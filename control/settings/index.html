@@ -9,15 +9,52 @@
 	
 	<!-- JS -->
 	<script src="../../../../scripts/buildfire.js"></script>
-   
- 	<!--
-    <script src="../../../../scripts/angular/angular.min.js"></script>
-    <script src="../../../../scripts/angular/ui-bootstrap.min.js"></script>
 
-    <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
-    -->
 </head>
 <body>
-    <span>Settings - Hello world!</span>
+
+        <div class="input-group">
+            <input id="pluginInstance" type="text" readonly class="form-control" placeholder="Plugin to Navigate to">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" onclick="selectPlugin()">...</button>
+            </span>
+        </div>
+    <input id="queryString" type="text" class="form-control" onchange="save()" placeholder="topic={{topic}}">
+
+    <script>
+        var currentData={
+            navTo:null
+            ,queryString:""
+        };
+
+        pluginInstanceInput = document.getElementById('pluginInstance');
+        queryString= document.getElementById("queryString");
+        function selectPlugin() {
+            buildfire.pluginInstance.showDialog({}, function (error, instances) {
+                if (instances.length > 0) {
+                    currentData.navTo=instances[0];
+                    save();
+                    pluginInstanceInput.value = instances[0].pluginTypeName + ": " + instances[0].title;
+                }
+            });
+        }
+
+        function save(){
+            currentData.queryString=queryString.value;
+            buildfire.datastore.save(currentData, function (err) {
+                if(err)console.error(err);
+            });
+        }
+
+        buildfire.datastore.get(function(err,obj){
+            if(obj ){
+                currentData=obj.data;
+                if(currentData.navTo)
+                    pluginInstanceInput.value= currentData.navTo.pluginTypeName + ": " + currentData.navTo.title;
+                queryString.value = currentData.queryString || "";
+            }
+
+        });
+    </script>
 </body>
 </html>

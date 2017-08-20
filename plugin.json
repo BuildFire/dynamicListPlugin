@@ -5,7 +5,7 @@
 ,"supportEmail":"devSupport@buildfire.com"
 ,"control":{
   "content":{
-    "enabled":true
+    "enabled":false
   }
 , "design":{
     "enabled":false

@@ -24,8 +24,99 @@
 
    <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
    -->
+    <style>
+        .item{
+            padding:15px;
+            font-size: 6vh;
+        }
+    </style>
 </head>
-<body>
-<span>Widget - Hello, world!</span>
+<body style="padding:10px;">
+    <div class="input-group">
+        <input id="searchCriteria" type="search" class="form-control" placeholder="Search">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" onclick="search({filter:{'$json.title': { $regex: new RegExp( searchCriteria.value , 'i') } } } )">Search</button>
+        </span>
+    </div>
+    <div id="list">
+
+    </div>
+
+    <div class="navbar-fixed-bottom input-group">
+        <input id="newTopicTitle" type="text" class="form-control" placeholder="Topic Title">
+        <span class="input-group-btn">
+            <button class="btn btn-success" type="button" onclick="addTopic()">Add</button>
+        </span>
+    </div>
+    <script>
+        var divList = document.getElementById("list");
+
+        function addTopic(topicTitle) {
+            var newTopicTitle =document.getElementById("newTopicTitle");
+            if (!topicTitle) topicTitle = newTopicTitle.value;
+
+            if (!topicTitle)return;
+
+            buildfire.publicData.search({
+                filter: {"$json.title": topicTitle},
+                limit: 1
+            }, "topics", function (err, data) {
+                debugger;
+                if (data.length == 0) {
+                    var item ={title: topicTitle};
+                    buildfire.publicData.insert(item, "topics", function (err) {
+                        newTopicTitle.value='';
+                    });
+                    addItemToList(item);
+                }
+            });
+
+        }
+
+        function search(criteriaObj){
+            if(!criteriaObj) criteriaObj={limit:10,sort:{clickCount:-1}};
+            buildfire.publicData.search(criteriaObj,"topics", function (err, results) {
+                if(results ){
+                    divList.innerHTML='';
+                    for(var i = 0 ; i < results.length; i++){
+                        addItemToList(results[i].data);
+                    }
+                }
+
+            });
+        }
+        search();
+        function addItemToList(item){
+            var div = document.createElement('div');
+            div.className="item";
+            div.innerHTML = item.title;
+            div.onclick = createDelegate(item);
+
+            var span = document.createElement('span');
+            span.innerHTML = "&gt;";
+            span.className="pull-right";
+
+            div.appendChild(span);
+
+            divList.appendChild(div);
+        }
+
+        function createDelegate(item){
+            return function (){
+                debugger;
+                navObj.queryString = navObj.queryString.replace("{{topic}}", encodeURIComponent( item.title));
+                buildfire.navigation.navigateTo(navObj);
+            }
+        }
+        var navObj;
+        buildfire.datastore.get(function(err,result){
+
+            if(result){
+                 navObj = result.data.navTo;
+                navObj.queryString = result.data.queryString;
+            }
+        })
+
+    </script>
 </body>
 </html>
