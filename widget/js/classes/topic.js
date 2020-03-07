@@ -99,7 +99,6 @@ class Topic {
           reject({error: 'Unauthorized', message: this.title + 'is not empty'});
         }
       }
-
       db.delete(this.id, "topics", (err, result) => {
         if (err) {
           reject(err);
