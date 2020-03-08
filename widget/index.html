@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-	<!--
+    <!--
 		NOTE:
 		1. You can reference the file in SDK via relative path
 		2. The Control and Widget Should NOT share resources. Only the Widget folder will make it to the device
@@ -11,32 +12,39 @@
 		    to keep you plugin as light weight as possible for performance and transport reasons
 	-->
 
-	<!-- You can load helper.css to use our helper classes.
+    <!-- You can load helper.css to use our helper classes.
 	<link href="../../../../styles/helper.css" rel="stylesheet">
 	-->
 
-	<!-- JS -->
-	<script src="../../../scripts/buildfire.js"></script>
+    <!-- JS -->
+    <script src="../../../scripts/buildfire.js"></script>
 
-	<!--
+    <!--
    <script src="../../../../scripts/angular/angular.min.js"></script>
    <script src="../../../../scripts/angular/ui-bootstrap.min.js"></script>
 
    <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
    -->
+    <script src="../control/content/js/classes/config.js"></script>
+    <script src="../control/content/js/classes/analytics.js"></script>
+
+    <script src="./js/classes/topic.js"></script>
+
     <style>
-        .item{
-            padding:15px;
+        .item {
+            padding: 15px;
             font-size: 6vh;
             margin-bottom: 2px;
         }
     </style>
 </head>
-<body >
+
+<body>
     <div class="input-group">
         <input id="searchCriteria" type="search" class="form-control" placeholder="Search">
         <span class="input-group-btn">
-            <button class="btn btn-default" type="button" onclick="search({filter:{'$json.title': { $regex: new RegExp( searchCriteria.value , 'i') } } } )">Search</button>
+            <button class="btn btn-default" type="button"
+                onclick="search({filter:{'$json.title': { $regex: new RegExp( searchCriteria.value , 'i') } } } )">Search</button>
         </span>
     </div>
     <div id="list">
@@ -53,20 +61,24 @@
         var divList = document.getElementById("list");
 
         function addTopic(topicTitle) {
-            var newTopicTitle =document.getElementById("newTopicTitle");
+            var newTopicTitle = document.getElementById("newTopicTitle");
             if (!topicTitle) topicTitle = newTopicTitle.value;
 
-            if (!topicTitle)return;
+            if (!topicTitle) return;
 
             buildfire.publicData.search({
-                filter: {"$json.title": topicTitle},
+                filter: {
+                    "$json.title": topicTitle
+                },
                 limit: 1
             }, "topics", function (err, data) {
 
                 if (data.length == 0) {
-                    var item ={title: topicTitle};
+                    var item = {
+                        title: topicTitle
+                    };
                     buildfire.publicData.insert(item, "topics", function (err) {
-                        newTopicTitle.value='';
+                        newTopicTitle.value = '';
                     });
                     addItemToList(item);
                 }
@@ -74,12 +86,17 @@
 
         }
 
-        function search(criteriaObj){
-            if(!criteriaObj) criteriaObj={limit:10,sort:{clickCount:-1}};
-            buildfire.publicData.search(criteriaObj,"topics", function (err, results) {
-                if(results ){
-                    divList.innerHTML='';
-                    for(var i = 0 ; i < results.length; i++){
+        function search(criteriaObj) {
+            if (!criteriaObj) criteriaObj = {
+                limit: 10,
+                sort: {
+                    clickCount: -1
+                }
+            };
+            buildfire.publicData.search(criteriaObj, "topics", function (err, results) {
+                if (results) {
+                    divList.innerHTML = '';
+                    for (var i = 0; i < results.length; i++) {
                         addItemToList(results[i]);
                     }
                 }
@@ -88,52 +105,56 @@
         }
         search();
 
-        var imgHeight= Math.round( window.innerWidth * (1/3));
-        function addItemToList(obj){
+        var imgHeight = Math.round(window.innerWidth * (1 / 3));
+
+        function addItemToList(obj) {
 
             var div = document.createElement('div');
-            div.className="item";
+            div.className = "item";
             div.innerHTML = obj.data.title;
-            div.style.backgroundImage="url(" + getImage(obj.data.title) + ")";
-            div.style.backgroundSize='cover';
-            div.style.backgroundColor="grey";
-            div.style.height=imgHeight + "px";
+            div.style.backgroundImage = "url(" + getImage(obj.data.title) + ")";
+            div.style.backgroundSize = 'cover';
+            div.style.backgroundColor = "grey";
+            div.style.height = imgHeight + "px";
             div.onclick = createDelegate(obj);
 
             var span = document.createElement('span');
             span.innerHTML = "&gt;";
-            span.className="pull-right";
+            span.className = "pull-right";
 
             div.appendChild(span);
 
             divList.appendChild(div);
         }
 
-        function getImage(topic){
-            var url = buildfire.imageLib.cropImage("https://app.buildfire.com/api/stockImages/"
-                    + encodeURIComponent(topic)
-                    + "?w=" + new Date().getDay() /// change once a day
-                ,{width:'full',height:imgHeight} );
+        function getImage(topic) {
+            var url = buildfire.imageLib.cropImage("https://app.buildfire.com/api/stockImages/" +
+                encodeURIComponent(topic) +
+                "?w=" + new Date().getDay() /// change once a day
+                , {
+                    width: 'full',
+                    height: imgHeight
+                });
             return url;
         }
 
-        function createDelegate(obj){
-            return function (){
+        function createDelegate(obj) {
+            return function () {
 
-                navObj.queryString = navObj.queryString.replace("{{topic}}", encodeURIComponent( obj.data.title));
+                navObj.queryString = navObj.queryString.replace("{{topic}}", encodeURIComponent(obj.data.title));
                 // should update item object with click count
                 buildfire.navigation.navigateTo(navObj);
             }
         }
         var navObj;
-        buildfire.datastore.get(function(err,result){
+        buildfire.datastore.get(function (err, result) {
 
-            if(result){
-                 navObj = result.data.navTo;
+            if (result) {
+                navObj = result.data.navTo;
                 navObj.queryString = result.data.queryString;
             }
         })
-
     </script>
 </body>
+
 </html>

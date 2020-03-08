@@ -47,6 +47,7 @@ class Topic {
         if (err) {
           reject(err);
         } else {
+          Analytics.trackAction(Analytics.events.TOPIC_CRETAED);
           resolve(result);
         }
       });
@@ -76,6 +77,7 @@ class Topic {
     if (topic && topic.reportedBy) {
       this.reportedBy.push(report);
     }
+    Analytics.trackAction(Analytics.events.TOPIC_REPORTED);
     return this.update(isPubic)
   }
 
@@ -97,10 +99,12 @@ class Topic {
           reject({error: 'Unauthorized', message: this.title + 'is not empty'});
         }
       }
+
       db.delete(this.id, "topics", (err, result) => {
         if (err) {
           reject(err);
         } else {
+          Analytics.trackAction(Analytics.events.TOPIC_DELETED);
           resolve(result);
         }
       });
