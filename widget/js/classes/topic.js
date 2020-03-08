@@ -81,11 +81,11 @@ class Topic {
     return this.update(isPubic)
   }
 
-  async delete(isPubic) {
+  delete(isPubic) {
     
     let db = this.getDatasource(isPubic);
 
-    return new Promise((resolve, reject) => {
+    return new Promise( async (resolve, reject) => {
       if (!this.id) {
         reject({error: 'Missed Parameters', message: 'You missed id parameter'});
       }
