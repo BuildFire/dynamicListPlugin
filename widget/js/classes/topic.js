@@ -127,6 +127,7 @@ class Topic {
           });
         }
       }
+
       db.delete(this.id, "topics", (err, result) => {
         if (err) {
           reject(err);
