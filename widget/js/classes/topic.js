@@ -17,7 +17,7 @@ class Topic {
         filter,
         limit,
         sort
-      }, "topics", function (err, data) {
+      }, "topics", function (err, result) {
         if (err) {
           reject(err);
         } else {
