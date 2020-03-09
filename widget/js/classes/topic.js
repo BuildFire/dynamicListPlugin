@@ -79,6 +79,7 @@ class Topic {
     });
   }
 
+
   report(isPubic, userId, reason) {
     const report = {
       userId,
