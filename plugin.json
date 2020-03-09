@@ -1,22 +1,28 @@
 {
-  "author":"Daniel Hindi"
-,"pluginName":"Dynamic List"
-,"pluginDescription":"This plugin allow users to create a list of items/topics on the fly to navigate to another plugin and pass it context"
-,"supportEmail":"devSupport@buildfire.com"
-,"control":{
-  "content":{
-    "enabled":true
-  }
-, "design":{
-    "enabled":false
-  }
-, "settings":{
-    "enabled":true
-  }
-}
-,"widget":{
-
-},
-  "features" : [],
-  "languages" : ["en"]
+  "author": "Daniel Hindi",
+  "pluginName": "Dynamic List",
+  "pluginDescription": "This plugin allow users to create a list of items/topics on the fly to navigate to another plugin and pass it context",
+  "supportEmail": "devSupport@buildfire.com",
+  "control": {
+    "content": {
+      "enabled": true
+    },
+    "design": {
+      "enabled": false
+    },
+    "settings": {
+      "enabled": true
+    },
+    "customTabs": [
+      {
+        "title": "Tests",
+        "url": "./tests/index.html"
+      }
+    ]
+  },
+  "widget": {},
+  "features": [],
+  "languages": [
+    "en"
+  ]
 }
