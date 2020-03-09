@@ -8,12 +8,11 @@ class Config {
 
   static get() {
     return new Promise((resolve, reject) => {
-      buildfire.datastore.get("configs", (err, dataObj) => {
+      buildfire.datastore.get( "configs", (err, result) => {
         if (err) {
           reject(err);
         } else {
-          let config = new Config(dataObj);
-          resolve(config);
+          resolve(result);
         }
       });
     });

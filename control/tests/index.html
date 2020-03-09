@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+  <!-- Load helper.css to use our helper classes.
+	<link href="../../../../styles/helper.css" rel="stylesheet">
+	-->
+
+  <!-- JS -->
+  <script src="../../../../scripts/buildfire.js"></script>
+  <script src="https://unpkg.com/chai/chai.js"></script>
+  <script src="https://unpkg.com/mocha/mocha.js"></script>
+
+  <script src="../content/js/classes/config.js"></script>
+  <script src="../content/js/classes/analytics.js"></script>
+  <script src="../../widget/js/classes/topic.js"></script>
+
+  <!--
+    <script src="../../../../scripts/angular/angular.min.js"></script>
+    <script src="../../../../scripts/angular/ui-bootstrap.min.js"></script>
+
+    <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
+    -->
+  <style>
+    #mocha-stats {
+      position: fixed;
+      top: 15px;
+      right: 30px;
+      font-size: 12px;
+      color: rgb(136, 136, 136);
+      z-index: 1;
+      margin: 0px;
+    }
+
+    #mocha ul,
+    #mocha li {
+      margin: 10px;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="mocha"></div>
+
+</body>
+<script class="mocha-init">
+  mocha.setup('bdd');
+  // mocha.checkLeaks();
+</script>
+<script src="../../test/control/content.test.js"></script>
+<script src="../../test/widget/widget.test.js"></script>
+
+<script class="mocha-exec">
+  mocha.run().globals(['foo', 'bar']);
+</script>
+
+</html>
