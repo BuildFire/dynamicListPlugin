@@ -11,7 +11,10 @@ class Topic {
 
 
   static getTopics(isPubic, filter, limit, sort) {
-    let db = this.getDatasource(isPubic);
+    let db = buildfire.publicData;
+    if (!isPubic) {
+      db = buildfire.userData;
+    }
     return new Promise((resolve, reject) => {
       db.search({
         filter,
@@ -54,9 +57,18 @@ class Topic {
     });
   }
 
-  update (isPubic) {
+  update(isPubic) {
     let db = this.getDatasource(isPubic);
-    return new Promise((resolve, reject) => {
+    return new Promise( async (resolve, reject) => {
+      let topic = await this.getById(isPubic, this.id);
+      if (topic && Object.keys(topic.data).length === 0) {
+        resolve({
+          code: "NOTFOUND",
+          message: "Entry not found",
+          ...topic
+        })
+        return;
+      }
       db.update(this.id, this, "topics", (err, result) => {
         if (err) {
           reject(err);
@@ -67,6 +79,7 @@ class Topic {
     });
   }
 
+
   report(isPubic, userId, reason) {
     const report = {
       userId,
@@ -74,29 +87,45 @@ class Topic {
       craetedOn: new Date()
     }
 
-    if (topic && topic.reportedBy) {
+    if (this && this.reportedBy) {
       this.reportedBy.push(report);
     }
     Analytics.trackAction(Analytics.events.TOPIC_REPORTED);
     return this.update(isPubic)
   }
 
+
   delete(isPubic) {
-    
     let db = this.getDatasource(isPubic);
 
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       if (!this.id) {
-        reject({error: 'Missed Parameters', message: 'You missed id parameter'});
+        reject({
+          error: 'Missed Parameters',
+          message: 'You missed id parameter'
+        });
       }
-  
+
+      let topic = await this.getById(isPubic, this.id);
+      if (topic && Object.keys(topic.data).length === 0) {
+        resolve({
+          code: "NOTFOUND",
+          message: "Entry not found",
+          ...topic
+        })
+        return;
+      }
+
       if (isPubic) {
         const filter = {
           "$json.parentTopicId": this.id
         }
-        const topics = await this.getTopics(isPubic, filter, 1);
+        const topics = await Topic.getTopics(isPubic, filter, 1);
         if (topics && topics.length > 0) {
-          reject({error: 'Unauthorized', message: this.title + 'is not empty'});
+          reject({
+            error: 'Unauthorized',
+            message: this.title + 'is not empty'
+          });
         }
       }
 
@@ -105,6 +134,19 @@ class Topic {
           reject(err);
         } else {
           Analytics.trackAction(Analytics.events.TOPIC_DELETED);
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getById(isPubic, topicId) {
+    let db = this.getDatasource(isPubic);
+    return new Promise((resolve, reject) => {
+      db.getById(topicId, 'topics', function (err, result) {
+        if (err) {
+          reject(err);
+        } else {
           resolve(result);
         }
       });
