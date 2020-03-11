@@ -4,8 +4,9 @@ describe('Content', function () {
 
   let configData = {
     pluginData: 'test',
-    querystring: '{{topicId}}',
-    isPublic: true
+    querystring: '${topicId}',
+    privacy: 'public',
+    indicator: 'image'
   }
 
   let config = new Config(configData);

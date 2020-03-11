@@ -17,14 +17,15 @@ describe('Widget', function () {
     deletedOn: null,
   }
 
-  let isPublic = true;
+  let publicPrivacy = 'public';
+  let privatePrivacy = 'privare';
 
   let privateTopic = new Topic(newTopic1);
   let publicTopic = new Topic(newTopic2);
 
   describe('Get Topics', function () {
     it('should get public topics without errors', function (done) {
-      Topic.getTopics(isPublic, {}, 10, {}).then(result => {
+      Topic.getTopics(publicPrivacy, {}, 10, {}).then(result => {
         assert.deepInclude(result[0], {
           userToken: 'public'
         })
@@ -35,11 +36,8 @@ describe('Widget', function () {
     });
 
     it('should get privte topics without errors', function (done) {
-      Topic.getTopics(!isPublic, {}, 10, {}).then(result => {
-        assert.notDeepInclude(result[0], {
-          userToken: 'public'
-        })
-        done()
+      Topic.getTopics(privatePrivacy, {}, 10, {}).then(result => {
+        done();
       }).catch(err => {
         done(err);
       })
@@ -48,13 +46,13 @@ describe('Widget', function () {
 
   describe('Save Topic', function () {
     it('should save public topic to public data without errors', function (done) {
-      publicTopic.save(isPublic).then(result => {
+      publicTopic.save(publicPrivacy).then(result => {
         done();
       }).catch(err => done(err))
     });
 
     it('should save private topic to user data without errors', function (done) {
-      privateTopic.save(!isPublic).then(result => {
+      privateTopic.save(privatePrivacy).then(result => {
         done();
       }).catch(err => done(err));
     });
@@ -71,7 +69,7 @@ describe('Widget', function () {
     let updatedTopic = new Topic(data);
 
     it('should update topic without errors', function (done) {
-      updatedTopic.update(isPublic).then(result => {
+      updatedTopic.update(publicPrivacy).then(result => {
         done();
       }).catch(err => {
         done(err);
@@ -90,7 +88,7 @@ describe('Widget', function () {
     let deletedTopic = new Topic(data);
 
     it('should delete topic without errors', function (done) {
-      deletedTopic.delete(isPublic).then(result => {
+      deletedTopic.delete(publicPrivacy).then(result => {
         console.log(result);
         done();
       }).catch(err => {
@@ -109,7 +107,7 @@ describe('Widget', function () {
     }
     let reportedTopic = new Topic(data);
     it('should report topic without errors', function (done) {
-      reportedTopic.report(isPublic, 'tets14556862', 'Not Polit').then(result => {
+      reportedTopic.report(publicPrivacy, 'tets14556862', 'Not Polit').then(result => {
         assert.strictEqual(result.data.reportedBy.length, 1)
         done();
       }).catch(err => {

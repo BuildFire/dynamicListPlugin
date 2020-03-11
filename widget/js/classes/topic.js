@@ -10,9 +10,9 @@ class Topic {
   }
 
 
-  static getTopics(isPubic, filter, limit, sort) {
+  static getTopics(privacy, filter, limit, sort) {
     let db = buildfire.publicData;
-    if (!isPubic) {
+    if (privacy === 'private') {
       db = buildfire.userData;
     }
     return new Promise((resolve, reject) => {
@@ -30,8 +30,8 @@ class Topic {
     });
   }
 
-  save(isPubic) {
-    let db = this.getDatasource(isPubic);
+  save(privacy) {
+    let db = this.getDatasource(privacy);
     const topic = {
       title: this.title,
       type: this.type,
@@ -57,10 +57,10 @@ class Topic {
     });
   }
 
-  update(isPubic) {
-    let db = this.getDatasource(isPubic);
+  update(privacy) {
+    let db = this.getDatasource(privacy);
     return new Promise( async (resolve, reject) => {
-      let topic = await this.getById(isPubic, this.id);
+      let topic = await this.getById(privacy, this.id);
       if (topic && Object.keys(topic.data).length === 0) {
         resolve({
           code: "NOTFOUND",
@@ -79,7 +79,7 @@ class Topic {
     });
   }
 
-  report(isPubic, userId, reason) {
+  report(privacy, userId, reason) {
     const report = {
       userId,
       reason,
@@ -90,12 +90,12 @@ class Topic {
       this.reportedBy.push(report);
     }
     Analytics.trackAction(Analytics.events.TOPIC_REPORTED);
-    return this.update(isPubic)
+    return this.update(privacy)
   }
 
 
-  delete(isPubic) {
-    let db = this.getDatasource(isPubic);
+  delete(privacy) {
+    let db = this.getDatasource(privacy);
 
     return new Promise(async (resolve, reject) => {
       if (!this.id) {
@@ -105,7 +105,7 @@ class Topic {
         });
       }
 
-      let topic = await this.getById(isPubic, this.id);
+      let topic = await this.getById(privacy, this.id);
       if (topic && Object.keys(topic.data).length === 0) {
         resolve({
           code: "NOTFOUND",
@@ -115,11 +115,11 @@ class Topic {
         return;
       }
 
-      if (isPubic) {
+      if (privacy === 'public') {
         const filter = {
           "$json.parentTopicId": this.id
         }
-        const topics = await Topic.getTopics(isPubic, filter, 1);
+        const topics = await Topic.getTopics(privacy, filter, 1);
         if (topics && topics.length > 0) {
           reject({
             error: 'Unauthorized',
@@ -139,8 +139,8 @@ class Topic {
     });
   }
 
-  getById(isPubic, topicId) {
-    let db = this.getDatasource(isPubic);
+  getById(privacy, topicId) {
+    let db = this.getDatasource(privacy);
     return new Promise((resolve, reject) => {
       db.getById(topicId, 'topics', function (err, result) {
         if (err) {
@@ -153,9 +153,9 @@ class Topic {
   }
 
 
-  getDatasource(isPubic) {
+  getDatasource(privacy) {
     let db = buildfire.publicData;;
-    if (!isPubic) {
+    if (privacy === 'private') {
       db = buildfire.userData;
     }
 
