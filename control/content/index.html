@@ -3,30 +3,21 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Inherit App Colors and Font -->
+  <meta name="buildfire" content="enableMDTheme,disableBootstrap">
 
-  <!--
-		NOTE:
-		1. You can reference the file in SDK via relative path
-		2. The Control and Widget Should NOT share resources. They will be separated in production.
-		3. You may include any JS framework you want with your Widget and Control folders. However, keep in mind
-		    to keep you plugin as light weight as possible for performance and transport reasons
-	-->
+  <!-- Material Design -->
+  <link href="../../../../styles/materialDesign/material-components-web@4.0.0.min.css" rel="stylesheet">
+  <script src="../../../../scripts/materialDesign/material-components-web@4.0.0.min.js" type="text/javascript"></script>
 
-  <!-- You can load helper.css to use our helper classes.
-    <link href="../../../../styles/helper.css" rel="stylesheet">
-    -->
+  <!-- Style -->
+  <link rel="stylesheet" href="style.css">
 
   <!-- JS -->
   <script src="../../../../scripts/buildfire.js"></script>
-  <!--
-    <script src="../../../../scripts/angular/angular.min.js"></script>
-    <script src="../../../../scripts/angular/ui-bootstrap.min.js"></script>
 
-   <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
-   -->
-
-  <script src="./js/classes/config.js"></script>
   <script src="./js/classes/analytics.js"></script>
+  <script src="./js/classes/config.js"></script>
 
   <script src="../../widget/js/classes/topic.js"></script>
 
@@ -34,9 +25,167 @@
 </head>
 
 <body>
-  <span>Content - Hello world!</span>
+  <div class="container">
+    <div class="mdc-layout-grid">
+      <div class="mdc-layout-grid__inner block">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Navigate To</span>
+        <span class="mdc-layout-grid__cell--span-4 text-body" id="pluginInstanceName">Plugin not identify</span>
+        <div class="mdc-layout-grid__cell--span-2">
+          <button class="mdc-button  mdc-button--raised btn" onclick="onSelectPlugin()">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Select Plugin</span>
+          </button>
+        </div>
+      </div>
+      <div class="mdc-layout-grid__inner block">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Query String</span>
+        <div class="mdc-layout-grid__cell--span-6">
+
+          <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
+            <input type="text" class="mdc-text-field__input" placeholder="${topic_id}" id="querystring"
+              onchange="onChangeQuerystring()">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="mdc-layout-grid__inner block">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Topic</span>
+        <div class="mdc-layout-grid__cell--span-2">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="publicPrivacy" value="public" name="privacy"
+                checked onchange="onSelectPrivacy()">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label for="publicPrivacy">Public</label>
+          </div>
+        </div>
+        <div class="mdc-layout-grid__cell--span-2">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="privatePrivacy" value="private" name="privacy"
+                onchange="onSelectPrivacy()">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label for="privatePrivacy">Private</label>
+          </div>
+        </div>
+      </div>
+      <div class="mdc-layout-grid__inner block">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Topic visual indicator</span>
+        <div class="mdc-layout-grid__cell--span-3">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="imageIndicator" value="image" name="indicator"
+                checked onchange="onSelectIndicator()">
+              <div class=" mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label class="radio-label" for="imageIndicator">Random Images</label>
+          </div>
+        </div>
+        <div class="mdc-layout-grid__cell--span-3">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="colorIndicator" value="color" name="indicator"
+                onchange="onSelectIndicator()">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label class="radio-label" for="colorIndicator">Random Colors</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
   <script>
     Analytics.init();
+    let config = new Config();
+
+    function onSelectPlugin() {
+      buildfire.pluginInstance.showDialog({}, (error, instances) => {
+        if (instances && instances.length > 0) {
+          console.log(instances);
+          config.pluginData = instances[0];
+          config.save();
+          pluginInstanceName.innerHTML = instances[0].pluginTypeName + ": " + instances[0].title;
+        } else {
+          pluginInstanceName.innerHTML = 'Plugin not identify';
+        }
+      });
+    }
+
+    function onSelectPrivacy() {
+      if (publicPrivacy.checked) {
+        config.privacy = Config.privacy.PUBLIC;
+      } else {
+        config.privacy = Config.privacy.PRIVATE;
+      }
+      config.save();
+
+    }
+
+    function onSelectIndicator() {
+      console.log(config)
+      if (imageIndicator.checked) {
+        config.indicator = Config.indicator.IMAGE;
+      } else {
+        config.indicator = Config.indicator.COLOR;
+      }
+      config.save();
+    }
+
+    function onChangeQuerystring() {
+      config.querystring = querystring.value;
+      config.save();
+    }
+
+
+    Config.get()
+      .then(result => {
+        console.log(result);
+        config = new Config(result.data);
+        querystring.value = config.querystring;
+        if (result && Object.keys(config.pluginData) > 0) {
+          pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
+        } else {
+          pluginInstanceName.innerHTML = 'Plugin not identify'
+        }
+
+        if (config.privacy === Config.privacy.PUBLIC) {
+          publicPrivacy.checked = true;
+        } else {
+          privatePrivacy.checked = true;
+        }
+
+        if (config.indicator === Config.indicator.IMAGE) {
+          imageIndicator.checked = true;
+        } else {
+          colorIndicator.checked = true;
+        }
+
+      })
+      .catch(err => {
+        console.error(err)
+      })
   </script>
 </body>
 
