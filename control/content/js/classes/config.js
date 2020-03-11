@@ -1,9 +1,19 @@
 class Config {
+  constructor(dataObj = {}) {
+    this.pluginData = dataObj.pluginData || {};
+    this.querystring = dataObj.querystring || '';
+    this.privacy = dataObj.privacy ||'public';
+    this.indicator = dataObj.indicator || 'image';
+  }
 
-  constructor(dataObj) {
-    this.pluginData = dataObj.pluginData;
-    this.querystring = dataObj.querystring;
-    this.isPublic = dataObj.isPublic;
+  static privacy = {
+    PUBLIC: 'public',
+    PRIVATE: 'private'
+  }
+
+  static indicator = {
+    IMAGE: 'image',
+    COLOR: 'color'
   }
 
   static get() {
