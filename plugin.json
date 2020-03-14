@@ -11,9 +11,13 @@
       "enabled": false
     },
     "settings": {
-      "enabled": true
+      "enabled": false
     },
     "customTabs": [
+      {
+        "title": "Abuse",
+        "url": "./abuse/index.html"
+      },
       {
         "title": "Tests",
         "url": "./tests/index.html"
