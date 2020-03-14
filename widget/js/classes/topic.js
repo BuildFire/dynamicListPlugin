@@ -6,7 +6,12 @@ class Topic {
     this.type = data.type;
     this.parentTopicId = data.parentTopicId || null;
     this.reportedBy = data.reportedBy || [];
-    this.deletedOn = null
+    this.createdOn = data.createdOn || null;
+    this.createdBy = data.createdBy || null;
+    this.lastUpdatedOn = data.lastUpdatedOn || null;
+    this.lastUpdatedBy = data.lastUpdatedBy || null;
+    this.deletedBy = data.deletedBy || null;
+    this.deletedOn = data.deletedOn || null;
   }
 
 
@@ -30,21 +35,34 @@ class Topic {
     });
   }
 
-  save(privacy) {
-    let db = this.getDatasource(privacy);
-    const topic = {
+  getRowData() {
+    return {
       title: this.title,
       type: this.type,
       parentTopicId: this.parentTopicId,
       reportedBy: this.reportedBy,
+      createdOn: this.createdOn,
+      createdBy: this.createdBy,
+      lastUpdatedOn: this.lastUpdatedOn,
+      lastUpdatedBy: this.lastUpdatedBy,
+      deletedOn: this.deletedOn,
+      deletedBy: this.deletedBy,
       _buildfire: {
         index: {
           string1: this.parentTopicId,
           date1: this.deletedOn,
-          text: this.title
+          text: this.title,
+          array1: this.reportedBy 
         }
       }
     }
+    
+  }
+
+  save(privacy) {
+    let db = this.getDatasource(privacy);
+    const topic = this.getRowData();
+    topic.createdOn = new Date();
     return new Promise((resolve, reject) => {
       db.insert(topic, "topics", (err, result) => {
         if (err) {
@@ -69,7 +87,9 @@ class Topic {
         })
         return;
       }
-      db.update(this.id, this, "topics", (err, result) => {
+      topic = this.getRowData();
+      topic.lastUpdatedOn = new Date();
+      db.update(this.id, topic, "topics", (err, result) => {
         if (err) {
           reject(err);
         } else {
@@ -83,7 +103,7 @@ class Topic {
     const report = {
       userId,
       reason,
-      craetedOn: new Date()
+      createdOn: new Date()
     }
 
     if (this && this.reportedBy) {
@@ -127,15 +147,22 @@ class Topic {
           });
         }
       }
-
-      db.delete(this.id, "topics", (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          Analytics.trackAction(Analytics.events.TOPIC_DELETED);
-          resolve(result);
-        }
-      });
+      // db.delete(this.id, "topics", (err, result) => {
+      //   if (err) {
+      //     reject(err);
+      //   } else {
+      //     Analytics.trackAction(Analytics.events.TOPIC_DELETED);
+      //     resolve(result);
+      //   }
+      // });
+      this.deletedOn = new Date();
+      this.update(privacy).then(result => {
+        Analytics.trackAction(Analytics.events.TOPIC_DELETED);
+        resolve(result);
+      })
+      .catch(err => {
+        reject(err);
+      })
     });
   }
 
@@ -158,7 +185,6 @@ class Topic {
     if (privacy === 'private') {
       db = buildfire.userData;
     }
-
     return db
   }
 
