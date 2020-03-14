@@ -30,17 +30,13 @@ describe('Widget', function () {
           userToken: 'public'
         })
         done()
-      }).catch(err => {
-        done(err);
-      })
+      }).catch(err =>  done(err));
     });
 
     it('should get privte topics without errors', function (done) {
       Topic.getTopics(privatePrivacy, {}, 10, {}).then(result => {
         done();
-      }).catch(err => {
-        done(err);
-      })
+      }).catch(err => done(err));
     });
   });
 
@@ -48,7 +44,7 @@ describe('Widget', function () {
     it('should save public topic to public data without errors', function (done) {
       publicTopic.save(publicPrivacy).then(result => {
         done();
-      }).catch(err => done(err))
+      }).catch(err =>  done(err));
     });
 
     it('should save private topic to user data without errors', function (done) {
@@ -60,7 +56,7 @@ describe('Widget', function () {
 
   describe('Update Topic', function () {
     const data = {
-      id: "5e6000cda5b6a40592241889",
+      id: "5e6bd8e609aa7805b321bf42",
       title: "politics01",
       type: "Link",
       parentTopicId: null,
@@ -71,15 +67,13 @@ describe('Widget', function () {
     it('should update topic without errors', function (done) {
       updatedTopic.update(publicPrivacy).then(result => {
         done();
-      }).catch(err => {
-        done(err);
-      })
+      }).catch(err =>  done(err));
     });
   });
 
   describe('Delete Topic', function () {
     const data = {
-      id: "5e668a783c452305fb587445",
+      id: "5e6bd8cf09aa7805b321bf41",
       title: "Artist01",
       type: "Link",
       parentTopicId: null,
@@ -91,28 +85,24 @@ describe('Widget', function () {
       deletedTopic.delete(publicPrivacy).then(result => {
         console.log(result);
         done();
-      }).catch(err => {
-        done(err);
-      })
+      }).catch(err => done(err));
     });
   });
 
   describe('Report Topic', function () {
     const data = {
-      id: "5e66abd1aa280805a7ad0ddd",
-      title: "Artist",
+      id: "5e6ab7d4fddc2b059954ed6c",
+      title: "Sport",
       type: "Link",
       parentTopicId: null,
       reportedBy: [],
     }
     let reportedTopic = new Topic(data);
     it('should report topic without errors', function (done) {
-      reportedTopic.report(publicPrivacy, 'tets14556862', 'Not Polit').then(result => {
+      reportedTopic.report(publicPrivacy, 'tets14556862', 'Spam').then(result => {
         assert.strictEqual(result.data.reportedBy.length, 1)
         done();
-      }).catch(err => {
-        done(err);
-      })
+      }).catch(err =>  done(err));
     });
   });
 });
