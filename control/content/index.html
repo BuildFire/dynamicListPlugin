@@ -135,9 +135,9 @@
 
     function onSelectPrivacy() {
       if (publicPrivacy.checked) {
-        config.privacy = Config.privacy.PUBLIC;
+        config.privacy = Config.PRIVACY.PUBLIC;
       } else {
-        config.privacy = Config.privacy.PRIVATE;
+        config.privacy = Config.PRIVACY.PRIVATE;
       }
       config.save();
 
@@ -146,9 +146,9 @@
     function onSelectIndicator() {
       console.log(config)
       if (imageIndicator.checked) {
-        config.indicator = Config.indicator.IMAGE;
+        config.indicator = Config.INDICATOR.IMAGE;
       } else {
-        config.indicator = Config.indicator.COLOR;
+        config.indicator = Config.INDICATOR.COLOR;
       }
       config.save();
     }
@@ -170,13 +170,13 @@
           pluginInstanceName.innerHTML = 'Plugin not identify'
         }
 
-        if (config.privacy === Config.privacy.PUBLIC) {
+        if (config.privacy === Config.PRIVACY.PUBLIC) {
           publicPrivacy.checked = true;
         } else {
           privatePrivacy.checked = true;
         }
 
-        if (config.indicator === Config.indicator.IMAGE) {
+        if (config.indicator === Config.INDICATOR.IMAGE) {
           imageIndicator.checked = true;
         } else {
           colorIndicator.checked = true;

@@ -6,12 +6,12 @@ class Config {
     this.indicator = dataObj.indicator || 'image';
   }
 
-  static privacy = {
+  static PRIVACY = {
     PUBLIC: 'public',
     PRIVATE: 'private'
   }
 
-  static indicator = {
+  static INDICATOR = {
     IMAGE: 'image',
     COLOR: 'color'
   }
