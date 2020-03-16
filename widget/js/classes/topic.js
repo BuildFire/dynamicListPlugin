@@ -23,6 +23,7 @@ class Topic {
     return new Promise((resolve, reject) => {
       db.search({
         filter,
+        skip: 0,
         limit,
         sort
       }, "topics", function (err, result) {
@@ -78,16 +79,16 @@ class Topic {
   update(privacy) {
     let db = this.getDatasource(privacy);
     return new Promise( async (resolve, reject) => {
-      let topic = await this.getById(privacy, this.id);
-      if (topic && Object.keys(topic.data).length === 0) {
-        resolve({
-          code: "NOTFOUND",
-          message: "Entry not found",
-          ...topic
-        })
-        return;
-      }
-      topic = this.getRowData();
+      // let topic = await this.getById(privacy, this.id);
+      // if (topic && Object.keys(topic.data).length === 0) {
+      //   resolve({
+      //     code: "NOTFOUND",
+      //     message: "Entry not found",
+      //     ...topic
+      //   })
+      //   return;
+      // }
+      let topic = this.getRowData();
       topic.lastUpdatedOn = new Date();
       db.update(this.id, topic, "topics", (err, result) => {
         if (err) {
@@ -125,15 +126,15 @@ class Topic {
         });
       }
 
-      let topic = await this.getById(privacy, this.id);
-      if (topic && Object.keys(topic.data).length === 0) {
-        resolve({
-          code: "NOTFOUND",
-          message: "Entry not found",
-          ...topic
-        })
-        return;
-      }
+      // let topic = await this.getById(privacy, this.id);
+      // if (topic && Object.keys(topic.data).length === 0) {
+      //   resolve({
+      //     code: "NOTFOUND",
+      //     message: "Entry not found",
+      //     ...topic
+      //   })
+      //   return;
+      // }
 
       if (privacy === 'public') {
         const filter = {

@@ -42,48 +42,65 @@
         <div class="mdc-layout-grid__cell--span-6">
 
           <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
-            <input type="text" class="mdc-text-field__input" placeholder="${topic_id}" id="querystring"
+            <input type="text" class="mdc-text-field__input"
+              placeholder="?WID=${topic_id}&TOPIC_TITLE=${topic_title}&UID=${user_id}" id="querystring"
               onchange="onChangeQuerystring()">
             <div class="mdc-notched-outline">
               <div class="mdc-notched-outline__leading"></div>
               <div class="mdc-notched-outline__trailing"></div>
             </div>
           </label>
-        </div>
-      </div>
-      <div class="mdc-layout-grid__inner block">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Topic</span>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="publicPrivacy" value="public" name="privacy"
-                checked onchange="onSelectPrivacy()">
-              <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label for="publicPrivacy">Public</label>
-          </div>
-        </div>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="privatePrivacy" value="private" name="privacy"
-                onchange="onSelectPrivacy()">
-              <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label for="privatePrivacy">Private</label>
+          <div>
+            <ul class="text-helper">
+              <li>topic_id: the topic id</li>
+              <li>topic_title: the topic title</li>
+              <li>user_id: the user id</li>
+            </ul>
           </div>
         </div>
       </div>
       <div class="mdc-layout-grid__inner block">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Topic visual indicator</span>
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Topic Privacy</span>
+        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
+          <div class="mdc-layout-grid__cell--span-4">
+            <div class="mdc-form-field">
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="publicPrivacy" value="public" name="privacy"
+                  checked onchange="onSelectPrivacy()">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+              <label for="publicPrivacy">Public</label>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell--span-4">
+            <div class="mdc-form-field">
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="privatePrivacy" value="private" name="privacy"
+                  onchange="onSelectPrivacy()">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+              <label for="privatePrivacy">Private</label>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell--span-10">
+            <ul class="text-helper">
+              <li>Public: Anyone on app can see the topic</li>
+              <li>Private: Only me can see the topic</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdc-layout-grid__inner block">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Style With Random</span>
         <div class="mdc-layout-grid__cell--span-3">
           <div class="mdc-form-field">
             <div class="mdc-radio">
@@ -95,7 +112,7 @@
               </div>
               <div class="mdc-radio__ripple"></div>
             </div>
-            <label class="radio-label" for="imageIndicator">Random Images</label>
+            <label class="radio-label" for="imageIndicator">Images</label>
           </div>
         </div>
         <div class="mdc-layout-grid__cell--span-3">
@@ -109,7 +126,7 @@
               </div>
               <div class="mdc-radio__ripple"></div>
             </div>
-            <label class="radio-label" for="colorIndicator">Random Colors</label>
+            <label class="radio-label" for="colorIndicator">Colors</label>
           </div>
         </div>
       </div>
