@@ -6,14 +6,18 @@ class Config {
     this.indicator = dataObj.indicator || 'image';
   }
 
-  static PRIVACY = {
-    PUBLIC: 'public',
-    PRIVATE: 'private'
+  static get PRIVACY() {
+    return {
+      PUBLIC: 'public',
+      PRIVATE: 'private'
+    }
   }
 
-  static INDICATOR = {
-    IMAGE: 'image',
-    COLOR: 'color'
+  static get INDICATOR() {
+    return {
+      IMAGE: 'image',
+      COLOR: 'color'
+    }
   }
 
   static get() {
