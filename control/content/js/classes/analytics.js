@@ -1,9 +1,11 @@
 class Analytics {
 
- static events = {
-    TOPIC_CRETAED: 'TOPIC_CRETAED',
-    TOPIC_REPORTED: 'TOPIC_REPORTED',
-    TOPIC_DELETED: 'TOPIC_DELETED',
+ static get events () {
+    return {
+      TOPIC_CRETAED: 'TOPIC_CRETAED',
+      TOPIC_REPORTED: 'TOPIC_REPORTED',
+      TOPIC_DELETED: 'TOPIC_DELETED',
+    }
   }
 
   static init() {

@@ -1,0 +1,41 @@
+
+.container {
+  margin: 1rem 0;
+}
+
+.btn {
+  font-size: .9rem;
+  text-transform: none;
+}
+
+.block {
+  margin-bottom: 1.5rem;
+}
+
+.text-body {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.text-body-light {
+  font-size: 0.91rem;
+  margin-top: 0.5rem;
+  color: #777777;
+}
+
+.mdc-text-field {
+  height: 2.3rem;
+  width: 100%;
+}
+
+.mdc-text-field--outlined .mdc-text-field__input {
+  padding: 0 0.9rem;
+  font-size: 0.8rem;
+}
+
+ul {
+  padding: 0 1rem;
+}
+.text-helper {
+  color: #888888;
+}
