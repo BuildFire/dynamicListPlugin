@@ -118,7 +118,7 @@ a.breadcrumb-label:hover {
   cursor: pointer;
   overflow: hidden;
   background-size: cover;
-  background-image: url('./.images/empty_img.png');
+  background-image: url('./images/empty_img.png');
 
 }
 
