@@ -29,11 +29,11 @@
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner block">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Navigate To</span>
-        <span class="mdc-layout-grid__cell--span-4 text-body" id="pluginInstanceName">Plugin not identify</span>
+        <span class="mdc-layout-grid__cell--span-4 text-body" id="pluginInstanceName">Feature not yet selected</span>
         <div class="mdc-layout-grid__cell--span-2">
           <button class="mdc-button  mdc-button--raised btn" onclick="onSelectPlugin()">
             <div class="mdc-button__ripple"></div>
-            <span class="mdc-button__label">Select Plugin</span>
+            <span class="mdc-button__label">Select Feature</span>
           </button>
         </div>
       </div>
@@ -145,7 +145,7 @@
           config.save();
           pluginInstanceName.innerHTML = instances[0].pluginTypeName + ": " + instances[0].title;
         } else {
-          pluginInstanceName.innerHTML = 'Plugin not identify';
+          pluginInstanceName.innerHTML = 'Feature not yet selected';
         }
       });
     }
@@ -161,7 +161,6 @@
     }
 
     function onSelectIndicator() {
-      console.log(config)
       if (imageIndicator.checked) {
         config.indicator = Config.INDICATOR.IMAGE;
       } else {
@@ -178,13 +177,12 @@
 
     Config.get()
       .then(result => {
-        console.log(result);
         config = new Config(result.data);
         querystring.value = config.querystring;
-        if (result && Object.keys(config.pluginData) > 0) {
+        if (result && Object.keys(config.pluginData).length > 0) {
           pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
         } else {
-          pluginInstanceName.innerHTML = 'Plugin not identify'
+          pluginInstanceName.innerHTML = 'Feature not yet selected'
         }
 
         if (config.privacy === Config.PRIVACY.PUBLIC) {

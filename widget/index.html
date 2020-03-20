@@ -2,159 +2,536 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Inherit App Colors and Font -->
+  <meta name="buildfire" content="enableMDTheme,disableBootstrap">
 
-    <!--
-		NOTE:
-		1. You can reference the file in SDK via relative path
-		2. The Control and Widget Should NOT share resources. Only the Widget folder will make it to the device
-		3. You may include any JS framework you want with your Widget and Control folders. However, keep in mind
-		    to keep you plugin as light weight as possible for performance and transport reasons
-	-->
+  <!-- Material Design -->
+  <link href="../../../styles/materialDesign/material-components-web@4.0.0.min.css" rel="stylesheet">
+  <script src="../../../scripts/materialDesign/material-components-web@4.0.0.min.js" type="text/javascript"></script>
 
-    <!-- You can load helper.css to use our helper classes.
-	<link href="../../../../styles/helper.css" rel="stylesheet">
-	-->
+  <script src="../../../scripts/buildfire.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-    <!-- JS -->
-    <script src="../../../scripts/buildfire.js"></script>
+  <!-- JS -->
+  <script src="../control/content/js/classes/config.js"></script>
+  <script src="../control/content/js/classes/analytics.js"></script>
+  <script src="./js/classes/topic.js"></script>
 
-    <!--
-   <script src="../../../../scripts/angular/angular.min.js"></script>
-   <script src="../../../../scripts/angular/ui-bootstrap.min.js"></script>
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
 
-   <script src="../../../../scripts/jquery/jquery-1.11.2.min.js"></script>
-   -->
-    <script src="../control/content/js/classes/config.js"></script>
-    <script src="../control/content/js/classes/analytics.js"></script>
-
-    <script src="./js/classes/topic.js"></script>
-
-    <style>
-        .item {
-            padding: 15px;
-            font-size: 6vh;
-            margin-bottom: 2px;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="input-group">
-        <input id="searchCriteria" type="search" class="form-control" placeholder="Search">
-        <span class="input-group-btn">
-            <button class="btn btn-default" type="button"
-                onclick="search({filter:{'$json.title': { $regex: new RegExp( searchCriteria.value , 'i') } } } )">Search</button>
-        </span>
+  <div class="container">
+    <div class="mdc-card search-card">
+      <span class="material-icons icon">search</span>
+      <input type="text" name="search" id="searchTxt" placeholder="Search" oninput="search()">
     </div>
-    <div id="list">
-
+    <div id="listContainer">
+      <div class="mdc-card list-group invisiable" id="listGroup">
+        <div class="mdc-card__actions">
+          <span class="group-title">Topic Title</span>
+          <div class="mdc-card__action--icons">
+            <button class="mdc-icon-button mdc-card__action--icon material-icons group-btn" title="More options">
+              more_vert
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="mdc-card list-link invisiable" id="listLink">
+        <div class="link-img"></div>
+        <div class="link-title">Topic Title</div>
+        <div class="mdc-card__action-icons link-action-container">
+          <button class="mdc-icon-button mdc-card__action--icon material-icons" title="More options">more_vert</button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="navbar-fixed-bottom input-group">
-        <input id="newTopicTitle" type="text" class="form-control" placeholder="Topic Title">
-        <span class="input-group-btn">
-            <button class="btn btn-success" type="button" onclick="addTopic()">Add</button>
-        </span>
+  <div class="add-btn">
+    <button class="mdc-fab" aria-label="Add" onclick="openTopicInputDialog()">
+      <div class="mdc-fab__ripple"></div>
+      <span class="mdc-fab__icon material-icons">add</span>
+    </button>
+  </div>
+  <div class="mdc-dialog" id="inputDialog">
+    <div class="mdc-dialog__container">
+      <div class="mdc-dialog__surface" role="inputDialog" aria-modal="true" aria-labelledby="dialog-title"
+        aria-describedby="dialog-content">
+        <h2 class="mdc-dialog__title" id="dialog-title">New Item</h2>
+        <div class="mdc-dialog__content" id="dialog-content">
+          <label class="mdc-text-field fullwidth">
+            <div class="mdc-text-field__ripple"></div>
+            <input class="mdc-text-field__input text-field-input" type="text" maxlength="50" id="topicTitle">
+            <span class="mdc-floating-label mdc-floating-label--float-above">Topic Title</span>
+            <div class="mdc-line-ripple"></div>
+          </label>
+          <div id="topicTypesRadioGroup" class="fullwidth">
+            <div class="mdc-form-field fullwidth">
+              <label class="radio-label" for="group">Group</label>
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" value="Group" id="group" name="topicType">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+            </div>
+            <div class="mdc-form-field fullwidth">
+              <label class="radio-label" for="link">Link</label>
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" value="Link" id="link" name="topicType">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="mdc-dialog__actions">
+          <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Cancel</span>
+          </button>
+          <button type="button" id="addTopicBtn" class="mdc-button mdc-dialog__button" onclick="addNewTopic()">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Create</span>
+          </button>
+        </footer>
+      </div>
     </div>
-    <script>
-        var divList = document.getElementById("list");
+    <div class="mdc-dialog__scrim"></div>
+  </div>
+  <div class="mdc-dialog" id="deleteDialog">
+    <div class="mdc-dialog__container">
+      <div class="mdc-dialog__surface" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title"
+        aria-describedby="dialog-content">
+        <h2 class="mdc-dialog__title" id="dialog-title">Delete Topic</h2>
+        <div class="mdc-dialog__content" id="dialog-content">
+          Are you sure you want to delete this topic and all of its content
+        </div>
+        <footer class="mdc-dialog__actions">
+          <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="cancel">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Cancel</span>
+          </button>
+          <button type="button" class="mdc-button mdc-dialog__button" id="dialogDeleteBtn">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Delete</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+    <div class="mdc-dialog__scrim"></div>
+  </div>
+  <div class="mdc-dialog" id="reportDialog">
+    <div class="mdc-dialog__container">
+      <div class="mdc-dialog__surface" role="formDialog" aria-modal="true" aria-labelledby="dialog-title"
+        aria-describedby="dialog-content">
+        <h2 class="mdc-dialog__title" id="report-dialog-title">Reason of report</h2>
+        <div class="mdc-dialog__content" id="report-dialog-content">
+          <div class="mdc-form-field fullwidth">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" value="Harrassment" id="harrassmentReason"
+                name="reportReason">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label class="radio-label" for="harrassmentReason">Harrassment</label>
+          </div>
+          <div class="mdc-form-field fullwidth">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" value="Spamming" id="spammingReason"
+                name="reportReason">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label class="radio-label" for="spammingReason">Spamming</label>
+          </div>
+          <div class="mdc-form-field fullwidth">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="fraudReason" value="Fraud" name="reportReason">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label class="radio-label" for="fraudReason">Fraud</label>
+          </div>
+        </div>
+        <footer class="mdc-dialog__actions">
+          <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Cancel</span>
+          </button>
+          <button type="button" class="mdc-button mdc-dialog__button" id="sendReportBtn">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Send</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+    <div class="mdc-dialog__scrim"></div>
+  </div>
+  <div class="bottom-sheet" id="bottomSheet">
+    <aside class="mdc-drawer mdc-drawer--open">
+      <div class="mdc-drawer__content">
+        <nav class="mdc-list">
+          <a class="mdc-list-item" id="editTopicOption">
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">edit</i>
+            <span class="mdc-list-item__text">Edit Topic</span>
+          </a>
+          <a class="mdc-list-item del-btn" id="deleteTopicOption">
+            <i class="material-icons mdc-list-item__graphic del-btn" aria-hidden="true">delete</i>
+            <span class="mdc-list-item__text del-btn">Delete Topic</span>
+          </a>
+          <a class="mdc-list-item" id="reportTopicOption">
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">report</i>
+            <span class="mdc-list-item__text">Report</span>
+          </a>
+          <a class="mdc-list-item" onclick="closeBottomSheet()">
+            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">close</i>
+            <span class="mdc-list-item__text">Cancel</span>
+          </a>
+        </nav>
+      </div>
+    </aside>
+  </div>
+  </div>
+  <script>
+    let config;
+    let timerId;
+    const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
+    const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
+    const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
 
-        function addTopic(topicTitle) {
-            var newTopicTitle = document.getElementById("newTopicTitle");
-            if (!topicTitle) topicTitle = newTopicTitle.value;
-
-            if (!topicTitle) return;
-
-            buildfire.publicData.search({
-                filter: {
-                    "$json.title": topicTitle
-                },
-                limit: 1
-            }, "topics", function (err, data) {
-
-                if (data.length == 0) {
-                    var item = {
-                        title: topicTitle
-                    };
-                    buildfire.publicData.insert(item, "topics", function (err) {
-                        newTopicTitle.value = '';
-                    });
-                    addItemToList(item);
-                }
-            });
-
-        }
-
-        function search(criteriaObj) {
-            if (!criteriaObj) criteriaObj = {
-                limit: 10,
-                sort: {
-                    clickCount: -1
-                }
-            };
-            buildfire.publicData.search(criteriaObj, "topics", function (err, results) {
-                if (results) {
-                    divList.innerHTML = '';
-                    for (var i = 0; i < results.length; i++) {
-                        addItemToList(results[i]);
-                    }
-                }
-
-            });
-        }
-        search();
-
-        var imgHeight = Math.round(window.innerWidth * (1 / 3));
-
-        function addItemToList(obj) {
-
-            var div = document.createElement('div');
-            div.className = "item";
-            div.innerHTML = obj.data.title;
-            div.style.backgroundImage = "url(" + getImage(obj.data.title) + ")";
-            div.style.backgroundSize = 'cover';
-            div.style.backgroundColor = "grey";
-            div.style.height = imgHeight + "px";
-            div.onclick = createDelegate(obj);
-
-            var span = document.createElement('span');
-            span.innerHTML = "&gt;";
-            span.className = "pull-right";
-
-            div.appendChild(span);
-
-            divList.appendChild(div);
-        }
-
-        function getImage(topic) {
-            var url = buildfire.imageLib.cropImage("https://app.buildfire.com/api/stockImages/" +
-                encodeURIComponent(topic) +
-                "?w=" + new Date().getDay() /// change once a day
-                , {
-                    width: 'full',
-                    height: imgHeight
-                });
-            return url;
-        }
-
-        function createDelegate(obj) {
-            return function () {
-
-                navObj.queryString = navObj.queryString.replace("{{topic}}", encodeURIComponent(obj.data.title));
-                // should update item object with click count
-                buildfire.navigation.navigateTo(navObj);
-            }
-        }
-        var navObj;
-        buildfire.datastore.get(function (err, result) {
-
-            if (result) {
-                navObj = result.data.navTo;
-                navObj.queryString = result.data.queryString;
-            }
+    function getConfig() {
+      buildfire.spinner.show()
+      Config.get()
+        .then(result => {
+          buildfire.spinner.hide()
+          config = new Config(result.data);
+          loadData();
         })
-    </script>
+        .catch(err => {
+          buildfire.spinner.hide()
+          listContainer.classList.add('bitmap');
+          console.error(err);
+        });
+
+      buildfire.datastore.onUpdate(result => {
+        console.log(result)
+        config = new Config(result.data);
+        loadData();
+      });
+    }
+
+    getConfig();
+
+    function loadData(filterData) {
+      clearList();
+      buildfire.spinner.show()
+      let filter = {
+        "_buildfire.index.date1": {
+          $type: "null"
+        },
+      };
+      if (filterData && Object.keys(filterData).length > 0) {
+        filter = {
+          ...filter,
+          ...filterData
+        }
+      }
+      Topic.getTopics(config.privacy, filter, null, {
+          type: 1
+        })
+        .then(topics => {
+          buildfire.spinner.hide()
+          if (topics && topics.length === 0) {
+            listContainer.classList.add('bitmap');
+            return;
+          }
+          for (const obj of topics) {
+            let topic = new Topic({
+              ...obj.data,
+              id: obj.id
+            });
+            renderTopic(topic);
+          }
+        })
+        .catch(err => {
+          listContainer.classList.add('bitmap');
+          console.error(err);
+        })
+    }
+
+    function search() {
+      let target = searchTxt.value;
+      let filter;
+      if (target) {
+        filter = {
+          $text: {
+            $search: target
+          }
+        };
+      }
+
+      clearTimeout(timerId)
+      timerId = setTimeout(() => {
+        loadData(filter)
+      }, 500)
+    }
+
+    function renderTopic(topic) {
+      let appendingElem;
+      if (topic.type === 'Group') {
+        appendingElem = createListGroup(topic);
+
+      } else {
+        appendingElem = createListLink(topic)
+      }
+      listContainer.appendChild(appendingElem);
+    }
+
+    function createListGroup(topic) {
+      let card = listGroup.cloneNode();
+      card.classList.remove('invisiable');
+      card.innerHTML = listGroup.innerHTML;
+      if (config.indicator === Config.INDICATOR.IMAGE) {
+        card.style.backgroundImage = `url(${getImage(topic)})`;
+        card.style.height = '12.0625rem';
+      } else {
+        card.style.backgroundColor = getColor();
+        card.style.height = '7.5rem';
+      }
+
+      card.querySelector('.group-title').innerHTML = topic.title;
+      let optionsBtn = card.querySelector('button');
+
+      optionsBtn.onclick = (event) => {
+        event.preventDefault();
+        showOptionsDailog(topic)
+      };
+      card.onclick = function (event) {
+        event.preventDefault();
+        if (event.target.tagName === 'BUTTON') {
+          return;
+        }
+        navigateTo(topic)
+      };
+
+      card.removeAttribute('id');
+      return card;
+    }
+
+    function createListLink(topic) {
+      let card = listLink.cloneNode();
+      card.classList.remove('invisiable');
+      card.innerHTML = listLink.innerHTML;
+
+      let linkImg = card.querySelector('.link-img');
+      if (config.indicator === Config.INDICATOR.IMAGE) {
+        linkImg.style.backgroundImage = `url(${getImage(topic)})`;
+      } else {
+        linkImg.style.display = 'none';
+        card.style.borderLeft = `solid 0.5rem ${getColor()}`;
+      }
+
+      card.querySelector('.link-title').innerHTML = topic.title;
+      let optionsBtn = card.querySelector('button');
+
+      card.onclick = function (event) {
+        event.preventDefault();
+        if (event.target.tagName === 'BUTTON') {
+          return;
+        }
+        navigateTo(topic)
+      };
+
+      optionsBtn.onclick = (event) => {
+        event.preventDefault();
+        showOptionsDailog(topic)
+      };
+      card.removeAttribute('id');
+      return card;
+    }
+
+    function clearList() {
+      listContainer.classList.remove('bitmap');
+      let group = listGroup;
+      let link = listLink;
+      listContainer.innerHTML = '';
+      listContainer.appendChild(group);
+      listContainer.appendChild(link);
+    }
+
+    function openTopicInputDialog() {
+      topicInpuDialog.scrimClickAction = '';
+      topicInpuDialog.open();
+    }
+
+    function addNewTopic() {
+      let title = topicTitle.value;
+      if (!title) {
+        return;
+      }
+
+      let types = topicTypesRadioGroup.querySelectorAll('input[name="topicType"]');
+      let type;
+      for (const elem of types) {
+        if (elem.checked) {
+          type = elem.value;
+        }
+      }
+      if (!type) {
+        return;
+      }
+
+      const topic = new Topic({
+        title,
+        type
+      });
+      addTopicBtn.disabled = true;
+      topic.save(config.privacy)
+        .then((result => {
+          topicInpuDialog.close();
+          loadData();
+          topicTitle.value = '';
+          addTopicBtn.disabled = false;
+        }))
+        .catch(err => {
+          console.error(err);
+          addTopicBtn.disabled = false;
+        })
+
+
+    }
+
+    function showOptionsDailog(topic) {
+      const bottomSheetCard = document.querySelector('#bottomSheet');
+      const editOption = bottomSheetCard.querySelector('#editTopicOption');
+      const deleteOption = bottomSheetCard.querySelector('#deleteTopicOption');
+      const reportOption = bottomSheetCard.querySelector('#reportTopicOption');
+      editOption.style.display = 'none';
+      deleteOption.onclick = () => openDeleteDialg(topic);
+      reportOption.onclick = () => openReportDialog(topic);
+
+      document.querySelector('.bottom-sheet').classList.add('backdoor')
+      document.querySelector('.mdc-drawer').classList.add('open-bottom-sheet');
+
+    }
+
+    function openDeleteDialg(topic) {
+      deleteTopicDialog.scrimClickAction = '';
+      deleteTopicDialog.open();
+      closeBottomSheet();
+      dialogDeleteBtn.onclick = function (event) {
+        event.preventDefault();
+        dialogDeleteBtn.disabled = true;
+        topic.delete(config.privacy)
+          .then(result => {
+            deleteTopicDialog.close();
+            dialogDeleteBtn.disabled = false;
+            loadData();
+          })
+          .catch(err => {
+            dialogDeleteBtn.disabled = false;
+            console.error(err);
+          })
+      };
+
+
+    }
+
+    function openReportDialog(topic) {
+      reportTopicDialog.scrimClickAction = '';
+      reportTopicDialog.open();
+      closeBottomSheet();
+      sendReportBtn.onclick = (event) => {
+        event.preventDefault();
+
+        let reasons = reportDialog.querySelectorAll('input[name="reportReason"]');
+        let reason;
+        for (const elem of reasons) {
+          if (elem.checked) {
+            reason = elem.value;
+          }
+        }
+        if (!reason) {
+          return;
+        }
+        sendReportBtn.disabled = true;
+
+        reportTopicDialog.close();
+        topic.report(config.privacy, 'Mohammad', reason)
+          .then(result => {
+            sendReportBtn.disabled = false;
+          })
+          .catch(err => {
+            sendReportBtn.disabled = false;
+            console.error(err);
+          })
+      };
+    }
+
+    function closeBottomSheet() {
+      document.querySelector('.mdc-drawer').classList.remove('open-bottom-sheet');
+      document.querySelector('.bottom-sheet').classList.remove('backdoor')
+    }
+
+    function navigateTo(topic) {
+      const queryString = getQueryString(config.querystring, topic.id, topic.title, 544654);
+      let pluginData = config.pluginData;
+      pluginData.queryString = queryString;
+      buildfire.navigation.navigateTo(pluginData)
+    }
+
+    function getQueryString(qs, topic_id, topic_title, user_id) {
+      return eval("`" + qs + "`");
+    }
+
+    function getImage(topic) {
+      let imgWidth;
+      let imgHeight;
+      if (topic.type === 'Group') {
+        imgWidth = '720';
+        imgHeight = '16:9'
+      } else {
+        imgWidth = 'm'
+        imgHeight = '1:1'
+      }
+      const url = buildfire.imageLib.cropImage(
+        `https://app.buildfire.com/api/stockImages/${encodeURIComponent(topic.title)}?w=${new Date().getDay()}`, {
+          size: imgWidth,
+          aspect: imgHeight
+        }
+      );
+
+      return url;
+    }
+
+    let colorIndex = 0;
+
+    function getColor() {
+      const colors = ['#C45858', '#58C4C2', '#FF8E71', '#EFA851', '#8C5475', '#B0ADFF'];
+      if (colorIndex === colors.length) {
+        colorIndex = 0;
+      }
+      return colors[colorIndex++];
+    }
+  </script>
 </body>
 
 </html>

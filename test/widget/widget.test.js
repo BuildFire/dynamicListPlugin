@@ -12,7 +12,7 @@ describe('Widget', function () {
   let newTopic2 = {
     title: 'politics',
     parentTopicId: null,
-    type: 'Link',
+    type: 'Group',
     reportedBy: [],
     deletedOn: null,
   }
