@@ -91,7 +91,6 @@ describe('Widget', function () {
             id: topic.id
           });
           const testResult = await deletedTopic.delete(publicPrivacy);
-          console.log(testResult);
           done();
         })
         .catch(err => done(err));
@@ -103,8 +102,6 @@ describe('Widget', function () {
       Topic.getTopics(publicPrivacy, filter, 1, {createdOn: 1})
         .then(async result => {
           let topic = result[0];
-          console.log(topic);
-
           let reportedTopic = new Topic({
             ...topic.data,
             id: topic.id

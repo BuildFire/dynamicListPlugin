@@ -237,7 +237,7 @@
           } else {
             loadData();
           }
-    
+
         })
         .catch(err => {
           buildfire.spinner.hide()
@@ -262,6 +262,11 @@
           loadData();
         }
       });
+
+      buildfire.auth.onLogout(() => {
+        loggedUser = null;
+      })
+
     }
 
     getConfig();
@@ -451,11 +456,13 @@
       const editOption = bottomSheetCard.querySelector('#editTopicOption');
       const deleteOption = bottomSheetCard.querySelector('#deleteTopicOption');
       const reportOption = bottomSheetCard.querySelector('#reportTopicOption');
-
+      editOption.style.display = 'none'
       if (config.privacy === Config.PRIVACY.PRIVATE) {
         reportOption.style.display = 'none';
+        deleteOption.style.display = 'block';
       } else {
         reportOption.style.display = 'block';
+        deleteOption.style.display = 'none';
       }
       deleteOption.onclick = () => openDeleteDialg(topic, targetEelement);
       reportOption.onclick = () => openReportDialog(topic);
