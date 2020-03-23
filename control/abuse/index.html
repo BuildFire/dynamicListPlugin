@@ -214,8 +214,8 @@
         <span class="material-icons icon">expand_more</span>
         </td>
         <td class="mdc-data-table__cell text-blue">${topic.title}</td>
-        <td class="mdc-data-table__cell">Mohammad</td>
-        <td class="mdc-data-table__cell">mhd@gmail.com</td>
+        <td class="mdc-data-table__cell">${topic.createdBy? topic.createdBy.firstName + ' ' + topic.createdBy.lastName : 'Public'}</td>
+        <td class="mdc-data-table__cell">${topic.createdBy? topic.createdBy.email : 'Public'}</td>
         <td class="mdc-data-table__cell mdc-data-table__cell--numeric">${topic.reportedBy.length}</td>
         <td class="mdc-data-table__cell">
           <button class="mdc-icon-button material-icons" name="approve">check</button>
@@ -225,9 +225,9 @@
 
     function createReportCard(report) {
       return `
-        <div class="mdc-layout-grid__cell--span-2">
+        <div class="mdc-layout-grid__cell--span-3">
           <h4>Reported By</h4>
-          <span class="text-blue">${report.userId}</span>
+          <span class="text-blue">${report.user? report.user.firstName + ' ' + report.user.lastName : 'undefined'}</span>
         </div>
         <div class="mdc-layout-grid__cell--span-3">
           <h4>Reported On</h4>
