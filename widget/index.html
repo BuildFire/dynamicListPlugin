@@ -17,6 +17,7 @@
   <script src="../control/content/js/classes/config.js"></script>
   <script src="../control/content/js/classes/analytics.js"></script>
   <script src="./js/classes/topic.js"></script>
+  <script src="./js/authManager.js"></script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="style.css">
@@ -213,6 +214,8 @@
   <script>
     let config;
     let timerId;
+    let colorIndex = 0;
+    let loggedUser = null;
     const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
     const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
     const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
@@ -223,7 +226,18 @@
         .then(result => {
           buildfire.spinner.hide()
           config = new Config(result.data);
-          loadData();
+
+          if (config.privacy === Config.PRIVACY.PRIVATE && !loggedUser) {
+            authManager.getCurrentUser()
+              .then(user => {
+                loggedUser = user;
+                loadData()
+              })
+              .catch(console.error)
+          } else {
+            loadData();
+          }
+    
         })
         .catch(err => {
           buildfire.spinner.hide()
@@ -232,9 +246,21 @@
         });
 
       buildfire.datastore.onUpdate(result => {
-        console.log(result)
+        topicInpuDialog.close();
+        deleteTopicDialog.close();
+        reportTopicDialog.close();
+        closeBottomSheet();
         config = new Config(result.data);
-        loadData();
+        if (config.privacy === Config.PRIVACY.PRIVATE && !loggedUser) {
+          authManager.getCurrentUser()
+            .then(user => {
+              loggedUser = user;
+              loadData();
+            })
+            .catch(console.error);
+        } else {
+          loadData();
+        }
       });
     }
 
@@ -322,7 +348,7 @@
 
       optionsBtn.onclick = (event) => {
         event.preventDefault();
-        showOptionsDailog(topic)
+        showOptionsDailog(topic, card)
       };
       card.onclick = function (event) {
         event.preventDefault();
@@ -362,7 +388,7 @@
 
       optionsBtn.onclick = (event) => {
         event.preventDefault();
-        showOptionsDailog(topic)
+        showOptionsDailog(topic, card)
       };
       card.removeAttribute('id');
       return card;
@@ -401,7 +427,8 @@
 
       const topic = new Topic({
         title,
-        type
+        type,
+        createdBy: loggedUser
       });
       addTopicBtn.disabled = true;
       topic.save(config.privacy)
@@ -419,13 +446,18 @@
 
     }
 
-    function showOptionsDailog(topic) {
+    function showOptionsDailog(topic, targetEelement) {
       const bottomSheetCard = document.querySelector('#bottomSheet');
       const editOption = bottomSheetCard.querySelector('#editTopicOption');
       const deleteOption = bottomSheetCard.querySelector('#deleteTopicOption');
       const reportOption = bottomSheetCard.querySelector('#reportTopicOption');
-      editOption.style.display = 'none';
-      deleteOption.onclick = () => openDeleteDialg(topic);
+
+      if (config.privacy === Config.PRIVACY.PRIVATE) {
+        reportOption.style.display = 'none';
+      } else {
+        reportOption.style.display = 'block';
+      }
+      deleteOption.onclick = () => openDeleteDialg(topic, targetEelement);
       reportOption.onclick = () => openReportDialog(topic);
 
       document.querySelector('.bottom-sheet').classList.add('backdoor')
@@ -433,7 +465,7 @@
 
     }
 
-    function openDeleteDialg(topic) {
+    function openDeleteDialg(topic, targetEelement) {
       deleteTopicDialog.scrimClickAction = '';
       deleteTopicDialog.open();
       closeBottomSheet();
@@ -444,7 +476,7 @@
           .then(result => {
             deleteTopicDialog.close();
             dialogDeleteBtn.disabled = false;
-            loadData();
+            listContainer.removeChild(targetEelement);
           })
           .catch(err => {
             dialogDeleteBtn.disabled = false;
@@ -456,9 +488,17 @@
     }
 
     function openReportDialog(topic) {
+      closeBottomSheet();
+      if (!loggedUser) {
+        authManager.getCurrentUser()
+          .then(user => {
+            loggedUser = user;
+          })
+          .catch(console.error);
+        return;
+      }
       reportTopicDialog.scrimClickAction = '';
       reportTopicDialog.open();
-      closeBottomSheet();
       sendReportBtn.onclick = (event) => {
         event.preventDefault();
 
@@ -475,7 +515,7 @@
         sendReportBtn.disabled = true;
 
         reportTopicDialog.close();
-        topic.report(config.privacy, 'Mohammad', reason)
+        topic.report(config.privacy, loggedUser, reason)
           .then(result => {
             sendReportBtn.disabled = false;
           })
@@ -513,7 +553,7 @@
         imgHeight = '1:1'
       }
       const url = buildfire.imageLib.cropImage(
-        `https://app.buildfire.com/api/stockImages/${encodeURIComponent(topic.title)}?w=${new Date().getDay()}`, {
+        `https://app.buildfire.com/api/stockImages/${encodeURIComponent(topic.title)}?w=${getWeekNumber(new Date())}`, {
           size: imgWidth,
           aspect: imgHeight
         }
@@ -522,14 +562,25 @@
       return url;
     }
 
-    let colorIndex = 0;
-
     function getColor() {
       const colors = ['#C45858', '#58C4C2', '#FF8E71', '#EFA851', '#8C5475', '#B0ADFF'];
       if (colorIndex === colors.length) {
         colorIndex = 0;
       }
       return colors[colorIndex++];
+    }
+
+    // get week number of year
+    function getWeekNumber(d) {
+      d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      // Set to nearest Thursday: current date + 4 - current day number
+      // Make Sunday's day number 7
+      d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+      // Get first day of year
+      var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      // Calculate full weeks to nearest Thursday
+      var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      return weekNo;
     }
   </script>
 </body>
