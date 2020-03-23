@@ -79,15 +79,6 @@ class Topic {
   update(privacy) {
     let db = this.getDatasource(privacy);
     return new Promise( async (resolve, reject) => {
-      // let topic = await this.getById(privacy, this.id);
-      // if (topic && Object.keys(topic.data).length === 0) {
-      //   resolve({
-      //     code: "NOTFOUND",
-      //     message: "Entry not found",
-      //     ...topic
-      //   })
-      //   return;
-      // }
       let topic = this.getRowData();
       topic.lastUpdatedOn = new Date();
       db.update(this.id, topic, "topics", (err, result) => {
@@ -100,9 +91,9 @@ class Topic {
     });
   }
 
-  report(privacy, userId, reason) {
+  report(privacy, user, reason) {
     const report = {
-      userId,
+      user,
       reason,
       createdOn: new Date()
     }
@@ -116,8 +107,6 @@ class Topic {
 
 
   delete(privacy) {
-    let db = this.getDatasource(privacy);
-
     return new Promise(async (resolve, reject) => {
       if (!this.id) {
         reject({
@@ -125,16 +114,6 @@ class Topic {
           message: 'You missed id parameter'
         });
       }
-
-      // let topic = await this.getById(privacy, this.id);
-      // if (topic && Object.keys(topic.data).length === 0) {
-      //   resolve({
-      //     code: "NOTFOUND",
-      //     message: "Entry not found",
-      //     ...topic
-      //   })
-      //   return;
-      // }
 
       if (privacy === 'public') {
         const filter = {
@@ -148,14 +127,6 @@ class Topic {
           });
         }
       }
-      // db.delete(this.id, "topics", (err, result) => {
-      //   if (err) {
-      //     reject(err);
-      //   } else {
-      //     Analytics.trackAction(Analytics.events.TOPIC_DELETED);
-      //     resolve(result);
-      //   }
-      // });
       this.deletedOn = new Date();
       this.update(privacy).then(result => {
         Analytics.trackAction(Analytics.events.TOPIC_DELETED);
@@ -188,6 +159,5 @@ class Topic {
     }
     return db
   }
-
 
 }
