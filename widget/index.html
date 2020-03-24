@@ -265,6 +265,14 @@
 
       buildfire.auth.onLogout(() => {
         loggedUser = null;
+        if (config.privacy === Config.PRIVACY.PRIVATE) {
+          authManager.login(false)
+            .then(user => {
+              loggedUser = user;
+              loadData();
+            })
+            .catch(console.error);
+        }
       })
 
     }
@@ -344,7 +352,7 @@
         card.style.backgroundImage = `url(${getImage(topic)})`;
         card.style.height = '12.0625rem';
       } else {
-        card.style.backgroundColor = getColor();
+        card.style.background = getColor();
         card.style.height = '7.5rem';
       }
 
@@ -409,6 +417,14 @@
     }
 
     function openTopicInputDialog() {
+      if (!loggedUser) {
+        authManager.login(true)
+          .then(user => {
+            loggedUser = user;
+          })
+          .catch(console.error);
+        return;
+      }
       topicInpuDialog.scrimClickAction = '';
       topicInpuDialog.open();
     }
@@ -457,13 +473,20 @@
       const deleteOption = bottomSheetCard.querySelector('#deleteTopicOption');
       const reportOption = bottomSheetCard.querySelector('#reportTopicOption');
       editOption.style.display = 'none'
+      
       if (config.privacy === Config.PRIVACY.PRIVATE) {
         reportOption.style.display = 'none';
-        deleteOption.style.display = 'block';
       } else {
         reportOption.style.display = 'block';
+      }
+
+      if (loggedUser && topic.createdBy.id === loggedUser.id) {
+        deleteOption.style.display = 'block';
+      } else {
         deleteOption.style.display = 'none';
       }
+
+
       deleteOption.onclick = () => openDeleteDialg(topic, targetEelement);
       reportOption.onclick = () => openReportDialog(topic);
 
@@ -473,9 +496,19 @@
     }
 
     function openDeleteDialg(topic, targetEelement) {
+      if (!loggedUser) {
+        authManager.login(true)
+          .then(user => {
+            loggedUser = user;
+          })
+          .catch(console.error);
+        return;
+      }
+
       deleteTopicDialog.scrimClickAction = '';
       deleteTopicDialog.open();
       closeBottomSheet();
+      
       dialogDeleteBtn.onclick = function (event) {
         event.preventDefault();
         dialogDeleteBtn.disabled = true;
@@ -497,7 +530,7 @@
     function openReportDialog(topic) {
       closeBottomSheet();
       if (!loggedUser) {
-        authManager.getCurrentUser()
+        authManager.login(true)
           .then(user => {
             loggedUser = user;
           })

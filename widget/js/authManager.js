@@ -20,9 +20,9 @@ const authManager = {
       })
     })
   },
-  login: () => {
+  login: (allowCancel) => {
     return new Promise((resolve, reject) => {
-      buildfire.auth.login({allowCancel: false} ,(err, user) => {
+      buildfire.auth.login({allowCancel} ,(err, user) => {
         if (err) {
           reject(err);
         } else {

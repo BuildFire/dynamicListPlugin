@@ -40,7 +40,7 @@ input:focus {
 }
 
 .bitmap {
-  background-image: url('./js/assets/empty.jpg');
+  background-image: url('./.images/empty_page.svg');
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;
@@ -58,6 +58,8 @@ input:focus {
   cursor: pointer;
   overflow: hidden;
   background-size: cover;
+  background-image: url('./.images/empty_img.png');
+
 }
 
 .mdc-card__actions {

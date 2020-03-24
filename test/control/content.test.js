@@ -3,7 +3,10 @@ describe('Content', function () {
   const expect = chai.expect
 
   let configData = {
-    pluginData: 'test',
+    pluginData: {
+      pluginTypeName: 'Test',
+      title: 'Test'
+    },
     querystring: '?WID=${topic_id}&TOPIC_TITLE=${topic_title}&UID=${user_id}',
     privacy: 'public',
     indicator: 'image'
