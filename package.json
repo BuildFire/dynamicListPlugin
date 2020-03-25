@@ -1,0 +1,35 @@
+{
+  "name": "dynamiclistplugin",
+  "version": "1.0.0",
+  "description": "User driven list that is meant to navigate to another plugin and pass context",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhd-rawashdah/dynamicListPlugin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mhd-rawashdah/dynamicListPlugin/issues"
+  },
+  "homepage": "https://github.com/mhd-rawashdah/dynamicListPlugin#readme",
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-csso": "^4.0.1",
+    "gulp-html-replace": "^1.6.2",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-sequence": "^1.0.0",
+    "gulp-uglify": "^3.0.2"
+  }
+}
