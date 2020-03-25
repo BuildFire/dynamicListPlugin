@@ -5,10 +5,11 @@ const concat = require('gulp-concat');
 const minHTML = require('gulp-htmlmin');
 const minifyCSS = require('gulp-csso');
 const imagemin = require('gulp-imagemin');
-const gulpSequence = require('gulp-sequence');
+const del = require('del');
 
 const jsTasks=[
   {name: "widgetJS", src: "widget/**/*.js"},
+  {name: "testJS", src: "test/**/*.js"},
   {name: "controlContentJS", src: "control/content/**/*.js"},
   {name: "controlDesignJS", src: "control/design/**/*.js"},
   {name: "controlAbuseJS", src: "control/abuse/**/*.js"},
@@ -111,10 +112,14 @@ gulp.task('images', function () {
 });
 
 
+gulp.task('clean',function(){
+  return del(['dist'],{force: true});
+});
+
 let buildTasksToRun = ['resources','images'];
 
 jsTasks.forEach((task) => {  buildTasksToRun.push(task.name)});
 htmlTasks.forEach((task) => {  buildTasksToRun.push(task.name)});
 cssTasks.forEach((task) => {  buildTasksToRun.push(task.name)});
 
-gulp.task('build',  gulpSequence('', '', buildTasksToRun));
+gulp.task('build',  gulp.series('clean', buildTasksToRun));
