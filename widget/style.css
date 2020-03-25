@@ -1,7 +1,13 @@
-/* .container {
-      display: flex;
-      flex-direction: column;
-    } */
+.container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  z-index: 1;
+  height: 100%;
+}
+.material-icons, #search-icon {
+  font-family: 'Material Icons' !important;
+} 
 
 .search-card {
   flex-direction: row;
