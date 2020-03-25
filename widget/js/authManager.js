@@ -4,16 +4,6 @@ const authManager = {
       buildfire.auth.getCurrentUser((err, user) => {
         if (err) {
           reject(err);
-          return;
-        }
-        if (!user) {
-          buildfire.auth.login({allowCancel: false} ,(err, loggedUser) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(loggedUser);
-            }
-          })
         } else {
           resolve(user);
         }
