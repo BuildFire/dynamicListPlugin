@@ -15,8 +15,8 @@
   
   <!-- JS -->
   <script src="../../../scripts/buildfire.js"></script>
-  <script src="../control/content/js/classes/config.js"></script>
-  <script src="../control/content/js/classes/analytics.js"></script>
+
+  <script src="./js/classes/helper.js"></script>
   <script src="./js/classes/topic.js"></script>
   <script src="./js/authManager.js"></script>
 
@@ -27,25 +27,33 @@
 <body>
   <div class="container">
     <div class="mdc-card search-card">
-      <span class="material-icons icon" id="search-icon">search</span>
+      <span class="material-icons icon" id="icon">search</span>
       <input type="text" name="search" id="searchTxt" placeholder="Search" oninput="search()">
     </div>
-    <div id="listContainer">
-      <div class="mdc-card list-group invisiable" id="listGroup">
-        <div class="mdc-card__actions">
-          <span class="group-title">Topic Title</span>
-          <div class="mdc-card__action--icons">
-            <button class="mdc-icon-button mdc-card__action--icon material-icons group-btn" title="More options">
-              more_vert
-            </button>
-          </div>
+    <div class="scroll" id="scrollContainer">
+      <div class="breadcrumbs invisiable" id="breadcrumbsDiv">
+        <div class="breadcrumb-item invisiable" id="breadcrumbDiv">
+          <span class="material-icons icon breadcrumb-icon" id="icon">chevron_right</span>
+          <a class="breadcrumb-label"></a>
         </div>
       </div>
-      <div class="mdc-card list-link invisiable" id="listLink">
-        <div class="link-img"></div>
-        <div class="link-title">Topic Title</div>
-        <div class="mdc-card__action-icons link-action-container">
-          <button class="mdc-icon-button mdc-card__action--icon material-icons" title="More options">more_vert</button>
+      <div id="listContainer">
+        <div class="mdc-card list-group invisiable" id="listGroup">
+          <div class="mdc-card__actions">
+            <span class="group-title">Topic Title</span>
+            <div class="mdc-card__action--icons">
+              <button class="mdc-icon-button mdc-card__action--icon material-icons group-btn" title="More options">
+                more_vert
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="mdc-card list-link invisiable" id="listLink">
+          <div class="link-img"></div>
+          <div class="link-title">Topic Title</div>
+          <div class="mdc-card__action-icons link-action-container">
+            <button class="mdc-icon-button mdc-card__action--icon material-icons" title="More options">more_vert</button>
+          </div>
         </div>
       </div>
     </div>
@@ -211,7 +219,7 @@
     </aside>
   </div>
   </div>
-  <script src="./js/app.js"></script>
+  <script src="./app.js"></script>
 </body>
 
 </html>

@@ -1,11 +1,14 @@
 const gulp = require('gulp');
 const babel = require('gulp-babel');
+var babelify = require('babelify');
+const bro = require('gulp-bro');
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
 const minHTML = require('gulp-htmlmin');
 const minifyCSS = require('gulp-csso');
 const imagemin = require('gulp-imagemin');
 const del = require('del');
+
 
 const jsTasks=[
   {name: "widgetJS", src: "widget/**/*.js"},

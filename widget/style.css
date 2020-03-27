@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   height: 100% !important;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
@@ -12,7 +13,7 @@ html, body {
 } */
 
 .material-icons,
-#search-icon {
+#icon {
   font-family: 'Material Icons' !important;
 }
 
@@ -48,14 +49,60 @@ input:focus {
   outline: none;
 }
 
+.scroll {
+  padding: 3.75rem 0 5rem;
+}
+
+.breadcrumbs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1.3rem .75rem;
+  white-space: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  -webkit-box-shadow: 0px 5px 5px -2px rgba(189, 189, 189, 1);
+  -moz-box-shadow: 0px 5px 5px -2px rgba(189, 189, 189, 1);
+  box-shadow: 0px 5px 5px -2px rgba(189, 189, 189, 1);
+}
+
+.breadcrumbs::-webkit-scrollbar {
+  display: none;
+}
+
+
+.breadcrumb-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.breadcrumb-item:last-child {
+  padding-right: .5rem;
+}
+
+a.breadcrumb-label {
+  padding: .3rem .6rem;
+  cursor: pointer;
+  background: #efefef;
+  border-radius: 4px;
+}
+
+
+
+a.breadcrumb-label:hover {
+  background: #e2e2e2;
+}
+
 #listContainer {
-  padding: 3.75rem 0.75rem 5rem;
+  padding: 0 0.75rem;
 }
 
 .bitmap {
   background-image: url('./.images/empty_page.svg');
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-attachment: absolute;
   background-position: center;
   height: 80vh;
 }
