@@ -1,3 +1,4 @@
+let breadcrumbsHistory = [];
 let config;
 let timerId;
 let colorIndex = 0;
@@ -6,14 +7,16 @@ const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
 const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
 
-function getConfig() {
-  buildfire.spinner.show()
-  Config.get()
+init();
+
+function init() {
+  buildfire.spinner.show();
+  
+  Helper.getConfigs()
     .then(result => {
       buildfire.spinner.hide()
-      config = new Config(result.data);
-
-      if (config.privacy === Config.PRIVACY.PRIVATE && !loggedUser) {
+      config = result.data;
+      if (config.privacy === Helper.PRIVACY.PRIVATE && !loggedUser) {
         enforceUserLogin();
       } else {
         getCurrentUser();
@@ -22,7 +25,7 @@ function getConfig() {
     })
     .catch(err => {
       buildfire.spinner.hide()
-      listContainer.classList.add('bitmap');
+      scrollContainer.classList.add('bitmap');
       console.error(err);
     });
 
@@ -31,46 +34,18 @@ function getConfig() {
     deleteTopicDialog.close();
     reportTopicDialog.close();
     closeBottomSheet();
-    
-    config = new Config(result.data);
-    if (config.privacy === Config.PRIVACY.PRIVATE && !loggedUser) {
+
+    config = result.data;
+    if (config.privacy === Helper.PRIVACY.PRIVATE && !loggedUser) {
       enforceUserLogin();
     } else {
       getCurrentUser();
     }
   });
 
-  function enforceUserLogin() {
-    authManager.getCurrentUser()
-      .then(user => {
-        if (user) {
-          loggedUser = user;
-          loadData();
-          return;
-        }
-
-        authManager.login(false)
-          .then(userCred => {
-            loggedUser = userCred;
-            loadData();
-          })
-          .catch(console.error);
-      })
-      .catch(console.error);
-  }
-
-  function getCurrentUser() {
-    authManager.getCurrentUser()
-      .then(user => {
-        loggedUser = user;
-        loadData();
-      })
-      .catch(console.error);
-  }
-
   buildfire.auth.onLogout(() => {
     loggedUser = null;
-    if (config.privacy === Config.PRIVACY.PRIVATE) {
+    if (config.privacy === Helper.PRIVACY.PRIVATE) {
       authManager.login(false)
         .then(user => {
           loggedUser = user;
@@ -82,7 +57,36 @@ function getConfig() {
 
 }
 
-getConfig();
+function enforceUserLogin() {
+  authManager.getCurrentUser()
+    .then(user => {
+      if (user) {
+        loggedUser = user;
+        // loadData();
+        getData();
+        return;
+      }
+
+      authManager.login(false)
+        .then(userCred => {
+          loggedUser = userCred;
+          // loadData();
+          getData();
+        })
+        .catch(console.error);
+    })
+    .catch(console.error);
+}
+
+function getCurrentUser() {
+  authManager.getCurrentUser()
+    .then(user => {
+      loggedUser = user;
+      // loadData();
+      getData();
+    })
+    .catch(console.error);
+}
 
 function loadData(filterData) {
   clearList();
@@ -102,9 +106,10 @@ function loadData(filterData) {
       type: 1
     })
     .then(topics => {
+      clearList();
       buildfire.spinner.hide()
       if (topics && topics.length === 0) {
-        listContainer.classList.add('bitmap');
+        scrollContainer.classList.add('bitmap');
         return;
       }
       for (const obj of topics) {
@@ -116,20 +121,27 @@ function loadData(filterData) {
       }
     })
     .catch(err => {
-      listContainer.classList.add('bitmap');
+      scrollContainer.classList.add('bitmap');
       console.error(err);
     })
 }
 
 function search() {
   let target = searchTxt.value;
-  let filter;
+  let filter = {};
   if (target) {
-    filter = {
-      $text: {
-        $search: target
-      }
+    filter.$text = {
+      $search: target
     };
+  }
+
+  if (breadcrumbsHistory && breadcrumbsHistory.length > 1) {
+    let currentTopicLevel = breadcrumbsHistory[breadcrumbsHistory.length - 1].options.topic;
+    filter['$json.parentTopicId'] = currentTopicLevel.id;
+  } else {
+    filter['$json.parentTopicId'] = {
+      $type: "null"
+    }
   }
 
   clearTimeout(timerId)
@@ -153,7 +165,7 @@ function createListGroup(topic) {
   let card = listGroup.cloneNode();
   card.classList.remove('invisiable');
   card.innerHTML = listGroup.innerHTML;
-  if (config.indicator === Config.INDICATOR.IMAGE) {
+  if (config.indicator === Helper.INDICATOR.IMAGE) {
     card.style.backgroundImage = `url(${getImage(topic)})`;
     card.style.height = '12.0625rem';
   } else {
@@ -173,7 +185,14 @@ function createListGroup(topic) {
     if (event.target.tagName === 'BUTTON') {
       return;
     }
-    navigateTo(topic)
+    // const filter = {
+    //   '$json.parentTopicId': topic.id
+    // }
+    buildfire.history.push(topic.title, {
+      topic
+    });
+    // loadData(filter)
+    getData();
   };
 
   card.removeAttribute('id');
@@ -186,7 +205,7 @@ function createListLink(topic) {
   card.innerHTML = listLink.innerHTML;
 
   let linkImg = card.querySelector('.link-img');
-  if (config.indicator === Config.INDICATOR.IMAGE) {
+  if (config.indicator === Helper.INDICATOR.IMAGE) {
     linkImg.style.backgroundImage = `url(${getImage(topic)})`;
   } else {
     linkImg.style.display = 'none';
@@ -213,7 +232,7 @@ function createListLink(topic) {
 }
 
 function clearList() {
-  listContainer.classList.remove('bitmap');
+  scrollContainer.classList.remove('bitmap');
   let group = listGroup;
   let link = listLink;
   listContainer.innerHTML = '';
@@ -232,6 +251,7 @@ function openTopicInputDialog() {
   }
   topicInpuDialog.scrimClickAction = '';
   topicInpuDialog.open();
+
 }
 
 function addNewTopic() {
@@ -251,16 +271,23 @@ function addNewTopic() {
     return;
   }
 
+  let parentTopicId;
+  if (breadcrumbsHistory && breadcrumbsHistory.length > 1) {
+    let currentTopicLevel = breadcrumbsHistory[breadcrumbsHistory.length - 1].options.topic;
+    parentTopicId = currentTopicLevel.id;
+  }
+
   const topic = new Topic({
     title,
     type,
+    parentTopicId,
     createdBy: loggedUser
   });
   addTopicBtn.disabled = true;
   topic.save(config.privacy)
     .then((result => {
       topicInpuDialog.close();
-      loadData();
+      getData();
       topicTitle.value = '';
       addTopicBtn.disabled = false;
     }))
@@ -268,8 +295,96 @@ function addNewTopic() {
       console.error(err);
       addTopicBtn.disabled = false;
     })
+}
 
+function getData() {
+  getBreadcrumbs()
+    .then(breadcrumbs => {
+      breadcrumbsHistory = breadcrumbs;
+      let filter = {}
+      // Here the length should be more than 1 where alwase we have home breadcrumbs in index 0
+      if (breadcrumbs && breadcrumbs.length > 1 && breadcrumbs[breadcrumbs.length - 1]) {
+        let currentTopicLevel = breadcrumbs[breadcrumbs.length - 1].options.topic;
+        filter['$json.parentTopicId'] = currentTopicLevel.id;
+      } else {
+        filter['$json.parentTopicId'] = {
+          $type: "null"
+        }
+      }
+      renderBreadcrumbs(breadcrumbs);
+      loadData(filter);
+    })
+    .catch(console.error)
 
+}
+
+function getBreadcrumbs() {
+  return new Promise((resolve, reject) => {
+    const options = {
+      pluginBreadcrumbsOnly: true
+    };
+    buildfire.history.get(options, (err, breadcrumbs) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (breadcrumbs.length === 0) {
+          buildfire.history.push('Home', {
+            topic: null
+          });
+        }
+        resolve(breadcrumbs)
+      }
+    });
+  })
+}
+
+function renderBreadcrumbs(breadcrumbs) {
+  clearBreadcrumbs();
+  if (breadcrumbs.length > 1) {
+    breadcrumbsDiv.classList.remove('invisiable');
+  } else {
+    breadcrumbsDiv.classList.add('invisiable');
+  }
+  breadcrumbs.forEach((elem, index) => {
+    let breadcrumb = createBreadcrumb(elem, index);
+    breadcrumbsDiv.appendChild(breadcrumb);
+  });
+  breadcrumbsDiv.scrollLeft = 1000;
+}
+
+function createBreadcrumb(bread, index) {
+  let breadcrumbElem = breadcrumbDiv.cloneNode();
+  breadcrumbElem.classList.remove('invisiable');
+  breadcrumbElem.innerHTML = breadcrumbDiv.innerHTML;
+  let breadcrumbLabel = breadcrumbElem.querySelector('.breadcrumb-label');
+  let breadcrumbIcon = breadcrumbElem.querySelector('.breadcrumb-icon');
+
+  breadcrumbLabel.innerHTML = bread.label;
+  if (index === 0) {
+    breadcrumbIcon.style.display = 'none';
+  } else {
+    breadcrumbIcon.style.display = '';
+  }
+  breadcrumbElem.id = bread.uid;
+  breadcrumbLabel.onclick = () => navigateBreadcrumbs(bread);
+  
+  return breadcrumbElem;
+}
+
+function navigateBreadcrumbs(bread) {
+  for (let i = breadcrumbsHistory.length - 1; i >= 0; i--) {
+    let breadcrumb = breadcrumbsHistory[i];
+    if (breadcrumb.uid === bread.uid) {
+      break;
+    }
+    buildfire.history.pop();
+  }
+}
+
+function clearBreadcrumbs() {
+  let breadcrumbElem = breadcrumbDiv;
+  breadcrumbsDiv.innerHTML = '';
+  breadcrumbsDiv.appendChild(breadcrumbElem);
 }
 
 function showOptionsDailog(topic, targetEelement) {
@@ -279,7 +394,7 @@ function showOptionsDailog(topic, targetEelement) {
   const reportOption = bottomSheetCard.querySelector('#reportTopicOption');
   editOption.style.display = 'none'
 
-  if (config.privacy === Config.PRIVACY.PRIVATE) {
+  if (config.privacy === Helper.PRIVACY.PRIVATE) {
     reportOption.style.display = 'none';
   } else {
     reportOption.style.display = '';
@@ -317,6 +432,7 @@ function openDeleteDialg(topic, targetEelement) {
   dialogDeleteBtn.onclick = function (event) {
     event.preventDefault();
     dialogDeleteBtn.disabled = true;
+    console.log(config);
     topic.delete(config.privacy)
       .then(result => {
         deleteTopicDialog.close();
@@ -427,3 +543,7 @@ function getWeekNumber(d) {
   var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   return weekNo;
 }
+
+buildfire.history.onPop((breadcrumb) => {
+  getData();
+});

@@ -53,11 +53,11 @@ class Topic {
           string1: this.parentTopicId,
           date1: this.deletedOn,
           text: this.title,
-          array1: this.reportedBy 
+          array1: this.reportedBy
         }
       }
     }
-    
+
   }
 
   save(privacy) {
@@ -69,7 +69,7 @@ class Topic {
         if (err) {
           reject(err);
         } else {
-          Analytics.trackAction(Analytics.events.TOPIC_CRETAED);
+          Helper.trackAction(Helper.EVENTS.TOPIC_CRETAED);
           resolve(result);
         }
       });
@@ -78,7 +78,7 @@ class Topic {
 
   update(privacy) {
     let db = this.getDatasource(privacy);
-    return new Promise( async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       let topic = this.getRowData();
       topic.lastUpdatedOn = new Date();
       db.update(this.id, topic, "topics", (err, result) => {
@@ -101,40 +101,59 @@ class Topic {
     if (this && this.reportedBy) {
       this.reportedBy.push(report);
     }
-    Analytics.trackAction(Analytics.events.TOPIC_REPORTED);
+    Helper.trackAction(Helper.EVENTS.TOPIC_REPORTED);
     return this.update(privacy)
   }
 
 
   delete(privacy) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (!this.id) {
         reject({
           error: 'Missed Parameters',
           message: 'You missed id parameter'
         });
+        return;
       }
 
       if (privacy === 'public') {
         const filter = {
-          "$json.parentTopicId": this.id
+          "$json.parentTopicId": this.id,
+          "_buildfire.index.date1": {
+            $type: "null"
+          },
         }
-        const topics = await Topic.getTopics(privacy, filter, 1);
-        if (topics && topics.length > 0) {
-          reject({
-            error: 'Unauthorized',
-            message: this.title + 'is not empty'
+        // const topics = await Topic.getTopics(privacy, filter, 1);
+        Topic.getTopics(privacy, filter, 1)
+          .then(topics => {
+            if (topics && topics.length > 0) {
+              reject({
+                error: 'Unauthorized',
+                message: this.title + 'is not empty'
+              });
+              return;
+            }
+            this.deletedOn = new Date();
+            this.update(privacy)
+              .then(result => {
+                Helper.trackAction(Helper.EVENTS.TOPIC_DELETED);
+                resolve(result);
+              })
+              .catch(err => {
+                reject(err);
+              });
           });
-        }
+      } else {
+        this.deletedOn = new Date();
+        this.update(privacy)
+          .then(result => {
+            Helper.trackAction(Helper.EVENTS.TOPIC_DELETED);
+            resolve(result);
+          })
+          .catch(err => {
+            reject(err);
+          })
       }
-      this.deletedOn = new Date();
-      this.update(privacy).then(result => {
-        Analytics.trackAction(Analytics.events.TOPIC_DELETED);
-        resolve(result);
-      })
-      .catch(err => {
-        reject(err);
-      })
     });
   }
 
