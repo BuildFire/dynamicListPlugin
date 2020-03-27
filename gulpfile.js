@@ -9,6 +9,7 @@ const minifyCSS = require('gulp-csso');
 const imagemin = require('gulp-imagemin');
 const del = require('del');
 
+
 const jsTasks=[
   {name: "widgetJS", src: "widget/**/*.js"},
   {name: "testJS", src: "test/**/*.js"},
