@@ -136,12 +136,14 @@ function search() {
     };
   }
 
-  if (breadcrumbsHistory && breadcrumbsHistory.length > 1) {
-    let currentTopicLevel = breadcrumbsHistory[breadcrumbsHistory.length - 1].options.topic;
-    filter['$json.parentTopicId'] = currentTopicLevel.id;
-  } else {
-    filter['$json.parentTopicId'] = {
-      $type: "null"
+  if (breadcrumbsHistory && breadcrumbsHistory.length > 0) {
+    let breadcrumbOptions = breadcrumbsHistory[breadcrumbsHistory.length - 1].options;
+    if (breadcrumbOptions.topic) { 
+      filter['$json.parentTopicId'] = breadcrumbOptions.topic.id
+    } else {
+      filter['$json.parentTopicId'] = {
+        $type: "null"
+      }
     }
   }
 
@@ -276,9 +278,11 @@ function addNewTopic() {
   }
 
   let parentTopicId;
-  if (breadcrumbsHistory && breadcrumbsHistory.length > 1) {
-    let currentTopicLevel = breadcrumbsHistory[breadcrumbsHistory.length - 1].options.topic;
-    parentTopicId = currentTopicLevel.id;
+  if (breadcrumbsHistory && breadcrumbsHistory.length > 0) {
+    let breadcrumbOptions = breadcrumbsHistory[breadcrumbsHistory.length - 1].options;
+    if (breadcrumbOptions.topic) {
+      parentTopicId =  breadcrumbOptions.topic.id;
+    }
   }
 
   const topic = new Topic({
@@ -309,14 +313,25 @@ function getData() {
       breadcrumbsHistory = breadcrumbs;
       let filter = {}
       // Here the length should be more than 1 where alwase we have home breadcrumbs in index 0
-      if (breadcrumbs && breadcrumbs.length > 1 && breadcrumbs[breadcrumbs.length - 1]) {
-        let currentTopicLevel = breadcrumbs[breadcrumbs.length - 1].options.topic;
-        filter['$json.parentTopicId'] = currentTopicLevel.id;
-      } else {
-        filter['$json.parentTopicId'] = {
-          $type: "null"
+      // if (breadcrumbs && breadcrumbs.length > 1 && breadcrumbs[breadcrumbs.length - 1]) {
+      //   let currentTopicLevel = breadcrumbs[breadcrumbs.length - 1].options.topic;
+      //   filter['$json.parentTopicId'] = currentTopicLevel.id;
+      // } else {
+      //   filter['$json.parentTopicId'] = {
+      //     $type: "null"
+      //   }
+      // }
+      if (breadcrumbs && breadcrumbs.length > 0) {
+        let breadcrumbOptions = breadcrumbs[breadcrumbs.length - 1].options;
+        if (breadcrumbOptions.topic) { 
+          filter['$json.parentTopicId'] = breadcrumbOptions.topic.id
+        } else {
+          filter['$json.parentTopicId'] = {
+            $type: "null"
+          }
         }
       }
+
       renderBreadcrumbs(breadcrumbs);
       loadData(filter);
     })
@@ -327,17 +342,17 @@ function getData() {
 function getBreadcrumbs() {
   return new Promise((resolve, reject) => {
     const options = {
-      pluginBreadcrumbsOnly: true
+      pluginBreadcrumbsOnly: false
     };
     buildfire.history.get(options, (err, breadcrumbs) => {
       if (err) {
         reject(err);
       } else {
-        if (breadcrumbs.length === 0) {
-          buildfire.history.push('Home', {
-            topic: null
-          });
-        }
+        // if (breadcrumbs.length === 0) {
+        //   buildfire.history.push('Home', {
+        //     topic: null
+        //   });
+        // }
         resolve(breadcrumbs)
       }
     });
@@ -346,14 +361,26 @@ function getBreadcrumbs() {
 
 function renderBreadcrumbs(breadcrumbs) {
   clearBreadcrumbs();
-  if (breadcrumbs.length > 1) {
+  if (breadcrumbs.length > 1 && breadcrumbs[breadcrumbs.length - 1].options.topic) {
     breadcrumbsDiv.classList.remove('invisiable');
   } else {
     breadcrumbsDiv.classList.add('invisiable');
   }
+
+  // just show the plugin breadcrumbs
+  let perivousBread;
   breadcrumbs.forEach((elem, index) => {
-    let breadcrumb = createBreadcrumb(elem, index);
-    breadcrumbsDiv.appendChild(breadcrumb);
+    if (!elem.options.topic) {
+      perivousBread = elem;
+    } else {
+      if (perivousBread && !perivousBread.options.topic) {
+        let breadcrumb = createBreadcrumb(perivousBread, 0);
+        breadcrumbsDiv.appendChild(breadcrumb);   
+        perivousBread = null;
+      }
+      let breadcrumb = createBreadcrumb(elem, index);
+      breadcrumbsDiv.appendChild(breadcrumb);
+    }
   });
   breadcrumbsDiv.scrollLeft = 1000;
 }
