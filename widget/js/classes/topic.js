@@ -129,7 +129,7 @@ class Topic {
             if (topics && topics.length > 0) {
               reject({
                 error: 'Unauthorized',
-                message: this.title + 'is not empty'
+                message: this.title + ' group is not empty'
               });
               return;
             }

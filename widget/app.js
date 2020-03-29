@@ -6,6 +6,7 @@ let loggedUser = null;
 const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
 const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
+const snackbar = new mdc.snackbar.MDCSnackbar(snackBar);
 
 init();
 
@@ -257,6 +258,8 @@ function openTopicInputDialog() {
 function addNewTopic() {
   let title = topicTitle.value;
   if (!title) {
+    showMessage('Please, enter title of topic');
+
     return;
   }
 
@@ -268,6 +271,7 @@ function addNewTopic() {
     }
   }
   if (!type) {
+    showMessage('Please, you have to select type of topic');
     return;
   }
 
@@ -287,6 +291,7 @@ function addNewTopic() {
   topic.save(config.privacy)
     .then((result => {
       topicInpuDialog.close();
+      showMessage(`Successfully added ${topic.title} topic`)
       getData();
       topicTitle.value = '';
       addTopicBtn.disabled = false;
@@ -294,6 +299,7 @@ function addNewTopic() {
     .catch(err => {
       console.error(err);
       addTopicBtn.disabled = false;
+      showMessage(err.message);
     })
 }
 
@@ -432,16 +438,18 @@ function openDeleteDialg(topic, targetEelement) {
   dialogDeleteBtn.onclick = function (event) {
     event.preventDefault();
     dialogDeleteBtn.disabled = true;
-    console.log(config);
     topic.delete(config.privacy)
       .then(result => {
         deleteTopicDialog.close();
+        showMessage(`Successfully deleted ${topic.title} topic`)
         dialogDeleteBtn.disabled = false;
         listContainer.removeChild(targetEelement);
       })
       .catch(err => {
         dialogDeleteBtn.disabled = false;
+        deleteTopicDialog.close();
         console.error(err);
+        showMessage(err.message);
       })
   };
 
@@ -479,10 +487,13 @@ function openReportDialog(topic) {
     topic.report(config.privacy, loggedUser, reason)
       .then(result => {
         sendReportBtn.disabled = false;
+        showMessage(`Successfully reported ${topic.title} topic`)
       })
       .catch(err => {
         sendReportBtn.disabled = false;
+        reportTopicDialog.close();
         console.error(err);
+        showMessage(err.message);
       })
   };
 }
@@ -542,6 +553,11 @@ function getWeekNumber(d) {
   // Calculate full weeks to nearest Thursday
   var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   return weekNo;
+}
+
+function showMessage(message) {
+  snackbarMsg.innerHTML = message;
+  snackbar.open();
 }
 
 buildfire.history.onPop((breadcrumb) => {
