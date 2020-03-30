@@ -1,6 +1,6 @@
 {
-  "author": "Daniel Hindi",
-  "pluginName": "Dynamic List",
+  "author": "BuildFire",
+  "pluginName": "Dynamic List - Dev",
   "pluginDescription": "This plugin allow users to create a list of items/topics on the fly to navigate to another plugin and pass it context",
   "supportEmail": "devSupport@buildfire.com",
   "control": {
@@ -16,11 +16,11 @@
     "customTabs": [
       {
         "title": "Abuse",
-        "url": "./abuse/index.html"
+        "url": "abuse/index.html"
       },
       {
         "title": "Tests",
-        "url": "./tests/index.html"
+        "url": "tests/index.html"
       }
     ]
   },

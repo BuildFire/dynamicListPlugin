@@ -1,20 +1,36 @@
 describe('Widget', function () {
   const assert = chai.assert
 
+  const user1 = {
+    id: 5465555888556,
+    firstName: 'test',
+    lastName: 'test',
+    email: 'test@test.com'
+  };
+
+  const user2 = {
+    id: 54655555555556,
+    firstName: 'test',
+    lastName: 'test',
+    email: 'test@test.com'
+  };
+
   let newTopic1 = {
     title: 'Technology',
     parentTopicId: null,
     type: 'Group',
     reportedBy: [],
     deletedOn: null,
+    createdBy: user1
   }
 
   let newTopic2 = {
     title: 'politics',
     parentTopicId: null,
-    type: 'Link',
+    type: 'Group',
     reportedBy: [],
     deletedOn: null,
+    createdBy: user2
   }
 
   let publicPrivacy = 'public';
@@ -70,7 +86,7 @@ describe('Widget', function () {
             ...topic.data,
             id: topic.id
           });
-          updatedTopic.title = 'Test Update';
+          updatedTopic.title = 'Test';
           const testResult = await updatedTopic.update(publicPrivacy);
           done();
         })
@@ -91,7 +107,6 @@ describe('Widget', function () {
             id: topic.id
           });
           const testResult = await deletedTopic.delete(publicPrivacy);
-          console.log(testResult);
           done();
         })
         .catch(err => done(err));
@@ -103,13 +118,11 @@ describe('Widget', function () {
       Topic.getTopics(publicPrivacy, filter, 1, {createdOn: 1})
         .then(async result => {
           let topic = result[0];
-          console.log(topic);
-
           let reportedTopic = new Topic({
             ...topic.data,
             id: topic.id
           });
-          const testResult = await reportedTopic.report(publicPrivacy, 'Test Report', 'Spam');
+          const testResult = await reportedTopic.report(publicPrivacy, user1, 'Spam');
           done();
         })
         .catch(err => done(err));
