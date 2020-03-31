@@ -34,3 +34,8 @@ tr {
 .text-blue {
   color: rgb(61, 140, 214);
 }
+
+.mdc-dialog__container{
+  display: block;
+  margin-top: 10rem;
+}
