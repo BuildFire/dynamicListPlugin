@@ -136,6 +136,9 @@ a.breadcrumb-label:hover {
   margin: .5rem 1rem .5rem;
   font-size: 1rem;
   color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .group-btn:not(:disabled) {
@@ -165,6 +168,9 @@ a.breadcrumb-label:hover {
 .link-title {
   flex: 3;
   margin: 0 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .link-action-container {
@@ -240,3 +246,4 @@ a.breadcrumb-label:hover {
 .del-item .mdc-list-item__graphic {
   color: #D40044;
 }
+
