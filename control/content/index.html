@@ -137,6 +137,45 @@
     Analytics.init();
     let config = new Config();
 
+
+    init();
+
+    function init() {
+      Config.get()
+      .then(result => {
+        config = new Config(result.data);
+        querystring.value = config.querystring;
+        if (Object.keys(result.data).length === 0) {
+          onSelectPrivacy();
+          onSelectIndicator();
+          return;
+        }
+
+        if (result && Object.keys(config.pluginData).length > 0) {
+          pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
+        } else {
+          pluginInstanceName.innerHTML = 'Feature not yet selected'
+        }
+
+        if (config.privacy === Config.PRIVACY.PUBLIC) {
+          publicPrivacy.checked = true;
+        } else {
+          privatePrivacy.checked = true;
+        }
+
+        if (config.indicator === Config.INDICATOR.IMAGE) {
+          imageIndicator.checked = true;
+        } else {
+          colorIndicator.checked = true;
+        }
+
+      })
+      .catch(err => {
+        console.error(err)
+      })
+    }
+
+
     function onSelectPlugin() {
       buildfire.pluginInstance.showDialog({}, (error, instances) => {
         if (instances && instances.length > 0) {
@@ -175,32 +214,7 @@
     }
 
 
-    Config.get()
-      .then(result => {
-        config = new Config(result.data);
-        querystring.value = config.querystring;
-        if (result && Object.keys(config.pluginData).length > 0) {
-          pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
-        } else {
-          pluginInstanceName.innerHTML = 'Feature not yet selected'
-        }
-
-        if (config.privacy === Config.PRIVACY.PUBLIC) {
-          publicPrivacy.checked = true;
-        } else {
-          privatePrivacy.checked = true;
-        }
-
-        if (config.indicator === Config.INDICATOR.IMAGE) {
-          imageIndicator.checked = true;
-        } else {
-          colorIndicator.checked = true;
-        }
-
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    
   </script>
 </body>
 
