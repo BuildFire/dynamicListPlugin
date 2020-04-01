@@ -144,20 +144,19 @@
       <div class="mdc-dialog__surface" role="formDialog" aria-modal="true" aria-labelledby="dialog-title"
         aria-describedby="dialog-content">
         <h2 class="mdc-dialog__title" id="report-dialog-title">Reason of report</h2>
-        <div class="mdc-dialog__content" id="report-dialog-content">
-          <div class="mdc-form-field fullwidth">
+        <div class="mdc-dialog__content" id="reportDialogContent">
+          <div class="mdc-form-field fullwidth invisiable" id="radioDiv">
             <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" value="Harrassment" id="harrassmentReason"
-                name="reportReason">
+              <input class="mdc-radio__native-control" type="radio" name="reportReason">
               <div class="mdc-radio__background">
                 <div class="mdc-radio__outer-circle"></div>
                 <div class="mdc-radio__inner-circle"></div>
               </div>
               <div class="mdc-radio__ripple"></div>
             </div>
-            <label class="radio-label" for="harrassmentReason">Harrassment</label>
+            <label class="radio-label"></label>
           </div>
-          <div class="mdc-form-field fullwidth">
+          <!-- <div class="mdc-form-field fullwidth">
             <div class="mdc-radio">
               <input class="mdc-radio__native-control" type="radio" value="Spamming" id="spammingReason"
                 name="reportReason">
@@ -179,7 +178,7 @@
               <div class="mdc-radio__ripple"></div>
             </div>
             <label class="radio-label" for="fraudReason">Fraud</label>
-          </div>
+          </div> -->
         </div>
         <footer class="mdc-dialog__actions">
           <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
