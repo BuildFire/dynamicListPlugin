@@ -507,10 +507,10 @@ function openReportDialog(topic) {
     const radioBtn = radioDiv.cloneNode();
     radioBtn.innerHTML = radioDiv.innerHTML;
     radioBtn.classList.remove('invisiable');
-    radioInput = radioBtn.querySelector('input[name="reportReason"]');
+    const radioInput = radioBtn.querySelector('input[name="reportReason"]');
     radioInput.id = 'reasonRadion' + index;
     radioInput.value = reason;
-    radioLabel = radioBtn.querySelector('.radio-label');
+    const radioLabel = radioBtn.querySelector('.radio-label');
     radioLabel.setAttribute('for', radioInput.id); 
     radioLabel.innerHTML = reason;
     radioBtn.removeAttribute('id');
