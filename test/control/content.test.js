@@ -7,7 +7,7 @@ describe('Content', function () {
       pluginTypeName: 'Test',
       title: 'Test'
     },
-    querystring: '?WID=${topic_id}&TOPIC_TITLE=${topic_title}&UID=${user_id}',
+    querystring: '?wid=${topic_id}&topic_title=${topic_title}&uid=${user_id}',
     privacy: 'public',
     indicator: 'image'
   }

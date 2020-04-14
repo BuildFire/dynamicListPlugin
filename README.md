@@ -1,5 +1,19 @@
 # DynamicList Plugin
-This plugin allow users to create a list of topics (Group & link) on the fly to navigate to another plugin and pass it context.
+Give your users a great experience. This feature gives users the ability to create community driven lists, each can be public or private. Users can create link, groups,  and sub-groups each can be linked to different plug-ins such as a social wall, the possibilities are limitless.
+
+## Features
+User can create list of topics.
+User can create two type of topic: group & link.
+User can click on group to navigate to another sub groups
+User can click om link cto navigate to another plugin with pass query string contains info about it.
+User can report topics.
+User can delete link and delete group as well if it doesn't contain sub groups.
+User can see breadcrumbs once he navigates to sub groups
+
+Admin can select feature which topic link navigate to it.
+Admin can set query string that wants to pass it to selected feature.
+Admin can set the privacy of topic Public or Private.
+Admin can set the style of list if it's image and color randomly 
 
 ## TECH STACK
  The plugin are built using web technologies:
