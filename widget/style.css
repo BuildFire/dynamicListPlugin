@@ -6,17 +6,6 @@ body {
   margin: 0;
 }
 
-/* body {
-  height: 100% !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-} */
-
-.material-icons,
-#icon {
-  font-family: 'Material Icons' !important;
-}
-
 .search-card {
   flex-direction: row;
   align-items: center;
@@ -150,6 +139,7 @@ a.breadcrumb-label:hover {
 /* Link Style */
 .list-link {
   margin: 1rem 0;
+  background: #ffffff;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
