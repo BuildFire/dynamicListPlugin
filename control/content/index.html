@@ -144,6 +144,7 @@
       Config.get()
       .then(result => {
         config = new Config(result.data);
+        console.log(result);
         querystring.value = config.querystring;
         if (Object.keys(result.data).length === 0) {
           onSelectPrivacy();
