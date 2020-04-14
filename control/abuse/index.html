@@ -193,6 +193,7 @@
       deleteBtn.onclick = (event) => {
         event.preventDefault();
         deleteBtn.disabled = true;
+        topic.deletedBy = null;
         topic.delete(Config.PRIVACY.PUBLIC)
           .then(result => {
             deleteBtn.disabled = false;
