@@ -6,7 +6,7 @@ let loggedUser = null;
 const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
 const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
-const snackbar = new mdc.snackbar.MDCSnackbar(snackBar);
+// const snackbar = new mdc.snackbar.MDCSnackbar(snackBar);
 
 init();
 
@@ -584,7 +584,7 @@ function getImage(topic) {
     imgHeight = '1:1'
   }
   const url = buildfire.imageLib.cropImage(
-    `https://app.buildfire.com/api/stockImages/${encodeURIComponent(topic.title)}?w=${getWeekNumber(new Date())}`, {
+    `https://app.buildfire.com/api/stockImages?topic=${escape(topic.title)}&w=${getWeekNumber(new Date())}`, {
       size: imgWidth,
       aspect: imgHeight
     }
@@ -615,8 +615,15 @@ function getWeekNumber(d) {
 }
 
 function showMessage(message) {
-  snackbarMsg.innerHTML = message;
-  snackbar.open();
+  const options = {
+    text: message,
+    action: {
+      text: 'Colse',
+    }
+  };
+  buildfire.components.toast.showToastMessage(options, (err, result) => {
+    if (err) throw error;
+  });
 }
 
 buildfire.history.onPop((breadcrumb) => {
