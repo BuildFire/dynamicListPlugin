@@ -6,27 +6,21 @@ body {
   margin: 0;
 }
 
-/* body {
-  height: 100% !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-} */
-
-.material-icons,
-#icon {
-  font-family: 'Material Icons' !important;
-}
-
 .search-card {
-  flex-direction: row;
-  align-items: center;
-  padding-left: 1rem;
   position: fixed;
   top: 0.8125rem;
   right: 0.5rem;
   left: 0.5rem;
-  background: #f8f8f8;
-  z-index: 10;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.inner-search-container {
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #ffffff14;
 }
 
 input {
@@ -35,15 +29,9 @@ input {
   margin-left: 1rem;
   font-size: 1rem;
   width: 100%;
-  background: #f8f8f8;
+  background: transparent;
 }
 
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #f8f8f8 inset !important;
-}
 
 input:focus {
   outline: none;
@@ -62,9 +50,9 @@ input:focus {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-  -webkit-box-shadow: 0px 5px 5px -2px rgba(189, 189, 189, 1);
-  -moz-box-shadow: 0px 5px 5px -2px rgba(189, 189, 189, 1);
-  box-shadow: 0px 5px 5px -2px rgba(189, 189, 189, 1);
+  -webkit-box-shadow: 0px 2px 5px -2px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 2px 5px -2px rgba(0,0,0,0.75);
+  box-shadow: 0px 2px 5px -2px rgba(0,0,0,0.75);
 }
 
 .breadcrumbs::-webkit-scrollbar {
@@ -136,6 +124,9 @@ a.breadcrumb-label:hover {
   margin: .5rem 1rem .5rem;
   font-size: 1rem;
   color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .group-btn:not(:disabled) {
@@ -147,6 +138,7 @@ a.breadcrumb-label:hover {
 /* Link Style */
 .list-link {
   margin: 1rem 0;
+  /* background: #ffffff; */
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
@@ -165,6 +157,9 @@ a.breadcrumb-label:hover {
 .link-title {
   flex: 3;
   margin: 0 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .link-action-container {
@@ -193,6 +188,10 @@ a.breadcrumb-label:hover {
 .fullwidth {
   width: 100%;
   margin: 0.6rem 0;
+}
+
+.mdc-radio .mdc-radio__native-control:enabled:not(:checked)+.mdc-radio__background .mdc-radio__outer-circle {
+  border-color: inherit;
 }
 
 .radio-label {
@@ -240,3 +239,4 @@ a.breadcrumb-label:hover {
 .del-item .mdc-list-item__graphic {
   color: #D40044;
 }
+

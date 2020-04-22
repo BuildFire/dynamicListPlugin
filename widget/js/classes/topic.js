@@ -123,10 +123,9 @@ class Topic {
             $type: "null"
           },
         }
-        // const topics = await Topic.getTopics(privacy, filter, 1);
         Topic.getTopics(privacy, filter, 1)
           .then(topics => {
-            if (topics && topics.length > 0) {
+            if (topics && topics.length > 0 && this.deletedBy) {
               reject({
                 error: 'Unauthorized',
                 message: this.title + ' group is not empty'

@@ -6,13 +6,13 @@ let loggedUser = null;
 const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
 const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
-const snackbar = new mdc.snackbar.MDCSnackbar(snackBar);
+// const snackbar = new mdc.snackbar.MDCSnackbar(snackBar);
 
 init();
 
 function init() {
   buildfire.spinner.show();
-  
+
   Helper.getConfigs()
     .then(result => {
       buildfire.spinner.hide()
@@ -138,7 +138,7 @@ function search() {
 
   if (breadcrumbsHistory && breadcrumbsHistory.length > 0) {
     let breadcrumbOptions = breadcrumbsHistory[breadcrumbsHistory.length - 1].options;
-    if (breadcrumbOptions.topic) { 
+    if (breadcrumbOptions.topic) {
       filter['$json.parentTopicId'] = breadcrumbOptions.topic.id
     } else {
       filter['$json.parentTopicId'] = {
@@ -188,17 +188,14 @@ function createListGroup(topic) {
     if (event.target.tagName === 'BUTTON') {
       return;
     }
-    // const filter = {
-    //   '$json.parentTopicId': topic.id
-    // }
+   
     buildfire.history.push(topic.title, {
       topic
     });
-    // loadData(filter)
     getData();
   };
 
-  card.removeAttribute('id');
+  card.id = topic.id;
   return card;
 }
 
@@ -230,7 +227,7 @@ function createListLink(topic) {
     event.preventDefault();
     showOptionsDailog(topic, card)
   };
-  card.removeAttribute('id');
+  card.id = topic.id;
   return card;
 }
 
@@ -281,7 +278,7 @@ function addNewTopic() {
   if (breadcrumbsHistory && breadcrumbsHistory.length > 0) {
     let breadcrumbOptions = breadcrumbsHistory[breadcrumbsHistory.length - 1].options;
     if (breadcrumbOptions.topic) {
-      parentTopicId =  breadcrumbOptions.topic.id;
+      parentTopicId = breadcrumbOptions.topic.id;
     }
   }
 
@@ -323,7 +320,7 @@ function getData() {
       // }
       if (breadcrumbs && breadcrumbs.length > 0) {
         let breadcrumbOptions = breadcrumbs[breadcrumbs.length - 1].options;
-        if (breadcrumbOptions.topic) { 
+        if (breadcrumbOptions.topic) {
           filter['$json.parentTopicId'] = breadcrumbOptions.topic.id
         } else {
           filter['$json.parentTopicId'] = {
@@ -375,7 +372,7 @@ function renderBreadcrumbs(breadcrumbs) {
     } else {
       if (perivousBread && !perivousBread.options.topic) {
         let breadcrumb = createBreadcrumb(perivousBread, 0);
-        breadcrumbsDiv.appendChild(breadcrumb);   
+        breadcrumbsDiv.appendChild(breadcrumb);
         perivousBread = null;
       }
       let breadcrumb = createBreadcrumb(elem, index);
@@ -400,7 +397,7 @@ function createBreadcrumb(bread, index) {
   }
   breadcrumbElem.id = bread.uid;
   breadcrumbLabel.onclick = () => navigateBreadcrumbs(bread);
-  
+
   return breadcrumbElem;
 }
 
@@ -465,12 +462,16 @@ function openDeleteDialg(topic, targetEelement) {
   dialogDeleteBtn.onclick = function (event) {
     event.preventDefault();
     dialogDeleteBtn.disabled = true;
+    topic.deletedBy = loggedUser;
     topic.delete(config.privacy)
       .then(result => {
         deleteTopicDialog.close();
         showMessage(`Successfully deleted ${topic.title} topic`)
         dialogDeleteBtn.disabled = false;
         listContainer.removeChild(targetEelement);
+        if (listContainer.children.length <= 2) {
+          scrollContainer.classList.add('bitmap');
+        }
       })
       .catch(err => {
         dialogDeleteBtn.disabled = false;
@@ -485,6 +486,7 @@ function openDeleteDialg(topic, targetEelement) {
 
 function openReportDialog(topic) {
   closeBottomSheet();
+  clearReportsContent();
   if (!loggedUser) {
     authManager.login(true)
       .then(user => {
@@ -493,8 +495,32 @@ function openReportDialog(topic) {
       .catch(console.error);
     return;
   }
+
+  const arrOfReasons = [
+    'Inappropriate profile pictures',
+    'Harrassment',
+    'Spamming',
+    'Fraud',
+  ]
+
+  arrOfReasons.forEach((reason, index) => {
+    const radioBtn = radioDiv.cloneNode();
+    radioBtn.innerHTML = radioDiv.innerHTML;
+    radioBtn.classList.remove('invisiable');
+    const radioInput = radioBtn.querySelector('input[name="reportReason"]');
+    radioInput.id = 'reasonRadion' + index;
+    radioInput.value = reason;
+    const radioLabel = radioBtn.querySelector('.radio-label');
+    radioLabel.setAttribute('for', radioInput.id); 
+    radioLabel.innerHTML = reason;
+    radioBtn.removeAttribute('id');
+    reportDialogContent.appendChild(radioBtn);
+  });
+
+  
   reportTopicDialog.scrimClickAction = '';
   reportTopicDialog.open();
+
   sendReportBtn.onclick = (event) => {
     event.preventDefault();
 
@@ -525,6 +551,12 @@ function openReportDialog(topic) {
   };
 }
 
+function clearReportsContent() {
+  let radioBtn = radioDiv;
+  reportDialogContent.innerHTML = '';
+  reportDialogContent.appendChild(radioBtn);
+}
+
 function closeBottomSheet() {
   document.querySelector('.mdc-drawer').classList.remove('open-bottom-sheet');
   document.querySelector('.bottom-sheet').classList.remove('backdoor')
@@ -552,7 +584,7 @@ function getImage(topic) {
     imgHeight = '1:1'
   }
   const url = buildfire.imageLib.cropImage(
-    `https://app.buildfire.com/api/stockImages/${encodeURIComponent(topic.title)}?w=${getWeekNumber(new Date())}`, {
+    `https://app.buildfire.com/api/stockImages?topic=${escape(topic.title)}&w=${getWeekNumber(new Date())}`, {
       size: imgWidth,
       aspect: imgHeight
     }
@@ -583,10 +615,31 @@ function getWeekNumber(d) {
 }
 
 function showMessage(message) {
-  snackbarMsg.innerHTML = message;
-  snackbar.open();
+  const options = {
+    text: message,
+    action: {
+      text: 'Colse',
+    }
+  };
+  buildfire.components.toast.showToastMessage(options, (err, result) => {
+    if (err) throw error;
+  });
 }
 
 buildfire.history.onPop((breadcrumb) => {
   getData();
 });
+
+buildfire.messaging.onReceivedMessage = (message) => {
+  switch (message.action) {
+    case 'Delete':
+      let topicElem = document.getElementById(message.topic.id);
+      if (topicElem) {
+        listContainer.removeChild(topicElem);
+        if (listContainer.children.length <= 2) {
+          scrollContainer.classList.add('bitmap');
+        }
+      }
+    break;
+  }
+}

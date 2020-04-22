@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Inherit App Colors and Font -->
-  <meta name="buildfire" content="enableMDTheme,disableBootstrap">
+  <meta name="buildfire" content="enableMDTheme">
 
   <!-- Material Design -->
   <link href="../../../../styles/materialDesign/material-components-web@4.0.0.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
   <!-- JS -->
   <script src="../../../../scripts/buildfire.js"></script>
   <script src="../content/js/classes/config.js"></script>
-  <script src="../content/js/classes/analytics.js"></script>
+  <script src="../../widget/js/classes/helper.js"></script>
   <script src="../../widget/js/classes/topic.js"></script>
 
 </head>
@@ -61,7 +61,7 @@
           </tr>
         </thead>
         <tbody class="mdc-data-table__content" id="tableBody">
-          <!--  -->
+          <!-- Table content  -->
         </tbody>
       </table>
     </div>
@@ -182,25 +182,29 @@
       return row
     }
 
-    function deleteTopic(topic, row, content) {
+    function deleteTopic(topic, row) {
       messageDialog.querySelector('#message-dialog-title').innerHTML = 'Delete Topic';
       messageDialog.querySelector('#message-dialog-content').innerHTML =
         'Are you sure you want to delete this topic and all of its content..?';
       messageDialog.querySelector('#confirmDialogBtnLabel').innerHTML = 'Delete';
       confirmMessageDialog.open();
       deleteBtn = messageDialog.querySelector('#confirmDialogBtn');
-
+      
       deleteBtn.onclick = (event) => {
         event.preventDefault();
+        deleteBtn.disabled = true;
+        topic.deletedBy = null;
         topic.delete(Config.PRIVACY.PUBLIC)
           .then(result => {
+            deleteBtn.disabled = false;
             confirmMessageDialog.close();
             let content = row.nextSibling;
             tableBody.removeChild(row);
             tableBody.removeChild(content);
-            // loadAbuse();
+            notifyWidgetAboutDeletedTopic(topic)
           })
           .catch(err => {
+            deleteBtn.disabled = false;
             console.error(err);
           })
       }
@@ -215,16 +219,18 @@
       approveBtn = messageDialog.querySelector('#confirmDialogBtn');
       approveBtn.onclick = (event) => {
         event.preventDefault();
+        approveBtn.disabled = true;
         topic.reportedBy = [];
         topic.update(Config.PRIVACY.PUBLIC)
           .then(result => {
+            approveBtn.disabled = false;
             confirmMessageDialog.close();
             let content = row.nextSibling;
             tableBody.removeChild(row);
             tableBody.removeChild(content);
-            // loadAbuse();
           })
           .catch(err => {
+            approveBtn.disabled = false;
             console.error(err);
           })
       }
@@ -283,7 +289,11 @@
           <span>${report.reason}</span>
         </div>`
     }
-  </script>
+
+    function notifyWidgetAboutDeletedTopic(topic) {
+      buildfire.messaging.sendMessageToWidget({action: 'Delete', topic});
+    }
+</script>
 </body>
 
 </html>

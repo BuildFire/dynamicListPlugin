@@ -79,16 +79,20 @@ describe('Widget', function () {
   describe('Update Topic', function () {
 
     it('should update topic without errors', function (done) {
-      Topic.getTopics(publicPrivacy, filter, 1, {createdOn: 1})
-        .then(async result => {
+      Topic.getTopics(publicPrivacy, filter, 1, {
+          createdOn: 1
+        })
+        .then(result => {
           let topic = result[0];
           let updatedTopic = new Topic({
             ...topic.data,
             id: topic.id
           });
           updatedTopic.title = 'Test';
-          const testResult = await updatedTopic.update(publicPrivacy);
-          done();
+          updatedTopic.update(publicPrivacy)
+            .then((result) => {
+              done();
+            })
         })
         .catch(err => done(err));
     });
@@ -100,14 +104,16 @@ describe('Widget', function () {
       Topic.getTopics(publicPrivacy, filter, 1, {
           createdOn: -1
         })
-        .then(async result => {
+        .then(result => {
           let topic = result[0];
           let deletedTopic = new Topic({
             ...topic.data,
             id: topic.id
           });
-          const testResult = await deletedTopic.delete(publicPrivacy);
-          done();
+          deletedTopic.delete(publicPrivacy)
+            .then((result) => {
+              done();
+            })
         })
         .catch(err => done(err));
     });
@@ -115,15 +121,19 @@ describe('Widget', function () {
 
   describe('Report Topic', function () {
     it('should report topic without errors', function (done) {
-      Topic.getTopics(publicPrivacy, filter, 1, {createdOn: 1})
-        .then(async result => {
+      Topic.getTopics(publicPrivacy, filter, 1, {
+          createdOn: 1
+        })
+        .then(result => {
           let topic = result[0];
           let reportedTopic = new Topic({
             ...topic.data,
             id: topic.id
           });
-          const testResult = await reportedTopic.report(publicPrivacy, user1, 'Spam');
-          done();
+          reportedTopic.report(publicPrivacy, user1, 'Spam')
+            .then((result) => {
+              done();
+            })
         })
         .catch(err => done(err));
     });

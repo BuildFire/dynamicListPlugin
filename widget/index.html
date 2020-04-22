@@ -4,7 +4,8 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Inherit App Colors and Font -->
-  <meta name="buildfire" content="enableMDTheme,disableBootstrap">
+  <!-- disableTheme -->
+  <meta name="buildfire" content="enableMDTheme">
 
   <!-- Material Design -->
   <link href="../../../styles/materialDesign/material-components-web@4.0.0.min.css" rel="stylesheet">
@@ -15,6 +16,8 @@
 
   <!-- JS -->
   <script src="../../../scripts/buildfire.js"></script>
+  <script src="../../../scripts/buildfire/components/toast/toast.js"></script>
+
 
   <script src="./js/classes/helper.js"></script>
   <script src="./js/classes/topic.js"></script>
@@ -27,13 +30,17 @@
 <body>
   <div class="container">
     <div class="mdc-card search-card">
-      <span class="material-icons icon" id="icon">search</span>
-      <input type="text" name="search" id="searchTxt" placeholder="Search" oninput="search()">
+      <div class="inner-search-container">
+        <span class="material-icons icon mdc-theme--text-icon-on-background" id="icon">search</span>
+        <input class="mdc-theme--text-primary-on-background" type="text" name="search" id="searchTxt"
+          placeholder="Search" oninput="search()" autocomplete="off">
+      </div>
     </div>
     <div class="scroll" id="scrollContainer">
       <div class="breadcrumbs invisiable" id="breadcrumbsDiv">
         <div class="breadcrumb-item invisiable" id="breadcrumbDiv">
-          <span class="material-icons icon breadcrumb-icon" id="icon">chevron_right</span>
+          <span class="material-icons icon breadcrumb-icon  mdc-theme--text-icon-on-background"
+            id="icon">chevron_right</span>
           <a class="breadcrumb-label"></a>
         </div>
       </div>
@@ -50,9 +57,9 @@
         </div>
         <div class="mdc-card list-link invisiable" id="listLink">
           <div class="link-img"></div>
-          <div class="link-title">Topic Title</div>
+          <span class="link-title mdc-theme--text-primary-on-background">Topic Title</span>
           <div class="mdc-card__action-icons link-action-container">
-            <button class="mdc-icon-button mdc-card__action--icon material-icons"
+            <button class="mdc-icon-button mdc-card__action--icon material-icons mdc-theme--text-icon-on-background"
               title="More options">more_vert</button>
           </div>
         </div>
@@ -70,11 +77,12 @@
     <div class="mdc-dialog__container">
       <div class="mdc-dialog__surface" role="inputDialog" aria-modal="true" aria-labelledby="dialog-title"
         aria-describedby="dialog-content">
-        <h2 class="mdc-dialog__title" id="dialog-title">New Item</h2>
+        <h2 class="mdc-dialog__title mdc-theme--text-primary-on-background" id="dialog-title">New Item</h2>
         <div class="mdc-dialog__content" id="dialog-content">
           <label class="mdc-text-field fullwidth">
             <div class="mdc-text-field__ripple"></div>
-            <input class="mdc-text-field__input text-field-input" type="text" maxlength="50" id="topicTitle">
+            <input class="mdc-text-field__input text-field-input" type="text" maxlength="50" id="topicTitle"
+              autocomplete="off">
             <span class="mdc-floating-label mdc-floating-label--float-above">Topic Title</span>
             <div class="mdc-line-ripple"></div>
           </label>
@@ -84,7 +92,7 @@
               <div class="mdc-radio">
                 <input class="mdc-radio__native-control" type="radio" value="Group" id="group" name="topicType">
                 <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__outer-circle radio-outer-circle"></div>
                   <div class="mdc-radio__inner-circle"></div>
                 </div>
                 <div class="mdc-radio__ripple"></div>
@@ -95,7 +103,7 @@
               <div class="mdc-radio">
                 <input class="mdc-radio__native-control" type="radio" value="Link" id="link" name="topicType">
                 <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__outer-circle radio-outer-circle"></div>
                   <div class="mdc-radio__inner-circle"></div>
                 </div>
                 <div class="mdc-radio__ripple"></div>
@@ -121,9 +129,9 @@
     <div class="mdc-dialog__container">
       <div class="mdc-dialog__surface" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title"
         aria-describedby="dialog-content">
-        <h2 class="mdc-dialog__title" id="dialog-title">Delete Topic</h2>
-        <div class="mdc-dialog__content" id="dialog-content">
-          Are you sure you want to delete this topic and all of its content
+        <h2 class="mdc-dialog__title mdc-theme--text-primary-on-background" id="dialog-title">Delete Topic</h2>
+        <div class="mdc-dialog__content mdc-theme--text-primary-on-background" id="dialog-content">
+          <span>Are you sure you want to delete this topic and all of its content</span>
         </div>
         <footer class="mdc-dialog__actions">
           <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="cancel">
@@ -143,21 +151,21 @@
     <div class="mdc-dialog__container">
       <div class="mdc-dialog__surface" role="formDialog" aria-modal="true" aria-labelledby="dialog-title"
         aria-describedby="dialog-content">
-        <h2 class="mdc-dialog__title" id="report-dialog-title">Reason of report</h2>
-        <div class="mdc-dialog__content" id="report-dialog-content">
-          <div class="mdc-form-field fullwidth">
+        <h2 class="mdc-dialog__title mdc-theme--text-primary-on-background" id="report-dialog-title">Reason of report
+        </h2>
+        <div class="mdc-dialog__content" id="reportDialogContent">
+          <div class="mdc-form-field fullwidth invisiable" id="radioDiv">
             <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" value="Harrassment" id="harrassmentReason"
-                name="reportReason">
+              <input class="mdc-radio__native-control" type="radio" name="reportReason">
               <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__outer-circle radio-outer-circle"></div>
                 <div class="mdc-radio__inner-circle"></div>
               </div>
               <div class="mdc-radio__ripple"></div>
             </div>
-            <label class="radio-label" for="harrassmentReason">Harrassment</label>
+            <label class="radio-label"></label>
           </div>
-          <div class="mdc-form-field fullwidth">
+          <!-- <div class="mdc-form-field fullwidth">
             <div class="mdc-radio">
               <input class="mdc-radio__native-control" type="radio" value="Spamming" id="spammingReason"
                 name="reportReason">
@@ -179,7 +187,7 @@
               <div class="mdc-radio__ripple"></div>
             </div>
             <label class="radio-label" for="fraudReason">Fraud</label>
-          </div>
+          </div> -->
         </div>
         <footer class="mdc-dialog__actions">
           <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
@@ -200,29 +208,33 @@
       <div class="mdc-drawer__content">
         <nav class="mdc-list">
           <a class="mdc-list-item" id="editTopicOption">
-            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">edit</i>
+            <i class="material-icons mdc-list-item__graphic mdc-theme--text-icon-on-background"
+              aria-hidden="true">edit</i>
             <span class="mdc-list-item__text">Edit Topic</span>
           </a>
           <a class="mdc-list-item del-btn" id="deleteTopicOption">
-            <i class="material-icons mdc-list-item__graphic del-btn" aria-hidden="true">delete</i>
+            <i class="material-icons mdc-list-item__graphic del-btn mdc-theme--text-icon-on-background"
+              aria-hidden="true">delete</i>
             <span class="mdc-list-item__text del-btn">Delete Topic</span>
           </a>
           <a class="mdc-list-item" id="reportTopicOption">
-            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">report</i>
+            <i class="material-icons mdc-list-item__graphic mdc-theme--text-icon-on-background"
+              aria-hidden="true">report</i>
             <span class="mdc-list-item__text">Report</span>
           </a>
           <a class="mdc-list-item" onclick="closeBottomSheet()">
-            <i class="material-icons mdc-list-item__graphic" aria-hidden="true">close</i>
+            <i class="material-icons mdc-list-item__graphic mdc-theme--text-icon-on-background"
+              aria-hidden="true">close</i>
             <span class="mdc-list-item__text">Cancel</span>
           </a>
         </nav>
       </div>
     </aside>
   </div>
-  <div class="mdc-snackbar mdc-snackbar--stacked" id="snackBar">
+  <!-- <div class="mdc-snackbar mdc-snackbar--stacked" id="snackBar">
     <div class="mdc-snackbar__surface">
       <div class="mdc-snackbar__label" id="snackbarMsg" role="status" aria-live="polite">
-        <!--Error Message -->
+      
       </div>
       <div class="mdc-snackbar__actions">
         <button type="button" class="mdc-button mdc-snackbar__action">
@@ -231,8 +243,7 @@
         </button>
       </div>
     </div>
-  </div>
-  </div>
+  </div> -->
   <script src="./app.js"></script>
 </body>
 

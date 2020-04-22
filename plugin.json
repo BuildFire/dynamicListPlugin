@@ -1,7 +1,7 @@
 {
   "author": "BuildFire",
   "pluginName": "Dynamic List - Dev",
-  "pluginDescription": "This plugin allow users to create a list of items/topics on the fly to navigate to another plugin and pass it context",
+  "pluginDescription": "Give your users a great experience. This feature gives users the ability to create community driven lists, each can be public or private. Users can create link, groups,  and sub-groups each can be linked to different plug-ins such as a social wall, the possibilities are limitless.",
   "supportEmail": "devSupport@buildfire.com",
   "control": {
     "content": {
@@ -28,5 +28,11 @@
   "features": [],
   "languages": [
     "en"
+  ],
+  "media": [
+    {
+      "type": "image-resource",
+      "path": "promo.gif"
+    }
   ]
 }
