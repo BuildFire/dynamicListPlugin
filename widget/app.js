@@ -6,7 +6,6 @@ let loggedUser = null;
 const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
 const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
-// const snackbar = new mdc.snackbar.MDCSnackbar(snackBar);
 
 init();
 
@@ -34,7 +33,7 @@ function init() {
     topicInpuDialog.close();
     deleteTopicDialog.close();
     reportTopicDialog.close();
-    closeBottomSheet();
+    buildfire.components.drawer.closeDrawer();
 
     config = result.data;
     if (config.privacy === Helper.PRIVACY.PRIVATE && !loggedUser) {
@@ -63,7 +62,6 @@ function enforceUserLogin() {
     .then(user => {
       if (user) {
         loggedUser = user;
-        // loadData();
         getData();
         return;
       }
@@ -71,7 +69,6 @@ function enforceUserLogin() {
       authManager.login(false)
         .then(userCred => {
           loggedUser = userCred;
-          // loadData();
           getData();
         })
         .catch(console.error);
@@ -83,7 +80,6 @@ function getCurrentUser() {
   authManager.getCurrentUser()
     .then(user => {
       loggedUser = user;
-      // loadData();
       getData();
     })
     .catch(console.error);
@@ -166,7 +162,7 @@ function renderTopic(topic) {
 
 function createListGroup(topic) {
   let card = listGroup.cloneNode();
-  card.classList.remove('invisiable');
+  card.classList.remove('invisible');
   card.innerHTML = listGroup.innerHTML;
   if (config.indicator === Helper.INDICATOR.IMAGE) {
     card.style.backgroundImage = `url(${getImage(topic)})`;
@@ -181,14 +177,14 @@ function createListGroup(topic) {
 
   optionsBtn.onclick = (event) => {
     event.preventDefault();
-    showOptionsDailog(topic, card)
+    showOptionsDialog(topic, card)
   };
   card.onclick = function (event) {
     event.preventDefault();
     if (event.target.tagName === 'BUTTON') {
       return;
     }
-   
+
     buildfire.history.push(topic.title, {
       topic
     });
@@ -201,7 +197,7 @@ function createListGroup(topic) {
 
 function createListLink(topic) {
   let card = listLink.cloneNode();
-  card.classList.remove('invisiable');
+  card.classList.remove('invisible');
   card.innerHTML = listLink.innerHTML;
 
   let linkImg = card.querySelector('.link-img');
@@ -225,7 +221,7 @@ function createListLink(topic) {
 
   optionsBtn.onclick = (event) => {
     event.preventDefault();
-    showOptionsDailog(topic, card)
+    showOptionsDialog(topic, card)
   };
   card.id = topic.id;
   return card;
@@ -359,21 +355,21 @@ function getBreadcrumbs() {
 function renderBreadcrumbs(breadcrumbs) {
   clearBreadcrumbs();
   if (breadcrumbs.length > 1 && breadcrumbs[breadcrumbs.length - 1].options.topic) {
-    breadcrumbsDiv.classList.remove('invisiable');
+    breadcrumbsDiv.classList.remove('invisible');
   } else {
-    breadcrumbsDiv.classList.add('invisiable');
+    breadcrumbsDiv.classList.add('invisible');
   }
 
   // just show the plugin breadcrumbs
-  let perivousBread;
+  let perviousBread;
   breadcrumbs.forEach((elem, index) => {
     if (!elem.options.topic) {
-      perivousBread = elem;
+      perviousBread = elem;
     } else {
-      if (perivousBread && !perivousBread.options.topic) {
-        let breadcrumb = createBreadcrumb(perivousBread, 0);
+      if (perviousBread && !perviousBread.options.topic) {
+        let breadcrumb = createBreadcrumb(perviousBread, 0);
         breadcrumbsDiv.appendChild(breadcrumb);
-        perivousBread = null;
+        perviousBread = null;
       }
       let breadcrumb = createBreadcrumb(elem, index);
       breadcrumbsDiv.appendChild(breadcrumb);
@@ -384,7 +380,7 @@ function renderBreadcrumbs(breadcrumbs) {
 
 function createBreadcrumb(bread, index) {
   let breadcrumbElem = breadcrumbDiv.cloneNode();
-  breadcrumbElem.classList.remove('invisiable');
+  breadcrumbElem.classList.remove('invisible');
   breadcrumbElem.innerHTML = breadcrumbDiv.innerHTML;
   let breadcrumbLabel = breadcrumbElem.querySelector('.breadcrumb-label');
   let breadcrumbIcon = breadcrumbElem.querySelector('.breadcrumb-icon');
@@ -417,35 +413,52 @@ function clearBreadcrumbs() {
   breadcrumbsDiv.appendChild(breadcrumbElem);
 }
 
-function showOptionsDailog(topic, targetEelement) {
-  const bottomSheetCard = document.querySelector('#bottomSheet');
-  const editOption = bottomSheetCard.querySelector('#editTopicOption');
-  const deleteOption = bottomSheetCard.querySelector('#deleteTopicOption');
-  const reportOption = bottomSheetCard.querySelector('#reportTopicOption');
-  editOption.style.display = 'none'
+function showOptionsDialog(topic, targetElement) {
+  const options = {
+    listItems: [
+      {
+        id: 'cancel',
+        icon: 'close',
+        text: 'Cancel',
+      }
+    ]
+  };
 
-  if (config.privacy === Helper.PRIVACY.PRIVATE) {
-    reportOption.style.display = 'none';
-  } else {
-    reportOption.style.display = '';
+  if (config.privacy !== Helper.PRIVACY.PRIVATE) {
+    options.listItems.unshift({
+      id: 'report',
+      icon: 'report',
+      text: 'Report',
+    })
   }
 
   if (loggedUser && topic.createdBy && topic.createdBy.id === loggedUser.id) {
-    deleteOption.style.display = '';
-  } else {
-    deleteOption.style.display = 'none';
+    options.listItems.unshift({
+      id: 'delete',
+      icon: 'delete',
+      text: 'Delete Topic',
+    })
+
   }
 
 
-  deleteOption.onclick = () => openDeleteDialg(topic, targetEelement);
-  reportOption.onclick = () => openReportDialog(topic);
+  const callback = (error, result) => {
+    if (error) return console.error(error);
+    buildfire.components.drawer.closeDrawer();
+    switch (result.id) {
+      case 'delete':
+        openDeleteDialog(topic, targetElement)
+        break;
+      case 'report':
+        openReportDialog(topic)
+    }
+  };
 
-  document.querySelector('.bottom-sheet').classList.add('backdoor')
-  document.querySelector('.mdc-drawer').classList.add('open-bottom-sheet');
+  buildfire.components.drawer.openBottomDrawer(options, callback);
 
 }
 
-function openDeleteDialg(topic, targetEelement) {
+function openDeleteDialog(topic, targetElement) {
   if (!loggedUser) {
     authManager.login(true)
       .then(user => {
@@ -457,7 +470,6 @@ function openDeleteDialg(topic, targetEelement) {
 
   deleteTopicDialog.scrimClickAction = '';
   deleteTopicDialog.open();
-  closeBottomSheet();
 
   dialogDeleteBtn.onclick = function (event) {
     event.preventDefault();
@@ -468,7 +480,7 @@ function openDeleteDialg(topic, targetEelement) {
         deleteTopicDialog.close();
         showMessage(`Successfully deleted ${topic.title} topic`)
         dialogDeleteBtn.disabled = false;
-        listContainer.removeChild(targetEelement);
+        listContainer.removeChild(targetElement);
         if (listContainer.children.length <= 2) {
           scrollContainer.classList.add('bitmap');
         }
@@ -485,7 +497,6 @@ function openDeleteDialg(topic, targetEelement) {
 }
 
 function openReportDialog(topic) {
-  closeBottomSheet();
   clearReportsContent();
   if (!loggedUser) {
     authManager.login(true)
@@ -498,7 +509,7 @@ function openReportDialog(topic) {
 
   const arrOfReasons = [
     'Inappropriate profile pictures',
-    'Harrassment',
+    'Harassment',
     'Spamming',
     'Fraud',
   ]
@@ -506,18 +517,18 @@ function openReportDialog(topic) {
   arrOfReasons.forEach((reason, index) => {
     const radioBtn = radioDiv.cloneNode();
     radioBtn.innerHTML = radioDiv.innerHTML;
-    radioBtn.classList.remove('invisiable');
+    radioBtn.classList.remove('invisible');
     const radioInput = radioBtn.querySelector('input[name="reportReason"]');
-    radioInput.id = 'reasonRadion' + index;
+    radioInput.id = 'reasonRadio' + index;
     radioInput.value = reason;
     const radioLabel = radioBtn.querySelector('.radio-label');
-    radioLabel.setAttribute('for', radioInput.id); 
+    radioLabel.setAttribute('for', radioInput.id);
     radioLabel.innerHTML = reason;
     radioBtn.removeAttribute('id');
     reportDialogContent.appendChild(radioBtn);
   });
 
-  
+
   reportTopicDialog.scrimClickAction = '';
   reportTopicDialog.open();
 
@@ -557,13 +568,9 @@ function clearReportsContent() {
   reportDialogContent.appendChild(radioBtn);
 }
 
-function closeBottomSheet() {
-  document.querySelector('.mdc-drawer').classList.remove('open-bottom-sheet');
-  document.querySelector('.bottom-sheet').classList.remove('backdoor')
-}
 
 function navigateTo(topic) {
-  const queryString = getQueryString(config.querystring, topic.id, topic.title, 544654);
+  const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser.id);
   let pluginData = config.pluginData;
   pluginData.queryString = queryString;
   buildfire.navigation.navigateTo(pluginData)
@@ -618,7 +625,7 @@ function showMessage(message) {
   const options = {
     text: message,
     action: {
-      text: 'Colse',
+      text: 'Close',
     }
   };
   buildfire.components.toast.showToastMessage(options, (err, result) => {
@@ -640,6 +647,6 @@ buildfire.messaging.onReceivedMessage = (message) => {
           scrollContainer.classList.add('bitmap');
         }
       }
-    break;
+      break;
   }
 }

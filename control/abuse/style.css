@@ -5,6 +5,7 @@
 .mdc-data-table {
   width: 100%;
   margin-top: 1rem;
+  overflow-y: hidden;
 }
 
 .header {
@@ -29,6 +30,12 @@ tr {
   border-radius: 0.2rem;
   margin-bottom: 1rem;
   background: #dfdfdf;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.card-col {
+  flex: 1;
 }
 
 .text-blue {

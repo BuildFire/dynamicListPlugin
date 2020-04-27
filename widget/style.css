@@ -95,7 +95,7 @@ a.breadcrumb-label:hover {
   height: 80vh;
 }
 
-.invisiable {
+.invisible {
   display: none;
 }
 
@@ -198,45 +198,4 @@ a.breadcrumb-label:hover {
   width: 100%;
 }
 
-/*End Topic Input Dailog Style */
-
-/*  Bottom Sheet Style */
-.bottom-sheet {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0rem;
-  right: 0rem;
-  z-index: -1;
-  background: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-}
-
-.backdoor {
-  opacity: 1;
-  z-index: 10;
-}
-
-.mdc-drawer {
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
-  width: auto;
-  position: fixed;
-  bottom: 0;
-  left: .5rem;
-  right: .5rem;
-  height: auto;
-  transform: translate(0, 100%);
-  transition: all 450ms cubic-bezier(0.32, 1, 0.23, 1) 0ms;
-
-}
-
-.open-bottom-sheet {
-  transform: translate(0, 0);
-  transition: all 450ms cubic-bezier(0.32, 1, 0.23, 1) 100ms;
-}
-
-.del-item .mdc-list-item__graphic {
-  color: #D40044;
-}
 
