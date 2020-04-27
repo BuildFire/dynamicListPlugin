@@ -17,6 +17,7 @@
   <!-- JS -->
   <script src="../../../scripts/buildfire.js"></script>
   <script src="../../../scripts/buildfire/components/toast/toast.js"></script>
+  <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
 
 
   <script src="./js/classes/helper.js"></script>
@@ -37,15 +38,15 @@
       </div>
     </div>
     <div class="scroll" id="scrollContainer">
-      <div class="breadcrumbs invisiable" id="breadcrumbsDiv">
-        <div class="breadcrumb-item invisiable" id="breadcrumbDiv">
+      <div class="breadcrumbs invisible" id="breadcrumbsDiv">
+        <div class="breadcrumb-item invisible" id="breadcrumbDiv">
           <span class="material-icons icon breadcrumb-icon  mdc-theme--text-icon-on-background"
             id="icon">chevron_right</span>
           <a class="breadcrumb-label"></a>
         </div>
       </div>
       <div id="listContainer">
-        <div class="mdc-card list-group invisiable" id="listGroup">
+        <div class="mdc-card list-group invisible" id="listGroup">
           <div class="mdc-card__actions">
             <span class="group-title">Topic Title</span>
             <div class="mdc-card__action--icons">
@@ -55,7 +56,7 @@
             </div>
           </div>
         </div>
-        <div class="mdc-card list-link invisiable" id="listLink">
+        <div class="mdc-card list-link invisible" id="listLink">
           <div class="link-img"></div>
           <span class="link-title mdc-theme--text-primary-on-background">Topic Title</span>
           <div class="mdc-card__action-icons link-action-container">
@@ -154,7 +155,7 @@
         <h2 class="mdc-dialog__title mdc-theme--text-primary-on-background" id="report-dialog-title">Reason of report
         </h2>
         <div class="mdc-dialog__content" id="reportDialogContent">
-          <div class="mdc-form-field fullwidth invisiable" id="radioDiv">
+          <div class="mdc-form-field fullwidth invisible" id="radioDiv">
             <div class="mdc-radio">
               <input class="mdc-radio__native-control" type="radio" name="reportReason">
               <div class="mdc-radio__background">
@@ -165,29 +166,6 @@
             </div>
             <label class="radio-label"></label>
           </div>
-          <!-- <div class="mdc-form-field fullwidth">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" value="Spamming" id="spammingReason"
-                name="reportReason">
-              <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label class="radio-label" for="spammingReason">Spamming</label>
-          </div>
-          <div class="mdc-form-field fullwidth">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="fraudReason" value="Fraud" name="reportReason">
-              <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label class="radio-label" for="fraudReason">Fraud</label>
-          </div> -->
         </div>
         <footer class="mdc-dialog__actions">
           <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
@@ -203,47 +181,7 @@
     </div>
     <div class="mdc-dialog__scrim"></div>
   </div>
-  <div class="bottom-sheet" id="bottomSheet">
-    <aside class="mdc-drawer mdc-drawer--open">
-      <div class="mdc-drawer__content">
-        <nav class="mdc-list">
-          <a class="mdc-list-item" id="editTopicOption">
-            <i class="material-icons mdc-list-item__graphic mdc-theme--text-icon-on-background"
-              aria-hidden="true">edit</i>
-            <span class="mdc-list-item__text">Edit Topic</span>
-          </a>
-          <a class="mdc-list-item del-btn" id="deleteTopicOption">
-            <i class="material-icons mdc-list-item__graphic del-btn mdc-theme--text-icon-on-background"
-              aria-hidden="true">delete</i>
-            <span class="mdc-list-item__text del-btn">Delete Topic</span>
-          </a>
-          <a class="mdc-list-item" id="reportTopicOption">
-            <i class="material-icons mdc-list-item__graphic mdc-theme--text-icon-on-background"
-              aria-hidden="true">report</i>
-            <span class="mdc-list-item__text">Report</span>
-          </a>
-          <a class="mdc-list-item" onclick="closeBottomSheet()">
-            <i class="material-icons mdc-list-item__graphic mdc-theme--text-icon-on-background"
-              aria-hidden="true">close</i>
-            <span class="mdc-list-item__text">Cancel</span>
-          </a>
-        </nav>
-      </div>
-    </aside>
-  </div>
-  <!-- <div class="mdc-snackbar mdc-snackbar--stacked" id="snackBar">
-    <div class="mdc-snackbar__surface">
-      <div class="mdc-snackbar__label" id="snackbarMsg" role="status" aria-live="polite">
-      
-      </div>
-      <div class="mdc-snackbar__actions">
-        <button type="button" class="mdc-button mdc-snackbar__action">
-          <div class="mdc-button__ripple"></div>
-          <span class="mdc-button__label">Close</span>
-        </button>
-      </div>
-    </div>
-  </div> -->
+
   <script src="./app.js"></script>
 </body>
 
