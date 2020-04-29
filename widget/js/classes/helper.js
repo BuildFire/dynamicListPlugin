@@ -7,6 +7,13 @@ class Helper {
     }
   }
 
+  static get WRITE_PRIVACY() {
+    return {
+      PUBLIC: 'public',
+      PRIVATE: 'private'
+    }
+  }
+  
   static get INDICATOR() {
     return {
       IMAGE: 'image',

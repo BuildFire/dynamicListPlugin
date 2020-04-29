@@ -90,6 +90,7 @@ function getCurrentUser() {
 }
 
 function loadData(filterData) {
+  checkTagPermissions(showHideAddButton);
   clearList();
   buildfire.spinner.show()
   let filter = {
@@ -565,8 +566,15 @@ function closeBottomSheet() {
 function navigateTo(topic) {
   const queryString = getQueryString(config.querystring, topic.id, topic.title, 544654);
   let pluginData = config.pluginData;
-  pluginData.queryString = queryString;
-  buildfire.navigation.navigateTo(pluginData)
+  if (Object.keys(pluginData).length === 0) {
+    buildfire.navigation.navigateToSocialWall({
+      title: topic.title,
+      queryString: `wid=${topic.id}&topic_title=${topic.title}`
+    })
+  } else {
+    pluginData.queryString = queryString;
+    buildfire.navigation.navigateTo(pluginData)
+  }
 }
 
 function getQueryString(qs, topic_id, topic_title, user_id) {
@@ -642,4 +650,25 @@ buildfire.messaging.onReceivedMessage = (message) => {
       }
     break;
   }
+}
+
+function checkTagPermissions(cb) {
+  if(config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length){
+    let writePrivacyTag = config.writePrivacyTag.trim();
+    buildfire.getContext((err, context) => {
+      if(err) return cb(false);
+      
+      let { appId } = context;
+      if(loggedUser && loggedUser.tags && loggedUser.tags[appId]) {
+        return cb(loggedUser.tags[appId].map(tag => tag.tagName).includes(writePrivacyTag));
+      }
+      return cb(false);
+    })
+  } else {
+    return cb(true)
+  }
+}
+
+function showHideAddButton(hasPermission) {
+  addButton.style.display = hasPermission ? "block" : "none";
 }

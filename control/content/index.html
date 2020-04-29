@@ -29,7 +29,7 @@
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner block">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Navigate To</span>
-        <span class="mdc-layout-grid__cell--span-4 text-body" id="pluginInstanceName">Feature not yet selected</span>
+        <span class="mdc-layout-grid__cell--span-4 text-body" id="pluginInstanceName">Social Wall</span>
         <div class="mdc-layout-grid__cell--span-2">
           <button class="mdc-button  mdc-button--raised btn" onclick="onSelectPlugin()">
             <div class="mdc-button__ripple"></div>
@@ -37,7 +37,7 @@
           </button>
         </div>
       </div>
-      <div class="mdc-layout-grid__inner block">
+      <div class="mdc-layout-grid__inner block" id="queryStringContainer">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Query String</span>
         <div class="mdc-layout-grid__cell--span-6">
 
@@ -99,6 +99,57 @@
         </div>
       </div>
 
+      <div class="mdc-layout-grid__inner block" id="writeAccessContainer">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Write Access</span>
+        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
+          <div class="mdc-layout-grid__cell--span-4">
+            <div class="mdc-form-field">
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="publicWritePrivacy" value="publicWrite" name="writePrivacy"
+                  checked onchange="onSelectWritePrivacy()">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+              <label for="publicWritePrivacy">Anyone</label>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell--span-4">
+            <div class="mdc-form-field">
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="privateWritePrivacy" value="privateWrite" name="writePrivacy"
+                  onchange="onSelectWritePrivacy()">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+              <label for="privateWritePrivacy">Tag Only</label>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell--span-6" id="tagInputContainer">
+            <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
+              <input type="text" class="mdc-text-field__input"
+                placeholder="exampletag" id="writePrivacyTag"
+                onchange="onChangeTag()">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </label>
+          </div>
+          <div class="mdc-layout-grid__cell--span-10">
+            <ul class="text-helper">
+              <li>Anyone: Anyone on app can add content</li>
+              <li>Tag Only: Only users with tag can add content</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <div class="mdc-layout-grid__inner block">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Style With Random</span>
         <div class="mdc-layout-grid__cell--span-3">
@@ -146,6 +197,7 @@
         config = new Config(result.data);
         console.log(result);
         querystring.value = config.querystring;
+        writePrivacyTag.value = config.writePrivacyTag;
         if (Object.keys(result.data).length === 0) {
           onSelectPrivacy();
           onSelectIndicator();
@@ -154,13 +206,17 @@
 
         if (result && Object.keys(config.pluginData).length > 0) {
           pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
+          queryStringContainer.style.display = "grid"
         } else {
-          pluginInstanceName.innerHTML = 'Feature not yet selected'
+          pluginInstanceName.innerHTML = 'Social Wall'
+          queryStringContainer.style.display = "none"
         }
 
         if (config.privacy === Config.PRIVACY.PUBLIC) {
           publicPrivacy.checked = true;
+          writeAccessContainer.style.display = "grid";
         } else {
+          writeAccessContainer.style.display = "none";
           privatePrivacy.checked = true;
         }
 
@@ -168,6 +224,14 @@
           imageIndicator.checked = true;
         } else {
           colorIndicator.checked = true;
+        }
+
+        if(config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
+          privateWritePrivacy.checked = true;
+          tagInputContainer.style.display = "block";
+        } else {
+          publicWritePrivacy.checked = true;
+          tagInputContainer.style.display = "none";
         }
 
       })
@@ -183,8 +247,10 @@
           config.pluginData = instances[0];
           config.save();
           pluginInstanceName.innerHTML = instances[0].pluginTypeName + ": " + instances[0].title;
+          queryStringContainer.style.display = "grid";
         } else {
-          pluginInstanceName.innerHTML = 'Feature not yet selected';
+          pluginInstanceName.innerHTML = 'Social Wall';
+          queryStringContainer.style.display = "grid";
         }
       });
     }
@@ -192,11 +258,24 @@
     function onSelectPrivacy() {
       if (publicPrivacy.checked) {
         config.privacy = Config.PRIVACY.PUBLIC;
+        writeAccessContainer.style.display = "grid";
       } else {
         config.privacy = Config.PRIVACY.PRIVATE;
+        writeAccessContainer.style.display = "none";
       }
       config.save();
 
+    }
+
+    function onSelectWritePrivacy() {
+      if (publicWritePrivacy.checked) {
+        config.writePrivacy = Config.WRITE_PRIVACY.PUBLIC;
+        tagInputContainer.style.display = "none";
+      } else {
+        config.writePrivacy = Config.WRITE_PRIVACY.PRIVATE;
+        tagInputContainer.style.display = "block";
+      }
+      config.save();
     }
 
     function onSelectIndicator() {
@@ -210,6 +289,11 @@
 
     function onChangeQuerystring() {
       config.querystring = querystring.value;
+      config.save();
+    }
+
+    function onChangeTag() {
+      config.writePrivacyTag = writePrivacyTag.value;
       config.save();
     }
 
