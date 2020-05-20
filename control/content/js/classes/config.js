@@ -6,12 +6,16 @@ class Config {
     this.writePrivacy = dataObj.writePrivacy ||'public';
     this.writePrivacyTag = dataObj.writePrivacyTag || null;
     this.indicator = dataObj.indicator || 'image';
+    this.contentType = dataObj.contentType || 1;
+    this.emptyState = dataObj.emptyState || false;
+    this.emptyStateMessage = dataObj.emptyStateMessage ||'Create your first group now!';
   }
 
   static get PRIVACY() {
     return {
       PUBLIC: 'public',
-      PRIVATE: 'private'
+      PRIVATE: 'private',
+      BOTH: 'both'
     }
   }
 

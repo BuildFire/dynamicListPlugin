@@ -21,7 +21,15 @@ function init() {
       } else {
         getCurrentUser();
       }
-
+      if (config.contentType === 1) {
+        groupsDiv.setAttribute('style', 'display: none;');
+      }
+      if (config.privacy != 'both') {
+        topicTypeRadioGroup.setAttribute('style', 'display: none');
+      }
+      if (config.emptyState) {
+        scrollContainer.setAttribute('data-text', config.emptyStateMessage)
+      }
     })
     .catch(err => {
       buildfire.spinner.hide()
@@ -41,6 +49,20 @@ function init() {
     } else {
       getCurrentUser();
     }
+    if (config.contentType === 1) {
+      groupsDiv.setAttribute('style', 'display: none;');
+    } else {
+      groupsDiv.setAttribute('style', 'display: flex;');
+    }
+    if (config.privacy != 'both') {
+      topicTypeRadioGroup.setAttribute('style', 'display: none');
+    }
+    else {
+      topicTypeRadioGroup.setAttribute('style', 'display: block');
+    }
+    if (config.emptyState) {
+      scrollContainer.setAttribute('data-text', config.emptyStateMessage)
+    } else scrollContainer.setAttribute('data-text', '')
   });
 
   buildfire.auth.onLogout(() => {
@@ -100,28 +122,54 @@ function loadData(filterData) {
       ...filterData
     }
   }
-  Topic.getTopics(config.privacy, filter, null, {
+  if (config.privacy === 'both') {
+    Topic.getAllTopics(filter, null, {
       type: 1
     })
-    .then(topics => {
-      clearList();
-      buildfire.spinner.hide()
-      if (topics && topics.length === 0) {
+      .then(topics => {
+        clearList();
+        buildfire.spinner.hide()
+        if (topics && topics.length === 0) {
+          scrollContainer.classList.add('bitmap');
+          return;
+        }
+        for (const obj of topics) {
+          let topic = new Topic({
+            ...obj.data,
+            id: obj.id
+          });
+          renderTopic(topic);
+        }
+      })
+      .catch(err => {
         scrollContainer.classList.add('bitmap');
-        return;
-      }
-      for (const obj of topics) {
-        let topic = new Topic({
-          ...obj.data,
-          id: obj.id
-        });
-        renderTopic(topic);
-      }
+        console.error(err);
+      })
+  }
+  else {
+    Topic.getTopics(config.privacy, filter, null, {
+      type: 1
     })
-    .catch(err => {
-      scrollContainer.classList.add('bitmap');
-      console.error(err);
-    })
+      .then(topics => {
+        clearList();
+        buildfire.spinner.hide()
+        if (topics && topics.length === 0) {
+          scrollContainer.classList.add('bitmap');
+          return;
+        }
+        for (const obj of topics) {
+          let topic = new Topic({
+            ...obj.data,
+            id: obj.id
+          });
+          renderTopic(topic);
+        }
+      })
+      .catch(err => {
+        scrollContainer.classList.add('bitmap');
+        console.error(err);
+      })
+  }
 }
 
 function search() {
@@ -259,7 +307,7 @@ function addNewTopic() {
     return;
   }
 
-  let types = topicTypesRadioGroup.querySelectorAll('input[name="topicType"]');
+  let types = topicTypeRadioGroup2.querySelectorAll('input[name="topicType2"]');
   let type;
   for (const elem of types) {
     if (elem.checked) {
@@ -268,6 +316,18 @@ function addNewTopic() {
   }
   if (!type) {
     showMessage('Please, you have to select type of topic');
+    return;
+  }
+
+  let types2 = topicTypeRadioGroup.querySelectorAll('input[name="topicType"]');
+  let type2;
+  for (const elem of types2) {
+    if (elem.checked) {
+      type2 = elem.value;
+    }
+  }
+  if (config.privacy === 'both' && !type2) {
+    showMessage('Please, you have to select privacy type of topic');
     return;
   }
 
@@ -286,7 +346,11 @@ function addNewTopic() {
     createdBy: loggedUser
   });
   addTopicBtn.disabled = true;
-  topic.save(config.privacy)
+  let privacy = '';
+  if (config.privacy === 'both') {
+    privacy = type2;
+  } else privacy = config.privacy;
+  topic.save(privacy)
     .then((result => {
       topicInpuDialog.close();
       showMessage(`Successfully added ${topic.title} topic`)
@@ -600,9 +664,9 @@ function getImage(topic) {
   }
   const url = buildfire.imageLib.cropImage(
     `https://app.buildfire.com/api/stockImages?topic=${escape(topic.title)}&w=${getWeekNumber(new Date())}`, {
-      size: imgWidth,
-      aspect: imgHeight
-    }
+    size: imgWidth,
+    aspect: imgHeight
+  }
   );
 
   return url;

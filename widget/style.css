@@ -95,6 +95,15 @@ a.breadcrumb-label:hover {
   height: 80vh;
 }
 
+.bitmap::after {
+  content: attr(data-text);
+  position: absolute;
+  text-align: center;
+  bottom: 30%;
+  width: 100%;
+}
+
+
 .invisible {
   display: none;
 }

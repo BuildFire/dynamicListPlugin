@@ -87,11 +87,37 @@
             <span class="mdc-floating-label mdc-floating-label--float-above">Topic Title</span>
             <div class="mdc-line-ripple"></div>
           </label>
-          <div id="topicTypesRadioGroup" class="fullwidth">
+          <div id="topicTypeRadioGroup" class="fullwidth">
             <div class="mdc-form-field fullwidth">
+              <label class="radio-label" for="publicGroup">Public</label>
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" value="public" id="publicGroup" name="topicType">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle radio-outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+            </div>
+            <div class="mdc-form-field fullwidth">
+              <label class="radio-label" for="privateGroup">Private</label>
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" value="private" id="privateGroup" name="topicType">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle radio-outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+            </div>
+            <hr>
+          </div>
+          
+          <div id="topicTypeRadioGroup2" class="fullwidth">
+            <div class="mdc-form-field fullwidth" id="groupsDiv">
               <label class="radio-label" for="group">Group</label>
               <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" value="Group" id="group" name="topicType">
+                <input class="mdc-radio__native-control" type="radio" value="Group" id="group" name="topicType2">
                 <div class="mdc-radio__background">
                   <div class="mdc-radio__outer-circle radio-outer-circle"></div>
                   <div class="mdc-radio__inner-circle"></div>
@@ -102,7 +128,7 @@
             <div class="mdc-form-field fullwidth">
               <label class="radio-label" for="link">Link</label>
               <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" value="Link" id="link" name="topicType">
+                <input class="mdc-radio__native-control" type="radio" value="Link" id="link" name="topicType2">
                 <div class="mdc-radio__background">
                   <div class="mdc-radio__outer-circle radio-outer-circle"></div>
                   <div class="mdc-radio__inner-circle"></div>
