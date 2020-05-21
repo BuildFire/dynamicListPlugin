@@ -23,6 +23,7 @@ function init() {
       }
       if (config.contentType === 1) {
         groupsDiv.setAttribute('style', 'display: none;');
+        link.checked = true;
       }
       if (config.privacy != 'both') {
         topicTypeRadioGroup.setAttribute('style', 'display: none');
@@ -123,6 +124,8 @@ function loadData(filterData) {
     }
   }
   if (config.privacy === 'both') {
+    tagOnly.setAttribute('style', 'display: none;');
+    privateGroup.checked = true;
     Topic.getAllTopics(filter, null, {
       type: 1
     })
@@ -504,8 +507,12 @@ function showOptionsDialog(topic, targetElement) {
       text: 'Delete Topic',
     })
 
+    options.listItems.unshift({
+      id: 'share',
+      icon: 'share',
+      text: 'Share with others',
+    })
   }
-
 
   const callback = (error, result) => {
     if (error) return console.error(error);
