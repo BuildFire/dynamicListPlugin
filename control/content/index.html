@@ -130,16 +130,20 @@
               <label for="privateWritePrivacy">Tag Only</label>
             </div>
           </div>
-          <div class="mdc-layout-grid__cell--span-6" id="tagInputContainer">
+          <div class="mdc-layout-grid__cell--span-4" id="tagInputContainer">
             <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
-              <input type="text" class="mdc-text-field__input"
-                placeholder="exampletag" id="writePrivacyTag"
-                onchange="onChangeTag()">
+              <input type="text" class="mdc-text-field__input" placeholder="exampletag" id="writePrivacyTag" disabled>
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__trailing"></div>
               </div>
             </label>
+          </div>
+          <div class="mdc-layout-grid__cell--span-2" id="tagInputContainer">
+            <button class="mdc-button  mdc-button--raised btn" onclick="onSelectTag()">
+              <div class="mdc-button__ripple"></div>
+              <span class="mdc-button__label">Select Tag(s)</span>
+            </button>
           </div>
           <div class="mdc-layout-grid__cell--span-10">
             <ul class="text-helper">
@@ -197,6 +201,7 @@
         config = new Config(result.data);
         console.log(result);
         querystring.value = config.querystring;
+        console.log("asdasdasd")
         writePrivacyTag.value = config.writePrivacyTag;
         if (Object.keys(result.data).length === 0) {
           onSelectPrivacy();
@@ -292,9 +297,13 @@
       config.save();
     }
 
-    function onChangeTag() {
-      config.writePrivacyTag = writePrivacyTag.value;
-      config.save();
+    function onSelectTag() {
+      buildfire.auth.showTagsSearchDialog({}, (err, tags) => {
+        tags = tags.map(tag => tag.tagName).join(", ");
+        config.writePrivacyTag = tags;
+        writePrivacyTag.value = tags;
+        config.save();
+      })
     }
 
   </script>
