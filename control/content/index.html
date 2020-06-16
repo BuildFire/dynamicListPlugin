@@ -59,7 +59,7 @@
           </div>
         </div>
       </div>
-      <div class="mdc-layout-grid__inner block">
+      <div class="mdc-layout-grid__inner block" style="margin-bottom: 0;">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Topic Privacy</span>
         <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
           <div class="mdc-layout-grid__cell--span-2">
@@ -118,7 +118,7 @@
       </div>
 
       <div class="mdc-layout-grid__inner block" id="writeAccessContainer">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Write Access</span>
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Public Write Access</span>
         <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
           <div class="mdc-layout-grid__cell--span-4">
             <div class="mdc-form-field">
@@ -200,7 +200,7 @@
         </div>
       </div>
       <div class="mdc-layout-grid__inner block">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Content Type</span>
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Disable Groups</span>
         <div class="mdc-layout-grid__cell--span-2">
           <div class="mdc-form-field">
             <div class="mdc-radio">
@@ -212,7 +212,7 @@
               </div>
               <div class="mdc-radio__ripple"></div>
             </div>
-            <label class="radio-label" for="imageIndicator">Links</label>
+            <label class="radio-label" for="imageIndicator">On</label>
           </div>
         </div>
         <div class="mdc-layout-grid__cell--span-4">
@@ -226,14 +226,13 @@
               </div>
               <div class="mdc-radio__ripple"></div>
             </div>
-            <label class="radio-label" for="colorIndicator">Groups & Links</label>
+            <label class="radio-label" for="colorIndicator">Off</label>
           </div>
         </div>
       </div>
 
       <div class="mdc-layout-grid__inner block">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Empty State Message</span>
-        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
           <div class="mdc-layout-grid__cell--span-2">
             <div class="mdc-form-field">
               <div class="mdc-radio">
@@ -277,8 +276,7 @@
                 </label>
               </div>
             </div>
-          </div>
-
+            
         </div>
       </div>
     </div>
@@ -300,7 +298,6 @@
               onSelectIndicator();
               return;
             }
-
             if (result && Object.keys(config.pluginData).length > 0) {
               pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
               queryStringContainer.style.display = "grid"
@@ -345,6 +342,7 @@
               emptyStateMessageDiv.setAttribute('style', 'visibility: hidden;')
               emptyStateMessageOff.checked = true;
             }
+            
           })
           .catch(err => {
             console.error(err)
@@ -364,8 +362,6 @@
           }
         });
       }
-
-
 
       function onSelectEmptyStateMessage(bool) {
         if (bool) {

@@ -23,6 +23,8 @@
   <script src="./js/classes/helper.js"></script>
   <script src="./js/classes/topic.js"></script>
   <script src="./js/authManager.js"></script>
+  <script src="js/shared/strings.js"></script>
+  <script src="js/shared/stringsConfig.js"></script>
 
   <!-- CSS -->
 
@@ -78,13 +80,13 @@
     <div class="mdc-dialog__container">
       <div class="mdc-dialog__surface" role="inputDialog" aria-modal="true" aria-labelledby="dialog-title"
         aria-describedby="dialog-content">
-        <h2 class="mdc-dialog__title mdc-theme--text-primary-on-background" id="dialog-title">New Item</h2>
+        <h2 class="mdc-dialog__title mdc-theme--text-primary-on-background" id="dialogtitle">New Item</h2>
         <div class="mdc-dialog__content" id="dialog-content">
           <label class="mdc-text-field fullwidth">
             <div class="mdc-text-field__ripple"></div>
             <input class="mdc-text-field__input text-field-input" type="text" maxlength="50" id="topicTitle"
               autocomplete="off">
-            <span class="mdc-floating-label mdc-floating-label--float-above">Topic Title</span>
+            <span class="mdc-floating-label mdc-floating-label--float-above" id="topicTitleText">Topic Title</span>
             <div class="mdc-line-ripple"></div>
           </label>
           <div id="topicTypeRadioGroup" class="fullwidth">
@@ -115,7 +117,7 @@
           
           <div id="topicTypeRadioGroup2" class="fullwidth">
             <div class="mdc-form-field fullwidth" id="groupsDiv">
-              <label class="radio-label" for="group">Group</label>
+              <label class="radio-label" for="group" id="groupsLabel">Group</label>
               <div class="mdc-radio">
                 <input class="mdc-radio__native-control" type="radio" value="Group" id="group" name="topicType2">
                 <div class="mdc-radio__background">
@@ -125,8 +127,8 @@
                 <div class="mdc-radio__ripple"></div>
               </div>
             </div>
-            <div class="mdc-form-field fullwidth">
-              <label class="radio-label" for="link">Link</label>
+            <div class="mdc-form-field fullwidth" id="linksDiv">
+              <label class="radio-label" for="link" id="linksLabel">Link</label>
               <div class="mdc-radio">
                 <input class="mdc-radio__native-control" type="radio" value="Link" id="link" name="topicType2">
                 <div class="mdc-radio__background">

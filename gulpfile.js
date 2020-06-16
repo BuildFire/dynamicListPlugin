@@ -17,7 +17,9 @@ const jsTasks=[
   {name: "controlDesignJS", src: "control/design/**/*.js"},
   {name: "controlAbuseJS", src: "control/abuse/**/*.js"},
   {name: "controlTestJS", src: "control/tests/**/*.js"},
-  {name: "controlSettingsJS", src: "control/settings/**/*.js"}
+  {name: "controlSettingsJS", src: "control/settings/**/*.js"},
+  {name: "controlLanguagesJS", src: "control/languages/**/*.js"}
+
 ];
 
 const htmlTasks=[
@@ -26,7 +28,8 @@ const htmlTasks=[
   {name: "controlDesignHtml", src: "control/design/**/*.html"},
   {name: "controlAbuseHtml", src: "control/abuse/**/*.html"},
   {name: "controlTestHtml", src: "control/tests/**/*.html"},
-  {name: "controlSettingsHtml", src: "control/settings/**/*.html"}
+  {name: "controlSettingsHtml", src: "control/settings/**/*.html"},
+  {name: "controlLanguagesHtml", src: "control/languages/**/*.html"}
 ];
 
 const cssTasks=[
@@ -35,7 +38,9 @@ const cssTasks=[
   {name: "controlDesignCss", src: "control/design/**/*.css"},
   {name: "controlAbuseCss", src: "control/abuse/**/*.css"},
   {name: "controlTestCss", src: "control/tests/**/*.css"},
-  {name: "controlSettingsCss", src: "control/settings/**/*.css"}
+  {name: "controlSettingsCss", src: "control/settings/**/*.css"},
+  {name: "controlLanguagesCss", src: "control/languages/**/*.css"}
+
 ];
 
 

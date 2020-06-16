@@ -14,8 +14,9 @@ function init() {
 
   Helper.getConfigs()
     .then(result => {
-      buildfire.spinner.hide()
+      buildfire.spinner.hide();
       config = result.data;
+      getStrings();
       if (config.privacy === Helper.PRIVACY.PRIVATE && !loggedUser) {
         enforceUserLogin();
       } else {
@@ -23,14 +24,18 @@ function init() {
       }
       if (config.contentType === 1) {
         groupsDiv.setAttribute('style', 'display: none;');
+        linksDiv.setAttribute('style', 'display: none;');
         link.checked = true;
       }
+
       if (config.privacy != 'both') {
         topicTypeRadioGroup.setAttribute('style', 'display: none');
       }
       if (config.emptyState) {
         scrollContainer.setAttribute('data-text', config.emptyStateMessage)
       }
+
+
     })
     .catch(err => {
       buildfire.spinner.hide()
@@ -43,7 +48,7 @@ function init() {
     deleteTopicDialog.close();
     reportTopicDialog.close();
     buildfire.components.drawer.closeDrawer();
-
+    getStrings();
     config = result.data;
     if (config.privacy === Helper.PRIVACY.PRIVATE && !loggedUser) {
       enforceUserLogin();
@@ -52,8 +57,11 @@ function init() {
     }
     if (config.contentType === 1) {
       groupsDiv.setAttribute('style', 'display: none;');
+      linksDiv.setAttribute('style', 'display: none;');
+      link.checked = true;
     } else {
       groupsDiv.setAttribute('style', 'display: flex;');
+      linksDiv.setAttribute('style', 'display: flex;');
     }
     if (config.privacy != 'both') {
       topicTypeRadioGroup.setAttribute('style', 'display: none');
@@ -63,7 +71,7 @@ function init() {
     }
     if (config.emptyState) {
       scrollContainer.setAttribute('data-text', config.emptyStateMessage)
-    } else scrollContainer.setAttribute('data-text', '')
+    } else scrollContainer.setAttribute('data-text', '');
   });
 
   buildfire.auth.onLogout(() => {
@@ -124,8 +132,10 @@ function loadData(filterData) {
     }
   }
   if (config.privacy === 'both') {
-    tagOnly.setAttribute('style', 'display: none;');
-    privateGroup.checked = true;
+    if (config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE) {
+      topicTypeRadioGroup.setAttribute('style', 'display: none;');
+      privateGroup.checked = true;
+    }
     Topic.getAllTopics(filter, null, {
       type: 1
     })
@@ -500,7 +510,7 @@ function showOptionsDialog(topic, targetElement) {
     })
   }
 
-  if (loggedUser && topic.createdBy && topic.createdBy.id === loggedUser.id) {
+  if (loggedUser && topic.createdBy && topic.createdBy._id === loggedUser._id) {
     options.listItems.unshift({
       id: 'delete',
       icon: 'delete',
@@ -539,7 +549,6 @@ function openDeleteDialog(topic, targetElement) {
       .catch(console.error);
     return;
   }
-
   deleteTopicDialog.scrimClickAction = '';
   deleteTopicDialog.open();
 
@@ -642,7 +651,7 @@ function clearReportsContent() {
 
 
 function navigateTo(topic) {
-  const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser.id);
+  const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser._id);
   let pluginData = config.pluginData;
   if (Object.keys(pluginData).length === 0) {
     buildfire.navigation.navigateToSocialWall({
@@ -731,13 +740,13 @@ buildfire.messaging.onReceivedMessage = (message) => {
 }
 
 function checkTagPermissions(cb) {
-  if(config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length){
+  if (config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length) {
     let writePrivacyTag = config.writePrivacyTag.trim();
     buildfire.getContext((err, context) => {
-      if(err) return cb(false);
-      
+      if (err) return cb(false);
+
       let { appId } = context;
-      if(loggedUser && loggedUser.tags && loggedUser.tags[appId]) {
+      if (loggedUser && loggedUser.tags && loggedUser.tags[appId]) {
         return cb(loggedUser.tags[appId].map(tag => tag.tagName).includes(writePrivacyTag));
       }
       return cb(false);
@@ -749,4 +758,23 @@ function checkTagPermissions(cb) {
 
 function showHideAddButton(hasPermission) {
   addButton.style.display = hasPermission ? "block" : "none";
+}
+
+function getStrings() {
+  let collectionName = "$bfLanguageSettings_en-us";
+  buildfire.datastore.search({}, collectionName, (e, objs) => {
+    if (objs && objs.length > 0 && objs[0] && objs[0].data && objs[0].data.screenOne) {
+      let keys = objs[0].data.screenOne;
+      stringsConfig.screenOne.labels = keys;
+       setStrings();
+    }
+  });
+}
+
+function setStrings() {
+  dialogtitle.innerText = stringsConfig.screenOne.labels.newItem.value;
+  topicTitleText.innerHTML = stringsConfig.screenOne.labels.topicTitle.value;
+  groupsLabel.innerHTML = stringsConfig.screenOne.labels.group.value;
+  linksLabel.innerHTML = stringsConfig.screenOne.labels.link.value;
+  searchTxt.placeholder = stringsConfig.screenOne.labels.searchBar.value;
 }
