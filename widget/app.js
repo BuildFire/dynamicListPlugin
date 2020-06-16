@@ -741,13 +741,19 @@ buildfire.messaging.onReceivedMessage = (message) => {
 
 function checkTagPermissions(cb) {
   if (config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length) {
-    let writePrivacyTag = config.writePrivacyTag.trim();
+    let writePrivacyTags = config.writePrivacyTag.split(",").map(tag => tag.trim());
     buildfire.getContext((err, context) => {
       if (err) return cb(false);
-
       let { appId } = context;
       if (loggedUser && loggedUser.tags && loggedUser.tags[appId]) {
-        return cb(loggedUser.tags[appId].map(tag => tag.tagName).includes(writePrivacyTag));
+        let userTags = loggedUser.tags[appId].map(tag => tag.tagName);
+        for (let i = 0; i < userTags.length; i++) {
+          for (let j = 0; j < writePrivacyTags.length; j++) {
+            if(userTags[i] === writePrivacyTags[j]){
+              return cb(true)
+            }
+          } 
+        }
       }
       return cb(false);
     })
