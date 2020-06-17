@@ -3,7 +3,8 @@ class Helper {
   static get PRIVACY() {
     return {
       PUBLIC: 'public',
-      PRIVATE: 'private'
+      PRIVATE: 'private',
+      BOTH: 'both'
     }
   }
 

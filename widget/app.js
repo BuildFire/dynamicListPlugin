@@ -133,8 +133,13 @@ function loadData(filterData) {
   }
   if (config.privacy === 'both') {
     if (config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE) {
-      topicTypeRadioGroup.setAttribute('style', 'display: none;');
-      privateGroup.checked = true;
+      checkTagPermissions(function(hasTag) {
+        if(!hasTag) {
+          topicTypeRadioGroup.setAttribute('style', 'display: none;');
+          privateGroup.checked = true;
+        }
+      })
+
     }
     Topic.getAllTopics(filter, null, {
       type: 1
@@ -740,7 +745,8 @@ buildfire.messaging.onReceivedMessage = (message) => {
 }
 
 function checkTagPermissions(cb) {
-  if (config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length) {
+  if ((config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length)
+  || config.privacy === Helper.PRIVACY.BOTH) {
     let writePrivacyTags = config.writePrivacyTag.split(",").map(tag => tag.trim());
     buildfire.getContext((err, context) => {
       if (err) return cb(false);
@@ -763,7 +769,8 @@ function checkTagPermissions(cb) {
 }
 
 function showHideAddButton(hasPermission) {
-  addButton.style.display = hasPermission ? "block" : "none";
+  if(config.privacy !== Helper.PRIVACY.BOTH)
+    addButton.style.display = hasPermission ? "block" : "none";
 }
 
 function getStrings() {

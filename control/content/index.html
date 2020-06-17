@@ -123,8 +123,8 @@
           <div class="mdc-layout-grid__cell--span-4">
             <div class="mdc-form-field">
               <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="publicWritePrivacy" value="publicWrite" name="writePrivacy"
-                  checked onchange="onSelectWritePrivacy()">
+                <input class="mdc-radio__native-control" type="radio" id="publicWritePrivacy" value="publicWrite"
+                  name="writePrivacy" checked onchange="onSelectWritePrivacy()">
                 <div class="mdc-radio__background">
                   <div class="mdc-radio__outer-circle"></div>
                   <div class="mdc-radio__inner-circle"></div>
@@ -137,8 +137,8 @@
           <div class="mdc-layout-grid__cell--span-4">
             <div class="mdc-form-field">
               <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="privateWritePrivacy" value="privateWrite" name="writePrivacy"
-                  onchange="onSelectWritePrivacy()">
+                <input class="mdc-radio__native-control" type="radio" id="privateWritePrivacy" value="privateWrite"
+                  name="writePrivacy" onchange="onSelectWritePrivacy()">
                 <div class="mdc-radio__background">
                   <div class="mdc-radio__outer-circle"></div>
                   <div class="mdc-radio__inner-circle"></div>
@@ -148,7 +148,7 @@
               <label for="privateWritePrivacy">Tag Only</label>
             </div>
           </div>
-          <div class="mdc-layout-grid__cell--span-4" id="tagInputContainer">
+          <div class="mdc-layout-grid__cell--span-4 tagInputContainer" id="tagInputContainer">
             <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
               <input type="text" class="mdc-text-field__input" placeholder="exampletag" id="writePrivacyTag" disabled>
               <div class="mdc-notched-outline">
@@ -157,7 +157,7 @@
               </div>
             </label>
           </div>
-          <div class="mdc-layout-grid__cell--span-2" id="tagInputContainer">
+          <div class="mdc-layout-grid__cell--span-2 tagInputContainer" id="tagInputContainer">
             <button class="mdc-button  mdc-button--raised btn" onclick="onSelectTag()">
               <div class="mdc-button__ripple"></div>
               <span class="mdc-button__label">Select Tag(s)</span>
@@ -237,50 +237,49 @@
 
       <div class="mdc-layout-grid__inner block">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Empty State Message</span>
-          <div class="mdc-layout-grid__cell--span-2">
-            <div class="mdc-form-field">
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="emptyStateMessageOn"
-                  value="emptyStateMessageOn" name="emptyStateMessage" checked
-                  onchange="onSelectEmptyStateMessage(true)">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
-                </div>
-                <div class="mdc-radio__ripple"></div>
+        <div class="mdc-layout-grid__cell--span-2">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="emptyStateMessageOn" value="emptyStateMessageOn"
+                name="emptyStateMessage" checked onchange="onSelectEmptyStateMessage(true)">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
               </div>
-              <label for="emptyStateMessageOn">On</label>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label for="emptyStateMessageOn">On</label>
+          </div>
+        </div>
+        <div class="mdc-layout-grid__cell--span-2">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="emptyStateMessageOff"
+                value="emptyStateMessageOff" name="emptyStateMessage" onchange="onSelectEmptyStateMessage(false)">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label for="emptyStateMessageOff">Off</label>
+          </div>
+        </div>
+        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6" id="emptyStateMessageDiv" hidden>
+          <div class="mdc-layout-grid__cell--span-10">
+            <span class="mdc-layout-grid__cell--span-2 text-body-light">Text:</span>
+            <div class="mdc-layout-grid__cell--span-4">
+              <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
+                <input type="text" class="mdc-text-field__input" id="blankStateMessage"
+                  onchange="onChangeEmptyStateMessage()">
+                <div class="mdc-notched-outline">
+                  <div class="mdc-notched-outline__leading"></div>
+                  <div class="mdc-notched-outline__trailing"></div>
+                </div>
+              </label>
             </div>
           </div>
-          <div class="mdc-layout-grid__cell--span-2">
-            <div class="mdc-form-field">
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="emptyStateMessageOff"
-                  value="emptyStateMessageOff" name="emptyStateMessage" onchange="onSelectEmptyStateMessage(false)">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
-                </div>
-                <div class="mdc-radio__ripple"></div>
-              </div>
-              <label for="emptyStateMessageOff">Off</label>
-            </div>
-          </div>
-          <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6" id="emptyStateMessageDiv" hidden>
-            <div class="mdc-layout-grid__cell--span-10">
-              <span class="mdc-layout-grid__cell--span-2 text-body-light">Text:</span>
-              <div class="mdc-layout-grid__cell--span-4">
-                <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
-                  <input type="text" class="mdc-text-field__input" id="blankStateMessage"
-                    onchange="onChangeEmptyStateMessage()">
-                  <div class="mdc-notched-outline">
-                    <div class="mdc-notched-outline__leading"></div>
-                    <div class="mdc-notched-outline__trailing"></div>
-                  </div>
-                </label>
-              </div>
-            </div>
-            
+
         </div>
       </div>
     </div>
@@ -294,7 +293,7 @@
       function init() {
         Config.get()
           .then(result => {
-            config = new Config(result.data);            querystring.value = config.querystring;
+            config = new Config(result.data); querystring.value = config.querystring;
             bothPrivacyDiv.setAttribute('style', 'display: none;');
             writePrivacyTag.value = config.writePrivacyTag;
             if (Object.keys(result.data).length === 0) {
@@ -331,26 +330,33 @@
               colorIndicator.checked = true;
             }
 
-            if(config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
-              privateWritePrivacy.checked = true;
-              tagInputContainer.style.display = "block";
-            } else {
-              publicWritePrivacy.checked = true;
-              tagInputContainer.style.display = "none";
-            }
-
-            if(config.emptyState) {
+            if (config.emptyState) {
               emptyStateMessageOn.checked = true;
               blankStateMessage.value = config.emptyStateMessage;
             } else {
               emptyStateMessageDiv.setAttribute('style', 'visibility: hidden;')
               emptyStateMessageOff.checked = true;
             }
-            
+            setBothPrivacyElements();
           })
           .catch(err => {
             console.error(err)
           })
+      }
+
+      function setBothPrivacyElements() {
+        let elements = document.getElementsByClassName("tagInputContainer");
+            if (config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
+              privateWritePrivacy.checked = true;
+              for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "block";
+              }
+            } else {
+              publicWritePrivacy.checked = true;
+              for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "none";
+              }
+            }
       }
 
       function onSelectPlugin() {
@@ -374,7 +380,7 @@
         }
         else if (!bool)
           emptyStateMessageDiv.setAttribute('style', 'visibility: hidden;')
-   
+
         config.emptyState = bool;
         config.save();
       }
@@ -404,13 +410,7 @@
       }
 
       function onSelectWritePrivacy() {
-        if (publicWritePrivacy.checked) {
-          config.writePrivacy = Config.WRITE_PRIVACY.PUBLIC;
-          tagInputContainer.style.display = "none";
-        } else {
-          config.writePrivacy = Config.WRITE_PRIVACY.PRIVATE;
-          tagInputContainer.style.display = "block";
-        }
+        setBothPrivacyElements();
         config.save();
       }
 
