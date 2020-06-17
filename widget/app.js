@@ -432,7 +432,7 @@ function showOptionsDialog(topic, targetElement) {
     })
   }
 
-  if (loggedUser && topic.createdBy && topic.createdBy.id === loggedUser.id) {
+  if (loggedUser && topic.createdBy && topic.createdBy._id === loggedUser._id) {
     options.listItems.unshift({
       id: 'delete',
       icon: 'delete',
@@ -570,7 +570,7 @@ function clearReportsContent() {
 
 
 function navigateTo(topic) {
-  const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser.id);
+  const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser._id);
   let pluginData = config.pluginData;
   pluginData.queryString = queryString;
   buildfire.navigation.navigateTo(pluginData)
