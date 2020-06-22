@@ -14,13 +14,27 @@ function init() {
 
   Helper.getConfigs()
     .then(result => {
-      buildfire.spinner.hide()
+      buildfire.spinner.hide();
       config = result.data;
+      getStrings();
       if (config.privacy === Helper.PRIVACY.PRIVATE && !loggedUser) {
         enforceUserLogin();
       } else {
         getCurrentUser();
       }
+      if (config.contentType === 1) {
+        groupsDiv.setAttribute('style', 'display: none;');
+        linksDiv.setAttribute('style', 'display: none;');
+        link.checked = true;
+      }
+
+      if (config.privacy != 'both') {
+        topicTypeRadioGroup.setAttribute('style', 'display: none');
+      }
+      if (config.emptyState) {
+        scrollContainer.setAttribute('data-text', config.emptyStateMessage)
+      }
+
 
     })
     .catch(err => {
@@ -34,13 +48,30 @@ function init() {
     deleteTopicDialog.close();
     reportTopicDialog.close();
     buildfire.components.drawer.closeDrawer();
-
+    getStrings();
     config = result.data;
     if (config.privacy === Helper.PRIVACY.PRIVATE && !loggedUser) {
       enforceUserLogin();
     } else {
       getCurrentUser();
     }
+    if (config.contentType === 1) {
+      groupsDiv.setAttribute('style', 'display: none;');
+      linksDiv.setAttribute('style', 'display: none;');
+      link.checked = true;
+    } else {
+      groupsDiv.setAttribute('style', 'display: flex;');
+      linksDiv.setAttribute('style', 'display: flex;');
+    }
+    if (config.privacy != 'both') {
+      topicTypeRadioGroup.setAttribute('style', 'display: none');
+    }
+    else {
+      topicTypeRadioGroup.setAttribute('style', 'display: block');
+    }
+    if (config.emptyState) {
+      scrollContainer.setAttribute('data-text', config.emptyStateMessage)
+    } else scrollContainer.setAttribute('data-text', '');
   });
 
   buildfire.auth.onLogout(() => {
@@ -86,6 +117,7 @@ function getCurrentUser() {
 }
 
 function loadData(filterData) {
+  checkTagPermissions(showHideAddButton);
   clearList();
   buildfire.spinner.show()
   let filter = {
@@ -99,28 +131,63 @@ function loadData(filterData) {
       ...filterData
     }
   }
-  Topic.getTopics(config.privacy, filter, null, {
+  if (config.privacy === 'both') {
+    if (config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE) {
+      checkTagPermissions(function(hasTag) {
+        if(!hasTag) {
+          topicTypeRadioGroup.setAttribute('style', 'display: none;');
+          privateGroup.checked = true;
+        }
+      })
+
+    }
+    Topic.getAllTopics(filter, null, {
       type: 1
     })
-    .then(topics => {
-      clearList();
-      buildfire.spinner.hide()
-      if (topics && topics.length === 0) {
+      .then(topics => {
+        clearList();
+        buildfire.spinner.hide()
+        if (topics && topics.length === 0) {
+          scrollContainer.classList.add('bitmap');
+          return;
+        }
+        for (const obj of topics) {
+          let topic = new Topic({
+            ...obj.data,
+            id: obj.id
+          });
+          renderTopic(topic);
+        }
+      })
+      .catch(err => {
         scrollContainer.classList.add('bitmap');
-        return;
-      }
-      for (const obj of topics) {
-        let topic = new Topic({
-          ...obj.data,
-          id: obj.id
-        });
-        renderTopic(topic);
-      }
+        console.error(err);
+      })
+  }
+  else {
+    Topic.getTopics(config.privacy, filter, null, {
+      type: 1
     })
-    .catch(err => {
-      scrollContainer.classList.add('bitmap');
-      console.error(err);
-    })
+      .then(topics => {
+        clearList();
+        buildfire.spinner.hide()
+        if (topics && topics.length === 0) {
+          scrollContainer.classList.add('bitmap');
+          return;
+        }
+        for (const obj of topics) {
+          let topic = new Topic({
+            ...obj.data,
+            id: obj.id
+          });
+          renderTopic(topic);
+        }
+      })
+      .catch(err => {
+        scrollContainer.classList.add('bitmap');
+        console.error(err);
+      })
+  }
 }
 
 function search() {
@@ -258,7 +325,7 @@ function addNewTopic() {
     return;
   }
 
-  let types = topicTypesRadioGroup.querySelectorAll('input[name="topicType"]');
+  let types = topicTypeRadioGroup2.querySelectorAll('input[name="topicType2"]');
   let type;
   for (const elem of types) {
     if (elem.checked) {
@@ -267,6 +334,18 @@ function addNewTopic() {
   }
   if (!type) {
     showMessage('Please, you have to select type of topic');
+    return;
+  }
+
+  let types2 = topicTypeRadioGroup.querySelectorAll('input[name="topicType"]');
+  let type2;
+  for (const elem of types2) {
+    if (elem.checked) {
+      type2 = elem.value;
+    }
+  }
+  if (config.privacy === 'both' && !type2) {
+    showMessage('Please, you have to select privacy type of topic');
     return;
   }
 
@@ -285,7 +364,11 @@ function addNewTopic() {
     createdBy: loggedUser
   });
   addTopicBtn.disabled = true;
-  topic.save(config.privacy)
+  let privacy = '';
+  if (config.privacy === 'both') {
+    privacy = type2;
+  } else privacy = config.privacy;
+  topic.save(privacy)
     .then((result => {
       topicInpuDialog.close();
       showMessage(`Successfully added ${topic.title} topic`)
@@ -439,8 +522,12 @@ function showOptionsDialog(topic, targetElement) {
       text: 'Delete Topic',
     })
 
+    options.listItems.unshift({
+      id: 'share',
+      icon: 'share',
+      text: 'Share with others',
+    })
   }
-
 
   const callback = (error, result) => {
     if (error) return console.error(error);
@@ -467,7 +554,6 @@ function openDeleteDialog(topic, targetElement) {
       .catch(console.error);
     return;
   }
-
   deleteTopicDialog.scrimClickAction = '';
   deleteTopicDialog.open();
 
@@ -572,8 +658,15 @@ function clearReportsContent() {
 function navigateTo(topic) {
   const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser._id);
   let pluginData = config.pluginData;
-  pluginData.queryString = queryString;
-  buildfire.navigation.navigateTo(pluginData)
+  if (Object.keys(pluginData).length === 0) {
+    buildfire.navigation.navigateToSocialWall({
+      title: topic.title,
+      queryString: `wid=${topic.id}&topic_title=${topic.title}`
+    })
+  } else {
+    pluginData.queryString = queryString;
+    buildfire.navigation.navigateTo(pluginData)
+  }
 }
 
 function getQueryString(qs, topic_id, topic_title, user_id) {
@@ -592,9 +685,9 @@ function getImage(topic) {
   }
   const url = buildfire.imageLib.cropImage(
     `https://app.buildfire.com/api/stockImages?topic=${escape(topic.title)}&w=${getWeekNumber(new Date())}`, {
-      size: imgWidth,
-      aspect: imgHeight
-    }
+    size: imgWidth,
+    aspect: imgHeight
+  }
   );
 
   return url;
@@ -649,4 +742,52 @@ buildfire.messaging.onReceivedMessage = (message) => {
       }
       break;
   }
+}
+
+function checkTagPermissions(cb) {
+  if ((config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length)
+  || config.privacy === Helper.PRIVACY.BOTH) {
+    let writePrivacyTags = config.writePrivacyTag.split(",").map(tag => tag.trim());
+    buildfire.getContext((err, context) => {
+      if (err) return cb(false);
+      let { appId } = context;
+      if (loggedUser && loggedUser.tags && loggedUser.tags[appId]) {
+        let userTags = loggedUser.tags[appId].map(tag => tag.tagName);
+        for (let i = 0; i < userTags.length; i++) {
+          for (let j = 0; j < writePrivacyTags.length; j++) {
+            if(userTags[i] === writePrivacyTags[j]){
+              return cb(true)
+            }
+          } 
+        }
+      }
+      return cb(false);
+    })
+  } else {
+    return cb(true)
+  }
+}
+
+function showHideAddButton(hasPermission) {
+  if(config.privacy !== Helper.PRIVACY.BOTH)
+    addButton.style.display = hasPermission ? "block" : "none";
+}
+
+function getStrings() {
+  let collectionName = "$bfLanguageSettings_en-us";
+  buildfire.datastore.search({}, collectionName, (e, objs) => {
+    if (objs && objs.length > 0 && objs[0] && objs[0].data && objs[0].data.screenOne) {
+      let keys = objs[0].data.screenOne;
+      stringsConfig.screenOne.labels = keys;
+       setStrings();
+    }
+  });
+}
+
+function setStrings() {
+  dialogtitle.innerText = stringsConfig.screenOne.labels.newItem.value;
+  topicTitleText.innerHTML = stringsConfig.screenOne.labels.topicTitle.value;
+  groupsLabel.innerHTML = stringsConfig.screenOne.labels.group.value;
+  linksLabel.innerHTML = stringsConfig.screenOne.labels.link.value;
+  searchTxt.placeholder = stringsConfig.screenOne.labels.searchBar.value;
 }

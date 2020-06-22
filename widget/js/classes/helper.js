@@ -3,10 +3,18 @@ class Helper {
   static get PRIVACY() {
     return {
       PUBLIC: 'public',
-      PRIVATE: 'private'
+      PRIVATE: 'private',
+      BOTH: 'both'
     }
   }
 
+  static get WRITE_PRIVACY() {
+    return {
+      PUBLIC: 'public',
+      PRIVATE: 'private'
+    }
+  }
+  
   static get INDICATOR() {
     return {
       IMAGE: 'image',

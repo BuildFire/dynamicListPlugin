@@ -19,6 +19,10 @@
         "url": "abuse/index.html"
       },
       {
+        "title": "Languages",
+        "url": "languages/index.html"
+      },
+      {
         "title": "Tests",
         "url": "tests/index.html"
       }

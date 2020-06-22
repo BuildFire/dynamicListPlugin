@@ -14,6 +14,26 @@ class Topic {
     this.deletedOn = data.deletedOn || null;
   }
 
+  static getAllTopics(filter, limit, sort) {
+    let topics = [];
+    return new Promise((resolve, reject) => {
+      buildfire.userData.search({ filter, skip: 0, limit, sort }, "topics", function (err, userResult) {
+        if (err) reject(err);
+        else {
+          topics = userResult;
+          buildfire.publicData.search({ filter, skip: 0, limit, sort }, "topics", function (err, dataResult) {
+            if (err) reject(err);
+            else {
+              dataResult.map(item => {
+                topics.push(item);
+              })
+              resolve(topics)
+            }
+          })
+        }
+      })
+    });
+  }
 
   static getTopics(privacy, filter, limit, sort) {
     let db = buildfire.publicData;

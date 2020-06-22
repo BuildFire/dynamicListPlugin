@@ -29,7 +29,7 @@
     <div class="mdc-layout-grid">
       <div class="mdc-layout-grid__inner block">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Navigate To</span>
-        <span class="mdc-layout-grid__cell--span-4 text-body" id="pluginInstanceName">Feature not yet selected</span>
+        <span class="mdc-layout-grid__cell--span-4 text-body" id="pluginInstanceName">Social Wall</span>
         <div class="mdc-layout-grid__cell--span-2">
           <button class="mdc-button  mdc-button--raised btn" onclick="onSelectPlugin()">
             <div class="mdc-button__ripple"></div>
@@ -37,7 +37,7 @@
           </button>
         </div>
       </div>
-      <div class="mdc-layout-grid__inner block">
+      <div class="mdc-layout-grid__inner block" id="queryStringContainer">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Query String</span>
         <div class="mdc-layout-grid__cell--span-6">
 
@@ -59,14 +59,14 @@
           </div>
         </div>
       </div>
-      <div class="mdc-layout-grid__inner block">
+      <div class="mdc-layout-grid__inner block" style="margin-bottom: 0;">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Topic Privacy</span>
         <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
-          <div class="mdc-layout-grid__cell--span-4">
+          <div class="mdc-layout-grid__cell--span-2">
             <div class="mdc-form-field">
               <div class="mdc-radio">
                 <input class="mdc-radio__native-control" type="radio" id="publicPrivacy" value="public" name="privacy"
-                  checked onchange="onSelectPrivacy()">
+                  checked onchange="onSelectPrivacy('public')">
                 <div class="mdc-radio__background">
                   <div class="mdc-radio__outer-circle"></div>
                   <div class="mdc-radio__inner-circle"></div>
@@ -76,11 +76,11 @@
               <label for="publicPrivacy">Public</label>
             </div>
           </div>
-          <div class="mdc-layout-grid__cell--span-4">
+          <div class="mdc-layout-grid__cell--span-2">
             <div class="mdc-form-field">
               <div class="mdc-radio">
                 <input class="mdc-radio__native-control" type="radio" id="privatePrivacy" value="private" name="privacy"
-                  onchange="onSelectPrivacy()">
+                  onchange="onSelectPrivacy('private')">
                 <div class="mdc-radio__background">
                   <div class="mdc-radio__outer-circle"></div>
                   <div class="mdc-radio__inner-circle"></div>
@@ -90,10 +90,83 @@
               <label for="privatePrivacy">Private</label>
             </div>
           </div>
+          <div class="mdc-layout-grid__cell--span-2">
+            <div class="mdc-form-field">
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="bothPrivacy" value="both" name="privacy"
+                  checked onchange="onSelectPrivacy('both')">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+              <label for="bothPrivacy">Both</label>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
+            <div class="mdc-layout-grid__cell--span-10" id="bothPrivacyDiv">
+
+              <ul class="text-helper">
+                <li>Public: Anyone on app can see the topic</li>
+                <li>Private: Only me can see the topic</li>
+                <li>Both: Anyone on app can see the public & private topics</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdc-layout-grid__inner block" id="writeAccessContainer">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Public Write Access</span>
+        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
+          <div class="mdc-layout-grid__cell--span-4">
+            <div class="mdc-form-field">
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="publicWritePrivacy" value="publicWrite"
+                  name="writePrivacy" checked onchange="onSelectWritePrivacy()">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+              <label for="publicWritePrivacy">Anyone</label>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell--span-4">
+            <div class="mdc-form-field">
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="privateWritePrivacy" value="privateWrite"
+                  name="writePrivacy" onchange="onSelectWritePrivacy()">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+              <label for="privateWritePrivacy">Tag Only</label>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell--span-4 tagInputContainer" id="tagInputContainer">
+            <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
+              <input type="text" class="mdc-text-field__input" placeholder="exampletag" id="writePrivacyTag" disabled>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </label>
+          </div>
+          <div class="mdc-layout-grid__cell--span-2 tagInputContainer" id="tagInputContainer">
+            <button class="mdc-button  mdc-button--raised btn" onclick="onSelectTag()">
+              <div class="mdc-button__ripple"></div>
+              <span class="mdc-button__label">Select Tag(s)</span>
+            </button>
+          </div>
           <div class="mdc-layout-grid__cell--span-10">
             <ul class="text-helper">
-              <li>Public: Anyone on app can see the topic</li>
-              <li>Private: Only me can see the topic</li>
+              <li>Anyone: Anyone on app can add content</li>
+              <li>Tag Only: Only users with tag can add content</li>
             </ul>
           </div>
         </div>
@@ -101,7 +174,7 @@
 
       <div class="mdc-layout-grid__inner block">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Style With Random</span>
-        <div class="mdc-layout-grid__cell--span-3">
+        <div class="mdc-layout-grid__cell--span-2">
           <div class="mdc-form-field">
             <div class="mdc-radio">
               <input class="mdc-radio__native-control" type="radio" id="imageIndicator" value="image" name="indicator"
@@ -115,7 +188,7 @@
             <label class="radio-label" for="imageIndicator">Images</label>
           </div>
         </div>
-        <div class="mdc-layout-grid__cell--span-3">
+        <div class="mdc-layout-grid__cell--span-2">
           <div class="mdc-form-field">
             <div class="mdc-radio">
               <input class="mdc-radio__native-control" type="radio" id="colorIndicator" value="color" name="indicator"
@@ -130,90 +203,247 @@
           </div>
         </div>
       </div>
+      <div class="mdc-layout-grid__inner block">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Disable Groups</span>
+        <div class="mdc-layout-grid__cell--span-2">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="contentTypeLinks" value="links" name="content"
+                checked onchange="onSelectContentType(1)">
+              <div class=" mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label class="radio-label" for="imageIndicator">On</label>
+          </div>
+        </div>
+        <div class="mdc-layout-grid__cell--span-4">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="contentTypeGroups" value="groupslinks"
+                name="content" onchange="onSelectContentType(2)">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label class="radio-label" for="colorIndicator">Off</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="mdc-layout-grid__inner block">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Empty State Message</span>
+        <div class="mdc-layout-grid__cell--span-2">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="emptyStateMessageOn" value="emptyStateMessageOn"
+                name="emptyStateMessage" checked onchange="onSelectEmptyStateMessage(true)">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label for="emptyStateMessageOn">On</label>
+          </div>
+        </div>
+        <div class="mdc-layout-grid__cell--span-2">
+          <div class="mdc-form-field">
+            <div class="mdc-radio">
+              <input class="mdc-radio__native-control" type="radio" id="emptyStateMessageOff"
+                value="emptyStateMessageOff" name="emptyStateMessage" onchange="onSelectEmptyStateMessage(false)">
+              <div class="mdc-radio__background">
+                <div class="mdc-radio__outer-circle"></div>
+                <div class="mdc-radio__inner-circle"></div>
+              </div>
+              <div class="mdc-radio__ripple"></div>
+            </div>
+            <label for="emptyStateMessageOff">Off</label>
+          </div>
+        </div>
+        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6" id="emptyStateMessageDiv" hidden>
+          <div class="mdc-layout-grid__cell--span-10">
+            <span class="mdc-layout-grid__cell--span-2 text-body-light">Text:</span>
+            <div class="mdc-layout-grid__cell--span-4">
+              <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
+                <input type="text" class="mdc-text-field__input" id="blankStateMessage"
+                  onchange="onChangeEmptyStateMessage()">
+                <div class="mdc-notched-outline">
+                  <div class="mdc-notched-outline__leading"></div>
+                  <div class="mdc-notched-outline__trailing"></div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
-
-  </div>
-  <script>
-    Analytics.init();
-    let config = new Config();
+    <script>
+      Analytics.init();
+      let config = new Config();
 
 
-    init();
+      init();
 
-    function init() {
-      Config.get()
-      .then(result => {
-        config = new Config(result.data);
-        console.log(result);
-        querystring.value = config.querystring;
-        if (Object.keys(result.data).length === 0) {
-          onSelectPrivacy();
-          onSelectIndicator();
-          return;
+      function init() {
+        Config.get()
+          .then(result => {
+            config = new Config(result.data); querystring.value = config.querystring;
+            bothPrivacyDiv.setAttribute('style', 'display: none;');
+            writePrivacyTag.value = config.writePrivacyTag;
+            if (Object.keys(result.data).length === 0) {
+              onSelectPrivacy(config.privacy);
+              onSelectIndicator();
+              return;
+            }
+            if (result && Object.keys(config.pluginData).length > 0) {
+              pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
+              queryStringContainer.style.display = "grid"
+            } else {
+              pluginInstanceName.innerHTML = 'Social Wall'
+              queryStringContainer.style.display = "none"
+            }
+
+            if (config.privacy === Config.PRIVACY.PUBLIC) {
+              publicPrivacy.checked = true;
+              writeAccessContainer.style.display = "grid";
+            }
+            else if (config.privacy === Config.PRIVACY.PRIVATE) {
+              writeAccessContainer.style.display = "none";
+              privatePrivacy.checked = true;
+            }
+
+            if (config.contentType === 1) {
+              contentTypeLinks.checked = true;
+            } else {
+              contentTypeGroups.checked = true;
+            }
+
+            if (config.indicator === Config.INDICATOR.IMAGE) {
+              imageIndicator.checked = true;
+            } else {
+              colorIndicator.checked = true;
+            }
+
+            if (config.emptyState) {
+              emptyStateMessageOn.checked = true;
+              blankStateMessage.value = config.emptyStateMessage;
+            } else {
+              emptyStateMessageDiv.setAttribute('style', 'visibility: hidden;')
+              emptyStateMessageOff.checked = true;
+            }
+            setBothPrivacyElements();
+          })
+          .catch(err => {
+            console.error(err)
+          })
+      }
+
+      function setBothPrivacyElements() {
+        let elements = document.getElementsByClassName("tagInputContainer");
+            if (config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
+              privateWritePrivacy.checked = true;
+              for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "block";
+              }
+            } else {
+              publicWritePrivacy.checked = true;
+              for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "none";
+              }
+            }
+      }
+
+      function onSelectPlugin() {
+        buildfire.pluginInstance.showDialog({}, (error, instances) => {
+          if (instances && instances.length > 0) {
+            config.pluginData = instances[0];
+            config.save();
+            pluginInstanceName.innerHTML = instances[0].pluginTypeName + ": " + instances[0].title;
+            queryStringContainer.style.display = "grid";
+          } else {
+            pluginInstanceName.innerHTML = 'Social Wall';
+            queryStringContainer.style.display = "grid";
+          }
+        });
+      }
+
+      function onSelectEmptyStateMessage(bool) {
+        if (bool) {
+          emptyStateMessageDiv.setAttribute('style', 'visibility: visible;')
+          blankStateMessage.value = config.emptyStateMessage;
         }
+        else if (!bool)
+          emptyStateMessageDiv.setAttribute('style', 'visibility: hidden;')
 
-        if (result && Object.keys(config.pluginData).length > 0) {
-          pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
+        config.emptyState = bool;
+        config.save();
+      }
+
+      function onSelectContentType(type) {
+        config.contentType = type;
+        config.save();
+      }
+
+      function onSelectPrivacy(privacy) {
+        if (privacy === 'public') {
+          config.privacy = Config.PRIVACY.PUBLIC;
+          bothPrivacyDiv.setAttribute('style', 'display: none;');
+          writeAccessContainer.style.display = "grid";
+        }
+        else if (privacy === 'private') {
+          config.privacy = Config.PRIVACY.PRIVATE;
+          bothPrivacyDiv.setAttribute('style', 'display: none;');
+          writeAccessContainer.style.display = "none";
+        }
+        else if (privacy === 'both') {
+          config.privacy = Config.PRIVACY.BOTH;
+          bothPrivacyDiv.setAttribute('style', 'display: block;');
+          writeAccessContainer.style.display = "grid";
+        }
+        config.save();
+      }
+
+      function onSelectWritePrivacy() {
+        setBothPrivacyElements();
+        config.save();
+      }
+
+
+      function onSelectIndicator() {
+        if (imageIndicator.checked) {
+          config.indicator = Config.INDICATOR.IMAGE;
         } else {
-          pluginInstanceName.innerHTML = 'Feature not yet selected'
+          config.indicator = Config.INDICATOR.COLOR;
         }
+        config.save();
+      }
 
-        if (config.privacy === Config.PRIVACY.PUBLIC) {
-          publicPrivacy.checked = true;
-        } else {
-          privatePrivacy.checked = true;
-        }
-
-        if (config.indicator === Config.INDICATOR.IMAGE) {
-          imageIndicator.checked = true;
-        } else {
-          colorIndicator.checked = true;
-        }
-
-      })
-      .catch(err => {
-        console.error(err)
-      })
-    }
-
-
-    function onSelectPlugin() {
-      buildfire.pluginInstance.showDialog({}, (error, instances) => {
-        if (instances && instances.length > 0) {
-          config.pluginData = instances[0];
+      function onSelectTag() {
+        buildfire.auth.showTagsSearchDialog({}, (err, tags) => {
+          tags = tags.map(tag => tag.tagName).join(", ");
+          config.writePrivacyTag = tags;
+          writePrivacyTag.value = tags;
           config.save();
-          pluginInstanceName.innerHTML = instances[0].pluginTypeName + ": " + instances[0].title;
-        } else {
-          pluginInstanceName.innerHTML = 'Feature not yet selected';
-        }
-      });
-    }
-
-    function onSelectPrivacy() {
-      if (publicPrivacy.checked) {
-        config.privacy = Config.PRIVACY.PUBLIC;
-      } else {
-        config.privacy = Config.PRIVACY.PRIVATE;
+        })
       }
-      config.save();
 
-    }
-
-    function onSelectIndicator() {
-      if (imageIndicator.checked) {
-        config.indicator = Config.INDICATOR.IMAGE;
-      } else {
-        config.indicator = Config.INDICATOR.COLOR;
+      function onChangeEmptyStateMessage() {
+        config.emptyStateMessage = blankStateMessage.value;
+        config.save();
       }
-      config.save();
-    }
 
-    function onChangeQuerystring() {
-      config.querystring = querystring.value;
-      config.save();
-    }
+      function onChangeQuerystring() {
+        config.querystring = querystring.value;
+        config.save();
+      }
 
-  </script>
+    </script>
 </body>
 
 </html>

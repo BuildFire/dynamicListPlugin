@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="../../../../scripts/buildfire.min.js"></script>
+
+    <style>
+        .subTitle {
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        textarea:invalid,
+        input:invalid {
+            background-color: lightpink;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #deleteButton {
+            padding-right: 25px;
+            margin-top: 5px;
+        }
+    </style>
+
+
+    <!--
+        Add more string here
+        ../../widget/js/shared/stringsConfig.js  <=========================== README
+        this file is shared with the widget.
+    -->
+
+    <!-- build:bundleSharedJSFiles  -->
+    <script src="../../widget/js/shared/stringsConfig.js"></script>
+    <script src="../../widget/js/shared/strings.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:bundleJSFiles  -->
+    <script src="js/stringsUI.js"></script>
+    <!-- endbuild -->
+
+    <script src="../../../../scripts/tinymce/tinymce.min.js"></script>
+
+
+</head>
+
+<body>
+    <div id="stringsContainer">
+        loading...
+    </div>
+    <a id="saveButton" class="btn btn-success pull-right" onclick="save()">Save</a>
+    <a id="deleteButton" class="text-danger pull-right" onclick="deleteLanguage(strings.id)">Delete</a>
+
+    <script>
+        let strings;
+        function init() {
+            loadLanguage("en-us");
+            let counter = 0;
+            for (let [key, value] of Object.entries(stringsConfig.screenOne.labels)) {
+                if(value.title === undefined) counter++;
+                if(counter === stringsConfig.screenOne.labels.length) return createLanguage("en-us");    
+            }
+        }
+        init()
+
+        function loadLanguage(lang) {
+            strings = new buildfire.services.Strings(lang, stringsConfig);
+            strings.init().then(() => {
+                strings.inject();
+            });
+            stringsUI.init("stringsContainer", strings, stringsConfig);
+        }
+    
+        function createLanguage(language) {
+            stringsContainer.disabled = true;
+            strings.createLanguage(language, () => {
+                stringsContainer.disabled = false;
+            });
+            return false;
+        }
+
+        function deleteLanguage() {
+            buildfire.notifications.confirm({ message: "Are you sure you want to remove support fo this language?", confirmButton: { type: "danger" } }, (e, r) => {
+                if (r.selectedButton.key == "confirm") {
+                    strings.deleteLanguage(() => {
+                        loadLanguage(langOptions.value);
+                    });
+                }
+
+            })
+        }
+
+
+        function save() {
+
+            strings.save(() => {
+                buildfire.messaging.sendMessageToWidget({ cmd: "refresh" })
+            });
+        }
+
+    </script>
+
+
+</body>
+
+</html>
