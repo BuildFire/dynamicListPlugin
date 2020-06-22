@@ -3,6 +3,7 @@ let config;
 let timerId;
 let colorIndex = 0;
 let loggedUser = null;
+let instanceId = null;
 const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
 const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
@@ -11,7 +12,7 @@ init();
 
 function init() {
   buildfire.spinner.show();
-
+  buildfire.appearance.titlebar.show();
   Helper.getConfigs()
     .then(result => {
       buildfire.spinner.hide()
@@ -55,6 +56,9 @@ function init() {
     }
   })
 
+  buildfire.getContext((err, context) => {
+    instanceId = context.instanceId;
+  })
 }
 
 function enforceUserLogin() {
@@ -100,8 +104,8 @@ function loadData(filterData) {
     }
   }
   Topic.getTopics(config.privacy, filter, null, {
-      type: 1
-    })
+    type: 1
+  })
     .then(topics => {
       clearList();
       buildfire.spinner.hide()
@@ -186,6 +190,7 @@ function createListGroup(topic) {
     }
 
     buildfire.history.push(topic.title, {
+      instanceId,
       topic
     });
     getData();
@@ -324,7 +329,6 @@ function getData() {
           }
         }
       }
-
       renderBreadcrumbs(breadcrumbs);
       loadData(filter);
     })
@@ -334,23 +338,41 @@ function getData() {
 
 function getBreadcrumbs() {
   return new Promise((resolve, reject) => {
-    const options = {
-      pluginBreadcrumbsOnly: false
-    };
+    let options = { pluginBreadcrumbsOnly: false };
+    let pluginBreadCrumbs = [];
     buildfire.history.get(options, (err, breadcrumbs) => {
       if (err) {
         reject(err);
       } else {
-        // if (breadcrumbs.length === 0) {
-        //   buildfire.history.push('Home', {
-        //     topic: null
-        //   });
-        // }
-        resolve(breadcrumbs)
+        buildfire.getContext((err, context) => {
+          if(err) reject(err);
+          let homeBreadcrumb = null;
+          breadcrumbs.map(bread => {
+            if (bread.label === "Home") {
+              bread.label = context.title;
+              homeBreadcrumb = bread;
+              pluginBreadCrumbs.push(bread);
+            }
+            if (bread.options.instanceId === context.instanceId) {
+              pluginBreadCrumbs.push(bread);
+            }
+            if (bread.label === context.title) {
+              if (bread.label !== homeBreadcrumb.label) {
+                pluginBreadCrumbs.push(bread);
+              }
+            }
+          })
+          resolve(pluginBreadCrumbs)
+        })
       }
     });
   })
 }
+
+buildfire.navigation.onAppLauncherActive(() => {
+  getData();
+  buildfire.appearance.titlebar.show();
+}, false);
 
 function renderBreadcrumbs(breadcrumbs) {
   clearBreadcrumbs();
@@ -635,6 +657,7 @@ function showMessage(message) {
 
 buildfire.history.onPop((breadcrumb) => {
   getData();
+  buildfire.appearance.titlebar.show();
 });
 
 buildfire.messaging.onReceivedMessage = (message) => {
