@@ -6,6 +6,14 @@ body {
   margin: 0;
 }
 
+html[safe-area="true"] body {
+  padding-bottom: 0px !important;
+  -webkit-overflow-scrolling: auto;
+}
+html[buildfire][safe-area="true"] body {
+  -webkit-overflow-scrolling: auto !important;
+}
+
 .search-card {
   position: fixed;
   top: 0.8125rem;
@@ -13,6 +21,9 @@ body {
   left: 0.5rem;
   z-index: 1;
   overflow: hidden;
+  -ms-transform: translate3d(0,0,0);
+  -webkit-transform: translate3d(0,0,0);
+  transform: translate3d(0,0,0);
 }
 
 .inner-search-container {
@@ -99,7 +110,7 @@ a.breadcrumb-label:hover {
   content: attr(data-text);
   position: absolute;
   text-align: center;
-  bottom: 30%;
+  bottom: 15%;
   width: 100%;
 }
 
@@ -177,11 +188,18 @@ a.breadcrumb-label:hover {
 }
 
 /* End Link Style */
-
+.material-icons {
+  font-family: 'Material Icons' !important;
+  -webkit-font-feature-settings: 'liga' !important;
+ }
+ 
 .add-btn {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
+  -ms-transform: translate3d(0,0,0);
+  -webkit-transform: translate3d(0,0,0);
+  transform: translate3d(0,0,0);
 }
 
 .del-btn {
