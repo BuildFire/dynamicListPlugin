@@ -337,7 +337,24 @@
               emptyStateMessageDiv.setAttribute('style', 'visibility: hidden;')
               emptyStateMessageOff.checked = true;
             }
-            setBothPrivacyElements();
+            //setBothPrivacyElements();
+            let elements = document.getElementsByClassName("tagInputContainer");
+
+            if (config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
+              console.log("PRIVATE INIT")
+
+              privateWritePrivacy.checked = true;
+              for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "block";
+              }
+          } 
+          else {
+            console.log("ANYONE INIT")
+            publicWritePrivacy.checked = true;
+              for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "none";
+              }
+          }
           })
           .catch(err => {
             console.error(err)
@@ -346,16 +363,14 @@
 
       function setBothPrivacyElements() {
         let elements = document.getElementsByClassName("tagInputContainer");
-          if (config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
-              publicWritePrivacy.checked = true;
-              config.writePrivacy = Config.WRITE_PRIVACY.PUBLIC;
+        if (config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
+          config.writePrivacy = Config.WRITE_PRIVACY.PUBLIC;
               for (var i = 0; i < elements.length; i++) {
                 elements[i].style.display = "none";
               }
           } 
           else {
-              privateWritePrivacy.checked = true;
-              config.writePrivacy = Config.WRITE_PRIVACY.PRIVATE;
+            config.writePrivacy = Config.WRITE_PRIVACY.PRIVATE;
               for (var i = 0; i < elements.length; i++) {
                 elements[i].style.display = "block";
               }

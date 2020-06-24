@@ -143,7 +143,6 @@ function loadData(filterData) {
           privateGroup.checked = true;
         }
       })
-
     }
     Topic.getAllTopics(filter, null, {
       type: 1
@@ -773,7 +772,7 @@ buildfire.messaging.onReceivedMessage = (message) => {
 function checkTagPermissions(cb) {
   if ((config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length)
   || config.privacy === Helper.PRIVACY.BOTH) {
-    let writePrivacyTags = config.writePrivacyTag.split(",").map(tag => tag.trim());
+    let writePrivacyTags = config.writePrivacyTag ? config.writePrivacyTag.split(",").map(tag => tag.trim()) : null;
     buildfire.getContext((err, context) => {
       if (err) return cb(false);
       let { appId } = context;
