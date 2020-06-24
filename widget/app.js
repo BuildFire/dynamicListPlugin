@@ -3,6 +3,7 @@ let config;
 let timerId;
 let colorIndex = 0;
 let loggedUser = null;
+let instanceId = null;
 const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
 const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
@@ -11,7 +12,7 @@ init();
 
 function init() {
   buildfire.spinner.show();
-
+  buildfire.appearance.titlebar.show();
   Helper.getConfigs()
     .then(result => {
       buildfire.spinner.hide();
@@ -35,7 +36,10 @@ function init() {
         scrollContainer.setAttribute('data-text', config.emptyStateMessage)
       }
 
-
+      buildfire.getContext((err, context) => {
+        if(err) return console.error(err);
+        instanceId = context.instanceId;
+      })
     })
     .catch(err => {
       buildfire.spinner.hide()
@@ -253,6 +257,7 @@ function createListGroup(topic) {
     }
 
     buildfire.history.push(topic.title, {
+      instanceId,
       topic
     });
     getData();
@@ -420,16 +425,31 @@ function getBreadcrumbs() {
     const options = {
       pluginBreadcrumbsOnly: false
     };
+    let pluginBreadCrumbs = [];
     buildfire.history.get(options, (err, breadcrumbs) => {
       if (err) {
         reject(err);
       } else {
-        // if (breadcrumbs.length === 0) {
-        //   buildfire.history.push('Home', {
-        //     topic: null
-        //   });
-        // }
-        resolve(breadcrumbs)
+        buildfire.getContext((err, context) => {
+          if(err) reject(err);
+          let homeBreadcrumb = null;
+          breadcrumbs.map(bread => {
+            if (bread.label === "Home") {
+              bread.label = context.title;
+              homeBreadcrumb = bread;
+              pluginBreadCrumbs.push(bread);
+            }
+            if (bread.options.instanceId === context.instanceId) {
+              pluginBreadCrumbs.push(bread);
+            }
+            if (bread.label === context.title) {
+              if (bread.label !== homeBreadcrumb.label) {
+                pluginBreadCrumbs.push(bread);
+              }
+            }
+          })
+          resolve(pluginBreadCrumbs)
+        })
       }
     });
   })
@@ -726,8 +746,14 @@ function showMessage(message) {
   });
 }
 
+buildfire.navigation.onAppLauncherActive(() => {
+  getData();
+  buildfire.appearance.titlebar.show();
+}, false);
+
 buildfire.history.onPop((breadcrumb) => {
   getData();
+  buildfire.appearance.titlebar.show();
 });
 
 buildfire.messaging.onReceivedMessage = (message) => {
