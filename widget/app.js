@@ -776,7 +776,7 @@ function checkTagPermissions(cb) {
     buildfire.getContext((err, context) => {
       if (err) return cb(false);
       let { appId } = context;
-      if (loggedUser && loggedUser.tags && loggedUser.tags[appId]) {
+      if (loggedUser && loggedUser.tags && loggedUser.tags[appId] && writePrivacyTags && writePrivacyTags.length) {
         let userTags = loggedUser.tags[appId].map(tag => tag.tagName);
         for (let i = 0; i < userTags.length; i++) {
           for (let j = 0; j < writePrivacyTags.length; j++) {

@@ -294,13 +294,11 @@
         Config.get()
           .then(result => {
             config = new Config(result.data); querystring.value = config.querystring;
+
             bothPrivacyDiv.setAttribute('style', 'display: none;');
             writePrivacyTag.value = config.writePrivacyTag;
-            if (Object.keys(result.data).length === 0) {
-              onSelectPrivacy(config.privacy);
-              onSelectIndicator();
-              return;
-            }
+
+
             if (result && Object.keys(config.pluginData).length > 0) {
               pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
               queryStringContainer.style.display = "grid"
@@ -308,7 +306,6 @@
               pluginInstanceName.innerHTML = 'Social Wall'
               queryStringContainer.style.display = "none"
             }
-
             if (config.privacy === Config.PRIVACY.PUBLIC) {
               publicPrivacy.checked = true;
               writeAccessContainer.style.display = "grid";
@@ -316,6 +313,8 @@
             else if (config.privacy === Config.PRIVACY.PRIVATE) {
               writeAccessContainer.style.display = "none";
               privatePrivacy.checked = true;
+            } else {
+              bothPrivacy.checked = true;
             }
 
             if (config.contentType === 1) {
@@ -337,7 +336,6 @@
               emptyStateMessageDiv.setAttribute('style', 'visibility: hidden;')
               emptyStateMessageOff.checked = true;
             }
-            //setBothPrivacyElements();
             let elements = document.getElementsByClassName("tagInputContainer");
 
             if (config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
