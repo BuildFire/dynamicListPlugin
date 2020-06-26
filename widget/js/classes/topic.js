@@ -17,17 +17,15 @@ class Topic {
   static getAllTopics(filter, limit, sort) {
     let topics = [];
     return new Promise((resolve, reject) => {
-      buildfire.userData.search({ filter, skip: 0, limit, sort }, "topics", function (err, userResult) {
+      buildfire.publicData.search({ filter, skip: 0, limit, sort }, "topics", function (err, dataResult) {
         if (err) reject(err);
         else {
-          topics = userResult;
-          buildfire.publicData.search({ filter, skip: 0, limit, sort }, "topics", function (err, dataResult) {
-            if (err) reject(err);
+          buildfire.userData.search({ filter, skip: 0, limit, sort }, "topics", function (err, userResult) {
+            if (err) {
+              resolve(dataResult)
+            }
             else {
-              dataResult.map(item => {
-                topics.push(item);
-              })
-              resolve(topics)
+              resolve([...userResult, ...dataResult])
             }
           })
         }

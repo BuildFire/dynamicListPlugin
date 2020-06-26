@@ -23,7 +23,7 @@ function init() {
       } else {
         getCurrentUser();
       }
-      if (config.contentType === 1) {
+      if (config.contentType !== 2) {
         groupsDiv.setAttribute('style', 'display: none;');
         linksDiv.setAttribute('style', 'display: none;');
         link.checked = true;
@@ -87,6 +87,8 @@ function init() {
           loadData();
         })
         .catch(console.error);
+    } else {
+      loadData()
     }
   })
 
@@ -143,7 +145,6 @@ function loadData(filterData) {
           privateGroup.checked = true;
         }
       })
-
     }
     Topic.getAllTopics(filter, null, {
       type: 1
@@ -676,7 +677,7 @@ function clearReportsContent() {
 
 
 function navigateTo(topic) {
-  const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser._id);
+  const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser ? loggedUser._id : null);
   let pluginData = config.pluginData;
   if (Object.keys(pluginData).length === 0) {
     buildfire.navigation.navigateToSocialWall({
@@ -773,11 +774,11 @@ buildfire.messaging.onReceivedMessage = (message) => {
 function checkTagPermissions(cb) {
   if ((config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length)
   || config.privacy === Helper.PRIVACY.BOTH) {
-    let writePrivacyTags = config.writePrivacyTag.split(",").map(tag => tag.trim());
+    let writePrivacyTags = config.writePrivacyTag ? config.writePrivacyTag.split(",").map(tag => tag.trim()) : null;
     buildfire.getContext((err, context) => {
       if (err) return cb(false);
       let { appId } = context;
-      if (loggedUser && loggedUser.tags && loggedUser.tags[appId]) {
+      if (loggedUser && loggedUser.tags && loggedUser.tags[appId] && writePrivacyTags && writePrivacyTags.length) {
         let userTags = loggedUser.tags[appId].map(tag => tag.tagName);
         for (let i = 0; i < userTags.length; i++) {
           for (let j = 0; j < writePrivacyTags.length; j++) {

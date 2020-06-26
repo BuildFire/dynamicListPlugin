@@ -15,10 +15,9 @@ html[buildfire][safe-area="true"] body {
 }
 
 .search-card {
-  position: fixed;
-  top: 0.8125rem;
-  right: 0.5rem;
-  left: 0.5rem;
+  margin-top: 0.8125rem;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
   z-index: 1;
   overflow: hidden;
   -ms-transform: translate3d(0,0,0);
@@ -49,7 +48,8 @@ input:focus {
 }
 
 .scroll {
-  padding: 3.75rem 0 5rem;
+  padding: 0.5rem 0 5rem;
+  color: var(--mdc-theme-text-primary-on-background);
 }
 
 .breadcrumbs {
@@ -84,14 +84,16 @@ input:focus {
 a.breadcrumb-label {
   padding: .3rem .6rem;
   cursor: pointer;
-  background: #efefef;
+  background: var(--mdc-theme-primary);
+  color: var(--mdc-theme-on-primary);
   border-radius: 4px;
 }
 
 
 
 a.breadcrumb-label:hover {
-  background: #e2e2e2;
+  color: var(--mdc-theme-primary);
+  background: var(--mdc-theme-on-primary);
 }
 
 #listContainer {
