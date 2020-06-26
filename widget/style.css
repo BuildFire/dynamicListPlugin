@@ -84,14 +84,16 @@ input:focus {
 a.breadcrumb-label {
   padding: .3rem .6rem;
   cursor: pointer;
-  background: #efefef;
+  background: var(--mdc-theme-primary);
+  color: var(--mdc-theme-on-primary);
   border-radius: 4px;
 }
 
 
 
 a.breadcrumb-label:hover {
-  background: #e2e2e2;
+  color: var(--mdc-theme-primary);
+  background: var(--mdc-theme-on-primary);
 }
 
 #listContainer {
