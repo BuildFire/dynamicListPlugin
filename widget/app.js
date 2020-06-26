@@ -23,7 +23,7 @@ function init() {
       } else {
         getCurrentUser();
       }
-      if (config.contentType === 1) {
+      if (config.contentType !== 2) {
         groupsDiv.setAttribute('style', 'display: none;');
         linksDiv.setAttribute('style', 'display: none;');
         link.checked = true;
@@ -87,6 +87,8 @@ function init() {
           loadData();
         })
         .catch(console.error);
+    } else {
+      loadData()
     }
   })
 
@@ -121,6 +123,7 @@ function getCurrentUser() {
 }
 
 function loadData(filterData) {
+  console.log({filterData})
   checkTagPermissions(showHideAddButton);
   clearList();
   buildfire.spinner.show()
@@ -148,6 +151,7 @@ function loadData(filterData) {
       type: 1
     })
       .then(topics => {
+        console.log("HERE", {topics})
         clearList();
         buildfire.spinner.hide()
         if (topics && topics.length === 0) {
@@ -675,7 +679,7 @@ function clearReportsContent() {
 
 
 function navigateTo(topic) {
-  const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser._id);
+  const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser ? loggedUser._id : null);
   let pluginData = config.pluginData;
   if (Object.keys(pluginData).length === 0) {
     buildfire.navigation.navigateToSocialWall({
