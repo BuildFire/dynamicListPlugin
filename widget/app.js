@@ -123,7 +123,6 @@ function getCurrentUser() {
 }
 
 function loadData(filterData) {
-  console.log({filterData})
   checkTagPermissions(showHideAddButton);
   clearList();
   buildfire.spinner.show()
@@ -151,7 +150,6 @@ function loadData(filterData) {
       type: 1
     })
       .then(topics => {
-        console.log("HERE", {topics})
         clearList();
         buildfire.spinner.hide()
         if (topics && topics.length === 0) {
