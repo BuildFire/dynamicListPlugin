@@ -34,7 +34,7 @@
   <div class="container">
     <div class="mdc-card search-card">
       <div class="inner-search-container">
-        <span class="material-icons" id="icon">search</span>
+        <span class="material-icons icon" id="searchIcon">search</span>
         <input class="mdc-theme--text-primary-on-background" type="text" name="search" id="searchTxt"
           placeholder="Search" oninput="search()" autocomplete="off">
       </div>
@@ -42,7 +42,7 @@
     <div class="scroll" id="scrollContainer">
       <div class="breadcrumbs invisible" id="breadcrumbsDiv">
         <div class="breadcrumb-item invisible" id="breadcrumbDiv">
-          <span class="material-icons icon breadcrumb-icon  mdc-theme--text-icon-on-background"
+          <span class="material-icons icon breadcrumb-icon"
             id="icon">chevron_right</span>
           <a class="breadcrumb-label"></a>
         </div>
@@ -52,7 +52,10 @@
           <div class="mdc-card__actions">
             <span class="group-title">Topic Title</span>
             <div class="mdc-card__action--icons">
-              <button class="mdc-icon-button mdc-card__action--icon material-icons group-btn" title="More options">
+              <button class="mdc-icon-button mdc-card__action--icon material-icons action-btn" title="Share">
+                share
+              </button>
+              <button class="mdc-icon-button mdc-card__action--icon material-icons action-btn" title="More options">
                 more_vert
               </button>
             </div>
@@ -62,7 +65,10 @@
           <div class="link-img"></div>
           <span class="link-title mdc-theme--text-primary-on-background">Topic Title</span>
           <div class="mdc-card__action-icons link-action-container">
-            <button class="mdc-icon-button mdc-card__action--icon material-icons mdc-theme--text-icon-on-background"
+            <button class="mdc-icon-button mdc-card__action--icon material-icons link-btn" title="Share">
+              share
+            </button>
+            <button class="mdc-icon-button mdc-card__action--icon material-icons link-btn"
               title="More options">more_vert</button>
           </div>
         </div>
@@ -77,8 +83,8 @@
     </button>
   </div>
   <div class="mdc-dialog" id="inputDialog">
-    <div class="mdc-dialog__container">
-      <div class="mdc-dialog__surface" role="inputDialog" aria-modal="true" aria-labelledby="dialog-title"
+    <div class="mdc-dialog__container dialogContainer">
+      <div class="mdc-dialog__surface dialogSurface" role="inputDialog" aria-modal="true" aria-labelledby="dialog-title"
         aria-describedby="dialog-content">
         <h2 class="mdc-dialog__title mdc-theme--text-primary-on-background" id="dialogtitle">New Item</h2>
         <div class="mdc-dialog__content" id="dialog-content">
@@ -90,19 +96,12 @@
             <div class="mdc-line-ripple"></div>
           </label>
           <div id="topicTypeRadioGroup" class="fullwidth">
-            <div class="mdc-form-field fullwidth" id="tagOnly">
-              <label class="radio-label" for="publicGroup">Public</label>
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" value="public" id="publicGroup" name="topicType">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle radio-outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
-                </div>
-                <div class="mdc-radio__ripple"></div>
-              </div>
-            </div>
+
             <div class="mdc-form-field fullwidth">
-              <label class="radio-label" for="privateGroup">Private</label>
+              <label class="radio-label designLabel" for="privateGroup">
+                <span class="material-icons widgetIcon" >lock</span>
+                Private
+              </label>
               <div class="mdc-radio">
                 <input class="mdc-radio__native-control" type="radio" value="private" id="privateGroup" name="topicType">
                 <div class="mdc-radio__background">
@@ -112,9 +111,23 @@
                 <div class="mdc-radio__ripple"></div>
               </div>
             </div>
-            <hr>
+            <div class="mdc-form-field fullwidth" id="tagOnly">
+              <label class="radio-label designLabel" for="publicGroup">
+                <span class="material-icons widgetIcon" >public</span>
+                Public
+              </label>
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" value="public" id="publicGroup" name="topicType">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle radio-outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+            </div>
+            
           </div>
-          
+          <hr id="breakPoint">
           <div id="topicTypeRadioGroup2" class="fullwidth">
             <div class="mdc-form-field fullwidth" id="groupsDiv">
               <label class="radio-label" for="group" id="groupsLabel">Group</label>
@@ -141,11 +154,15 @@
           </div>
         </div>
         <footer class="mdc-dialog__actions">
-          <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
+        <!--  <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
             <div class="mdc-button__ripple"></div>
             <span class="mdc-button__label">Cancel</span>
           </button>
           <button type="button" id="addTopicBtn" class="mdc-button mdc-dialog__button" onclick="addNewTopic()">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Create</span>
+          </button>-->
+          <button type="button" id="addTopicBtn" class="mdc-button mdc-button--raised" onclick="addNewTopic()">
             <div class="mdc-button__ripple"></div>
             <span class="mdc-button__label">Create</span>
           </button>

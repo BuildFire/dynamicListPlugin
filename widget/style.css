@@ -129,7 +129,6 @@ a.breadcrumb-label:hover {
   overflow: hidden;
   background-size: cover;
   background-image: url('./.images/empty_img.png');
-
 }
 
 .mdc-card__actions {
@@ -143,7 +142,8 @@ a.breadcrumb-label:hover {
 }
 
 .group-title {
-  margin: .5rem 1rem .5rem;
+  display: flex;
+  margin: .5rem 0.5rem .5rem;
   font-size: 1rem;
   color: #ffffff;
   white-space: nowrap;
@@ -228,3 +228,62 @@ a.breadcrumb-label:hover {
 }
 
 
+
+.widgetIcon {
+  font-size: 20px !important;
+  padding-right: 15px;
+}
+.titleIcon {
+  font-size: 20px !important;
+  padding-right: 10px;
+}
+.designLabel {
+  display: flex;
+}
+
+.dialogContainer {
+  width: 100%;
+}
+
+.dialogSurface {
+  position: absolute;
+  bottom: 0;
+  max-width: 100% !important;
+  width: 100%;
+}
+
+.mdc-dialog__title {
+  padding: 0 24px 20px;
+}
+
+.mdc-dialog__content {
+  padding: 0px 24px;
+}
+
+.mdc-dialog__actions {
+  justify-content: center;
+  padding: 0 20px 15px !important;
+}
+
+.action-btn {
+  background-color:rgba(255,255,255, 0.1);
+  border-radius:50%;
+  height: 40px;
+  width: 40px;
+  color: white !important;
+}
+
+.link-btn {
+  background-color:rgba(255,255,255, 0.1);
+  border-radius:50%;
+  height: 40px;
+  width: 40px;
+}
+
+
+.mdc-card__action--icon{
+  padding: 0 !important;
+}
+ .mdc-icon-button {
+  padding: 0 !important;
+}

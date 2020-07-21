@@ -7,12 +7,21 @@ let instanceId = null;
 const topicInpuDialog = new mdc.dialog.MDCDialog(inputDialog);
 const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
-
+let languages = {};
+let appTheme = {};
 init();
 
 function init() {
   buildfire.spinner.show();
   buildfire.appearance.titlebar.show();
+  buildfire.appearance.getAppTheme(function(err, theme) {
+    appTheme = theme.colors;
+    document.getElementsByClassName('widgetIcon')[1].style.setProperty('color', appTheme.icons, 'important');
+    document.getElementsByClassName('widgetIcon')[0].style.setProperty('color', appTheme.icons, 'important');
+    document.getElementsByClassName('widgetIcon')[1].style.setProperty('color', appTheme.icons, 'important');
+    document.getElementById('dialogtitle').style.setProperty('color', appTheme.successTheme, 'important');
+    document.getElementById('searchIcon').style.setProperty('color', appTheme.icons, 'important');
+  })
   Helper.getConfigs()
     .then(result => {
       buildfire.spinner.hide();
@@ -27,6 +36,7 @@ function init() {
         groupsDiv.setAttribute('style', 'display: none;');
         linksDiv.setAttribute('style', 'display: none;');
         link.checked = true;
+        breakPoint.setAttribute('style', 'display: none;');
       }
 
       if (config.privacy != 'both') {
@@ -37,7 +47,7 @@ function init() {
       }
 
       buildfire.getContext((err, context) => {
-        if(err) return console.error(err);
+        if (err) return console.error(err);
         instanceId = context.instanceId;
       })
     })
@@ -62,10 +72,12 @@ function init() {
     if (config.contentType === 1) {
       groupsDiv.setAttribute('style', 'display: none;');
       linksDiv.setAttribute('style', 'display: none;');
+      breakPoint.setAttribute('style', 'display: none;');
       link.checked = true;
     } else {
       groupsDiv.setAttribute('style', 'display: flex;');
       linksDiv.setAttribute('style', 'display: flex;');
+      breakPoint.setAttribute('style', 'display: block;');
     }
     if (config.privacy != 'both') {
       topicTypeRadioGroup.setAttribute('style', 'display: none');
@@ -92,6 +104,13 @@ function init() {
     }
   })
 
+  window.addEventListener('click', function(e){   
+    if (document.getElementById('inputDialog').contains(e.target)){
+      if(e.target.className === "mdc-dialog__scrim") {
+        topicInpuDialog.close();
+      }
+    }
+  });
 }
 
 function enforceUserLogin() {
@@ -139,8 +158,8 @@ function loadData(filterData) {
   }
   if (config.privacy === 'both') {
     if (config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE) {
-      checkTagPermissions(function(hasTag) {
-        if(!hasTag) {
+      checkTagPermissions(function (hasTag) {
+        if (!hasTag) {
           topicTypeRadioGroup.setAttribute('style', 'display: none;');
           privateGroup.checked = true;
         }
@@ -161,8 +180,21 @@ function loadData(filterData) {
             ...obj.data,
             id: obj.id
           });
+          topic.privacy = obj.data.privacy;
           renderTopic(topic);
         }
+        /*setTimeout(() => {
+          let elements = document.getElementsByClassName('titleIcon');
+          for (let el of elements) {
+            console.log(el)
+            el.style.setProperty('color', appTheme.icons, 'important');
+          }
+          let elements2 = document.getElementsByClassName('action-btn');
+          for (let el of elements2) {
+            console.log(el)
+            el.style.setProperty('color', appTheme.icons, 'important');
+          }
+        }, 500)*/
       })
       .catch(err => {
         scrollContainer.classList.add('bitmap');
@@ -187,6 +219,7 @@ function loadData(filterData) {
           });
           renderTopic(topic);
         }
+        
       })
       .catch(err => {
         scrollContainer.classList.add('bitmap');
@@ -236,6 +269,7 @@ function createListGroup(topic) {
   let card = listGroup.cloneNode();
   card.classList.remove('invisible');
   card.innerHTML = listGroup.innerHTML;
+  
   if (config.indicator === Helper.INDICATOR.IMAGE) {
     card.style.backgroundImage = `url(${getImage(topic)})`;
     card.style.height = '12.0625rem';
@@ -244,8 +278,11 @@ function createListGroup(topic) {
     card.style.height = '7.5rem';
   }
 
-  card.querySelector('.group-title').innerHTML = topic.title;
-  let optionsBtn = card.querySelector('button');
+  card.querySelector('.group-title').innerHTML = `<span class="material-icons titleIcon">
+  ${topic.privacy === "public" ? 'public' : 'lock' }</span> 
+  ${topic.title}`;
+
+  let optionsBtn = card.querySelectorAll('button')[1];
 
   optionsBtn.onclick = (event) => {
     event.preventDefault();
@@ -282,8 +319,7 @@ function createListLink(topic) {
   }
 
   card.querySelector('.link-title').innerHTML = topic.title;
-  let optionsBtn = card.querySelector('button');
-
+  let optionsBtn = card.querySelectorAll('button')[1];
   card.onclick = function (event) {
     event.preventDefault();
     if (event.target.tagName === 'BUTTON') {
@@ -432,7 +468,7 @@ function getBreadcrumbs() {
         reject(err);
       } else {
         buildfire.getContext((err, context) => {
-          if(err) reject(err);
+          if (err) reject(err);
           let homeBreadcrumb = null;
           breadcrumbs.map(bread => {
             if (bread.label === "Home") {
@@ -541,12 +577,6 @@ function showOptionsDialog(topic, targetElement) {
       id: 'delete',
       icon: 'delete',
       text: 'Delete Topic',
-    })
-
-    options.listItems.unshift({
-      id: 'share',
-      icon: 'share',
-      text: 'Share with others',
     })
   }
 
@@ -773,7 +803,7 @@ buildfire.messaging.onReceivedMessage = (message) => {
 
 function checkTagPermissions(cb) {
   if ((config.privacy === Helper.PRIVACY.PUBLIC && config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE && config.writePrivacyTag && config.writePrivacyTag.trim().length)
-  || config.privacy === Helper.PRIVACY.BOTH) {
+    || config.privacy === Helper.PRIVACY.BOTH) {
     let writePrivacyTags = config.writePrivacyTag ? config.writePrivacyTag.split(",").map(tag => tag.trim()) : null;
     buildfire.getContext((err, context) => {
       if (err) return cb(false);
@@ -782,10 +812,10 @@ function checkTagPermissions(cb) {
         let userTags = loggedUser.tags[appId].map(tag => tag.tagName);
         for (let i = 0; i < userTags.length; i++) {
           for (let j = 0; j < writePrivacyTags.length; j++) {
-            if(userTags[i] === writePrivacyTags[j]){
+            if (userTags[i] === writePrivacyTags[j]) {
               return cb(true)
             }
-          } 
+          }
         }
       }
       return cb(false);
@@ -796,25 +826,31 @@ function checkTagPermissions(cb) {
 }
 
 function showHideAddButton(hasPermission) {
-  if(config.privacy !== Helper.PRIVACY.BOTH)
+  if (config.privacy !== Helper.PRIVACY.BOTH)
     addButton.style.display = hasPermission ? "block" : "none";
 }
 
 function getStrings() {
   let collectionName = "$bfLanguageSettings_en-us";
-  buildfire.datastore.search({}, collectionName, (e, objs) => {
-    if (objs && objs.length > 0 && objs[0] && objs[0].data && objs[0].data.screenOne) {
-      let keys = objs[0].data.screenOne;
-      stringsConfig.screenOne.labels = keys;
-       setStrings();
-    }
+  buildfire.datastore.search({}, collectionName, (e, result) => {
+    let strings = {};
+    result = result[0]
+    if (result && result.data && result.data.screenOne) 
+      strings = result.data.screenOne;
+    else
+      strings = stringsConfig.screenOne.labels;
+
+    Object.keys(strings).forEach(e => {
+      strings[e].value ? languages[e] = strings[e].value : languages[e] = strings[e].defaultValue;
+    });
+    setStrings();
   });
 }
 
 function setStrings() {
-  dialogtitle.innerText = stringsConfig.screenOne.labels.newItem.value;
-  topicTitleText.innerHTML = stringsConfig.screenOne.labels.topicTitle.value;
-  groupsLabel.innerHTML = stringsConfig.screenOne.labels.group.value;
-  linksLabel.innerHTML = stringsConfig.screenOne.labels.link.value;
-  searchTxt.placeholder = stringsConfig.screenOne.labels.searchBar.value;
+  dialogtitle.innerText = languages.newItem;
+  topicTitleText.innerHTML = languages.topicTitle;
+  groupsLabel.innerHTML = languages.group;
+  linksLabel.innerHTML = languages.link;
+  searchTxt.placeholder = languages.searchBar;
 }

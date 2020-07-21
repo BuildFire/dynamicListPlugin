@@ -22,10 +22,21 @@ class Topic {
         else {
           buildfire.userData.search({ filter, skip: 0, limit, sort }, "topics", function (err, userResult) {
             if (err) {
+              dataResult.map(function (item) {
+                item.data.privacy = "public";
+              });
               resolve(dataResult)
             }
             else {
-              resolve([...userResult, ...dataResult])
+              for(let i = 0; i < dataResult.length; i++) {
+                dataResult[i].data.privacy = "public";
+                topics.push(dataResult[i]);
+              }
+              for(let i = 0; i < userResult.length; i++) {
+                userResult[i].data.privacy = "private";
+                topics.push(userResult[i]);
+              }
+              resolve(topics)
             }
           })
         }
