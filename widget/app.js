@@ -931,11 +931,9 @@ function shareWithOthers(data) {
 }
 
 function subscribeToGroup(data) {
-  console.log(data)
-
   let group = data.toShare;
-  if (group.privacy === 'public') return console.error("Group is public");
-  if (group.createdBy._id === loggedUser._id) return console.error("Group is already created");
+  if (group.privacy === 'public') return getData();
+  if (group.createdBy._id === loggedUser._id) return getData();
   let searchOptions = {}
   searchOptions.filter = {
     $and: [
