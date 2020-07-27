@@ -902,9 +902,14 @@ function shareWithOthers(data) {
   link.title = "share link title";
   link.type = "website";
   link.description = "Join group";
-
+  let toShare = {};
+  toShare.title = data.title;
+  toShare.createdBy = { _id: data.createdBy._id };
+  toShare.privacy = data.privacy;
+  toShare.type = data.type;
+  console.log(toShare);
   link.data = {
-    data
+    toShare
   };
 
   buildfire.deeplink.generateUrl(link, function (err, result) {
@@ -926,7 +931,9 @@ function shareWithOthers(data) {
 }
 
 function subscribeToGroup(data) {
-  let group = data.data;
+  console.log(data)
+
+  let group = data.toShare;
   if (group.privacy === 'public') return console.error("Group is public");
   if (group.createdBy._id === loggedUser._id) return console.error("Group is already created");
   let searchOptions = {}
