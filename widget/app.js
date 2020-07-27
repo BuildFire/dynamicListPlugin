@@ -14,13 +14,14 @@ init();
 function init() {
   buildfire.spinner.show();
   buildfire.appearance.titlebar.show();
-  buildfire.appearance.getAppTheme(function(err, theme) {
+  buildfire.appearance.getAppTheme(function (err, theme) {
     appTheme = theme.colors;
     document.getElementsByClassName('widgetIcon')[1].style.setProperty('color', appTheme.icons, 'important');
     document.getElementsByClassName('widgetIcon')[0].style.setProperty('color', appTheme.icons, 'important');
     document.getElementsByClassName('widgetIcon')[1].style.setProperty('color', appTheme.icons, 'important');
     document.getElementById('dialogtitle').style.setProperty('color', appTheme.successTheme, 'important');
     document.getElementById('searchIcon').style.setProperty('color', appTheme.icons, 'important');
+    document.getElementById('addBtn').style.setProperty('background-color', appTheme.icons, 'important');
   })
   Helper.getConfigs()
     .then(result => {
@@ -90,6 +91,19 @@ function init() {
     } else scrollContainer.setAttribute('data-text', '');
   });
 
+  buildfire.auth.onLogin(function (user) {
+    if (user && user._id) {
+      loggedUser = user;
+      buildfire.deeplink.getData(function (result) {
+        if (result) {
+          subscribeToGroup(result);
+        } else {
+          getData();
+        }
+      });
+    }
+  });
+
   buildfire.auth.onLogout(() => {
     loggedUser = null;
     if (config.privacy === Helper.PRIVACY.PRIVATE) {
@@ -104,9 +118,9 @@ function init() {
     }
   })
 
-  window.addEventListener('click', function(e){   
-    if (document.getElementById('inputDialog').contains(e.target)){
-      if(e.target.className === "mdc-dialog__scrim") {
+  window.addEventListener('click', function (e) {
+    if (document.getElementById('inputDialog').contains(e.target)) {
+      if (e.target.className === "mdc-dialog__scrim") {
         topicInpuDialog.close();
       }
     }
@@ -118,14 +132,26 @@ function enforceUserLogin() {
     .then(user => {
       if (user) {
         loggedUser = user;
-        getData();
+        buildfire.deeplink.getData(function (result) {
+          if (result) {
+            subscribeToGroup(result);
+          } else {
+            getData();
+          }
+        });
         return;
       }
 
       authManager.login(false)
         .then(userCred => {
           loggedUser = userCred;
-          getData();
+          buildfire.deeplink.getData(function (result) {
+            if (result) {
+              subscribeToGroup(result);
+            } else {
+              getData();
+            }
+          });
         })
         .catch(console.error);
     })
@@ -136,7 +162,13 @@ function getCurrentUser() {
   authManager.getCurrentUser()
     .then(user => {
       loggedUser = user;
-      getData();
+      buildfire.deeplink.getData(function (result) {
+        if (result) {
+          subscribeToGroup(result);
+        } else {
+          getData();
+        }
+      });
     })
     .catch(console.error);
 }
@@ -219,7 +251,7 @@ function loadData(filterData) {
           });
           renderTopic(topic);
         }
-        
+
       })
       .catch(err => {
         scrollContainer.classList.add('bitmap');
@@ -269,7 +301,7 @@ function createListGroup(topic) {
   let card = listGroup.cloneNode();
   card.classList.remove('invisible');
   card.innerHTML = listGroup.innerHTML;
-  
+
   if (config.indicator === Helper.INDICATOR.IMAGE) {
     card.style.backgroundImage = `url(${getImage(topic)})`;
     card.style.height = '12.0625rem';
@@ -279,10 +311,10 @@ function createListGroup(topic) {
   }
 
   card.querySelector('.group-title').innerHTML = `<span class="material-icons titleIcon">
-  ${topic.privacy === "public" ? 'public' : 'lock' }</span> 
+  ${topic.privacy === "public" ? 'public' : 'lock'}</span> 
   ${topic.title}`;
 
-  let optionsBtn = card.querySelectorAll('button')[1];
+  let optionsBtn = card.querySelectorAll('button')[0];
 
   optionsBtn.onclick = (event) => {
     event.preventDefault();
@@ -319,7 +351,7 @@ function createListLink(topic) {
   }
 
   card.querySelector('.link-title').innerHTML = topic.title;
-  let optionsBtn = card.querySelectorAll('button')[1];
+  let optionsBtn = card.querySelectorAll('button')[0];
   card.onclick = function (event) {
     event.preventDefault();
     if (event.target.tagName === 'BUTTON') {
@@ -580,6 +612,12 @@ function showOptionsDialog(topic, targetElement) {
     })
   }
 
+  options.listItems.unshift({
+    id: 'share',
+    icon: 'share',
+    text: 'Share with others',
+  })
+
   const callback = (error, result) => {
     if (error) return console.error(error);
     buildfire.components.drawer.closeDrawer();
@@ -589,6 +627,8 @@ function showOptionsDialog(topic, targetElement) {
         break;
       case 'report':
         openReportDialog(topic)
+      case 'share':
+        shareWithOthers(topic)
     }
   };
 
@@ -712,11 +752,12 @@ function navigateTo(topic) {
   if (Object.keys(pluginData).length === 0) {
     buildfire.navigation.navigateToSocialWall({
       title: topic.title,
-      queryString: `wid=${topic.id}&topic_title=${topic.title}`
+      queryString: `wid=${topic.id}&topic_title=${topic.title}&privacy=${topic.privacy}`
     })
   } else {
-    pluginData.queryString = queryString;
-    buildfire.navigation.navigateTo(pluginData)
+    if (topic.originalShareId) pluginData.queryString = 'wid=' + topic.originalShareId + '&privacy='+topic.privacy;
+    else pluginData.queryString = queryString + '&privacy='+topic.privacy;
+    buildfire.navigation.navigateTo(pluginData);
   }
 }
 
@@ -835,7 +876,7 @@ function getStrings() {
   buildfire.datastore.search({}, collectionName, (e, result) => {
     let strings = {};
     result = result[0]
-    if (result && result.data && result.data.screenOne) 
+    if (result && result.data && result.data.screenOne)
       strings = result.data.screenOne;
     else
       strings = stringsConfig.screenOne.labels;
@@ -853,4 +894,74 @@ function setStrings() {
   groupsLabel.innerHTML = languages.group;
   linksLabel.innerHTML = languages.link;
   searchTxt.placeholder = languages.searchBar;
+}
+
+function shareWithOthers(data) {
+  console.log(data)
+  let link = {};
+  link.title = "share link title";
+  link.type = "website";
+  link.description = "Join group";
+
+  link.data = {
+    data
+  };
+
+  buildfire.deeplink.generateUrl(link, function (err, result) {
+    if (err) {
+      console.error(err)
+    } else {
+      const el = document.createElement('textarea');
+      el.value = result.url;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showMessage(`Link copied to clipboard`);
+    }
+  });
+}
+
+function subscribeToGroup(data) {
+  let group = data.data;
+  if (group.privacy === 'public') return console.error("Group is public");
+  if (group.createdBy._id === loggedUser._id) return console.error("Group is already created");
+  let searchOptions = {}
+  searchOptions.filter = {
+    $and: [
+      { '$json.createdBy._id': loggedUser._id },
+      { '$json.title': group.title },
+    ]
+  }
+  buildfire.userData.search(searchOptions, 'topics', function (err, result) {
+    if (err) {
+      console.log(err)
+    }
+    if (result && result.length > 0) {
+      getData();
+    }
+    else {
+      const topic = new Topic({
+        title: group.title,
+        type: group.type,
+        parentTopicId: group.parentTopicId,
+        originalShareId: group.id,
+        createdBy: loggedUser,
+        createdOn: new Date()
+      });
+      topic.save(group.privacy)
+        .then((result => {
+          showMessage(`You have been added to ${topic.title} topic`)
+          getData();
+        }))
+        .catch(err => {
+          console.error(err);
+          showMessage(err.message);
+        })
+    }
+  })
+
 }
