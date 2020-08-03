@@ -755,8 +755,8 @@ function navigateTo(topic) {
       queryString: `wid=${topic.id}&topic_title=${topic.title}&privacy=${topic.privacy}`
     })
   } else {
-    if (topic.originalShareId) pluginData.queryString = 'wid=' + topic.originalShareId + '&privacy='+topic.privacy;
-    else pluginData.queryString = queryString + '&privacy='+topic.privacy;
+    if (topic.originalShareId) pluginData.queryString = 'wid=' + topic.originalShareId + '&privacy=' + topic.privacy;
+    else pluginData.queryString = queryString + '&privacy=' + topic.privacy;
     buildfire.navigation.navigateTo(pluginData);
   }
 }
@@ -899,7 +899,7 @@ function setStrings() {
 function shareWithOthers(data) {
   console.log(data)
   let link = {};
-  link.title = "share link title";
+  link.title = data.title;
   link.type = "website";
   link.description = "Join group";
   let toShare = {};
@@ -916,16 +916,17 @@ function shareWithOthers(data) {
     if (err) {
       console.error(err)
     } else {
-      const el = document.createElement('textarea');
-      el.value = result.url;
-      el.setAttribute('readonly', '');
-      el.style.position = 'absolute';
-      el.style.left = '-9999px';
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      showMessage(`Link copied to clipboard`);
+      buildfire.device.share({ 
+        subject: link.title,
+        text: link.description,
+        image: 'http://myImageUrl',
+        link: result.url
+       }, function (err,result) {
+        if (err)
+        console.log(err)
+        else
+          console.log(result)
+       });
     }
   });
 }
