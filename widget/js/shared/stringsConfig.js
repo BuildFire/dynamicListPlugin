@@ -4,10 +4,10 @@ const stringsConfig = {
 		, subtitle: "Change values to update labels and messages displayed in the application"
 		, labels: {
 			newItem: {
-				title: "Add new item dialog"
-				, placeholder: "Add new item dialog"
+				title: "New Item"
+				, placeholder: "New Item"
 				, maxLength: 60
-				, defaultValue: "Add new item dialog"
+				, defaultValue: "New Item"
 			},
 			topicTitle: {
 				title: "Topic title"
@@ -28,10 +28,10 @@ const stringsConfig = {
 				, defaultValue: "Link"
 			},
 			searchBar: {
-				title: "Search Bar"
-				, placeholder: "Search Bar"
+				title: "Search"
+				, placeholder: "Search"
 				, maxLength: 60
-				, defaultValue: "Search Bar"
+				, defaultValue: "Search"
 			}
 		}
 	}
