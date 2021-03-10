@@ -9,6 +9,7 @@ class Config {
     this.contentType = dataObj.contentType || 1;
     this.emptyState = dataObj.emptyState || false;
     this.emptyStateMessage = dataObj.emptyStateMessage ||'Create your first group now!';
+    this.navigateToCwByDefault = dataObj.navigateToCwByDefault || false;
   }
 
   static get PRIVACY() {

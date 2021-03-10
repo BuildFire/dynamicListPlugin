@@ -293,6 +293,8 @@
       function init() {
         Config.get()
           .then(result => {
+            // This way, we will keep old instances to use PSW navigate by default (so we don't break backward compatibility) and new instances to navigate to CW by default.
+            if (result && !Object.keys(result.data).length) result.data.navigateToCwByDefault = true;
             config = new Config(result.data); querystring.value = config.querystring;
 
             bothPrivacyDiv.setAttribute('style', 'display: none;');

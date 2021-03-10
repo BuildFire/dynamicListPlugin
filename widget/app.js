@@ -1,5 +1,5 @@
 let breadcrumbsHistory = [];
-let config;
+let config = {};
 let timerId;
 let colorIndex = 0;
 let loggedUser = null;
@@ -748,11 +748,12 @@ function clearReportsContent() {
 
 function navigateTo(topic) {
   const queryString = getQueryString(config.querystring, topic.id, topic.title, loggedUser ? loggedUser._id : null);
-  let pluginData = config.pluginData;
-  if (Object.keys(pluginData).length === 0) {
+  let pluginData = config && config.pluginData ? config.pluginData : null;
+  if (!pluginData || Object.keys(pluginData).length === 0) {
     buildfire.navigation.navigateToSocialWall({
       title: topic.title,
-      queryString: `wid=${topic.id}&topic_title=${topic.title}&privacy=${topic.privacy}`
+      queryString: `wid=${topic.id}&topic_title=${topic.title}&privacy=${topic.privacy}`,
+      pluginTypeOrder: config && config.navigateToCwByDefault ? ['community', 'premium_social', 'social'] : ['premium_social', 'social', 'community']
     })
   } else {
     if (topic.originalShareId) pluginData.queryString = 'wid=' + topic.originalShareId + '&privacy=' + topic.privacy;
