@@ -618,6 +618,8 @@ function showOptionsDialog(topic, targetElement) {
     text: 'Share with others',
   })
 
+  options.enableFilter = false; //Support for new drawer
+
   const callback = (error, result) => {
     if (error) return console.error(error);
     buildfire.components.drawer.closeDrawer();
