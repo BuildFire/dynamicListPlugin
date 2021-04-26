@@ -513,25 +513,7 @@
 
       function onSelectSortType(sort) {
         let sortType = sort === 0 ? 'default' : sort === 1 ? 'ascending' : 'descending';
-        console.log("AAAA", sort, config.sortBy, sortType)
         config.sortBy = sortType;
-        config.save();
-        // if(config.sortBy === sortType) {
-          
-        //   document.getElementById('sortBy'+1).checked = false;
-        // }
-        // if(sort === 1) {
-        //   config.sortBy ===  'ascending' ? sortBy1.checked = false;
-        //   sortBy2.checked = false;
-        // }
-        // if(sort === 1) {
-        //   config.sortBy ===  'ascending' ? sortBy1.checked = false;
-        //   sortBy2.checked = false;
-        // }
-        // else if(sort === 2) {
-        //   config.sortBy = 'descending';
-        //   sortBy1.checked = false;
-        // }
         config.save();
       }
 
