@@ -3,6 +3,7 @@ class Topic {
   constructor(data = {}) {
     this.id = data.id;
     this.title = data.title;
+    this.titleIndex = data.titleIndex;
     this.type = data.type;
     this.parentTopicId = data.parentTopicId || null;
     this.originalShareId = data.originalShareId || null;
@@ -69,6 +70,7 @@ class Topic {
   getRowData() {
     return {
       title: this.title,
+      titleIndex: this.titleIndex,
       type: this.type,
       parentTopicId: this.parentTopicId,
       originalShareId: this.originalShareId,
@@ -95,6 +97,8 @@ class Topic {
     let db = this.getDatasource(privacy);
     const topic = this.getRowData();
     topic.createdOn = new Date();
+    topic.titleIndex = topic.title.toLowerCase();
+
     return new Promise((resolve, reject) => {
       db.insert(topic, "topics", (err, result) => {
         if (err) {
@@ -112,6 +116,7 @@ class Topic {
     return new Promise((resolve, reject) => {
       let topic = this.getRowData();
       topic.lastUpdatedOn = new Date();
+      topic.titleIndex = topic.title.toLowerCase();
       db.update(this.id, topic, "topics", (err, result) => {
         if (err) {
           reject(err);
