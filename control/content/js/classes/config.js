@@ -10,6 +10,7 @@ class Config {
     this.emptyState = dataObj.emptyState || false;
     this.emptyStateMessage = dataObj.emptyStateMessage ||'Create your first group now!';
     this.navigateToCwByDefault = dataObj.navigateToCwByDefault || false;
+    this.sortBy = dataObj.sortBy || 'default';
   }
 
   static get PRIVACY() {
@@ -31,6 +32,12 @@ class Config {
     return {
       IMAGE: 'image',
       COLOR: 'color'
+    }
+  }
+  static get SORTING() {
+    return {
+      ASCENDING: 'ascending',
+      DESCENDING: 'descending'
     }
   }
 

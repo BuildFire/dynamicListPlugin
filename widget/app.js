@@ -14,6 +14,7 @@ init();
 function init() {
   buildfire.spinner.show();
   buildfire.appearance.titlebar.show();
+  updateRecordsForSorting();
   buildfire.appearance.getAppTheme(function (err, theme) {
     appTheme = theme.colors;
     document.getElementsByClassName('widgetIcon')[1].style.setProperty('color', appTheme.icons, 'important');
@@ -127,6 +128,30 @@ function init() {
   });
 }
 
+function updateRecordsForSorting() {
+  let pageSize = 50, page = 0, allItems = [], filter = { "$json.titleIndex": { $exists: false } }
+  let get = function () {
+    buildfire.userData.search({ filter, pageSize, page, recordCount: true }, "topics", function (err, data) {
+      if (data && data.result && data.result.length) {
+        allItems = allItems.concat(data.result);
+        if (data.totalRecord > allItems.length) {
+          page++;
+          get();
+        }
+        else {
+          allItems.map(item => {
+            item.data.titleIndex = item.data.title.toLowerCase();
+            buildfire.userData.update(item.id, item.data, "topics", (err, res) => {
+              console.log(res)
+            })
+          });
+        }
+      }
+    })
+  }
+  get();
+}
+
 function enforceUserLogin() {
   authManager.getCurrentUser()
     .then(user => {
@@ -182,6 +207,12 @@ function loadData(filterData) {
       $type: "null"
     },
   };
+
+  let sort = {
+    type: 1
+  }
+  config?.sortBy === 'ascending' ? sort.titleIndex = 1 : (config?.sortBy === 'descending' ? sort.titleIndex = -1 : null);
+
   if (filterData && Object.keys(filterData).length > 0) {
     filter = {
       ...filter,
@@ -197,9 +228,7 @@ function loadData(filterData) {
         }
       })
     }
-    Topic.getAllTopics(filter, null, {
-      type: 1
-    })
+    Topic.getAllTopics(filter, null, sort)
       .then(topics => {
         clearList();
         buildfire.spinner.hide()
@@ -207,6 +236,9 @@ function loadData(filterData) {
           scrollContainer.classList.add('bitmap');
           return;
         }
+        config?.sortBy === 'ascending' ? topics.sort((a, b) =>a.data.titleIndex.localeCompare(b.data.titleIndex)) 
+        : config?.sortBy === 'descending' ? topics.sort((a, b) =>b.data.titleIndex.localeCompare(a.data.titleIndex)) : null;
+        
         for (const obj of topics) {
           let topic = new Topic({
             ...obj.data,
@@ -234,9 +266,7 @@ function loadData(filterData) {
       })
   }
   else {
-    Topic.getTopics(config.privacy, filter, null, {
-      type: 1
-    })
+    Topic.getTopics(config.privacy, filter, null, sort)
       .then(topics => {
         clearList();
         buildfire.spinner.hide()
@@ -753,14 +783,14 @@ function navigateTo(topic) {
   let pluginData = config && config.pluginData ? config.pluginData : null;
   if (!pluginData || Object.keys(pluginData).length === 0) {
     const navigateToCwByDefault = (
-      config && !Object.keys(config).length 
-      ? 
-        true 
-      :
-        config && config.navigateToCwByDefault 
-        ? 
-          config.navigateToCwByDefault 
-        : 
+      config && !Object.keys(config).length
+        ?
+        true
+        :
+        config && config.navigateToCwByDefault
+          ?
+          config.navigateToCwByDefault
+          :
           false
     );
     buildfire.navigation.navigateToSocialWall({
@@ -930,17 +960,17 @@ function shareWithOthers(data) {
     if (err) {
       console.error(err)
     } else {
-      buildfire.device.share({ 
+      buildfire.device.share({
         subject: link.title,
         text: link.description,
         image: 'http://myImageUrl',
         link: result.url
-       }, function (err,result) {
+      }, function (err, result) {
         if (err)
-        console.log(err)
+          console.log(err)
         else
           console.log(result)
-       });
+      });
     }
   });
 }
