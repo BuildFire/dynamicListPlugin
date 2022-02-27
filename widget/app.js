@@ -799,8 +799,11 @@ function navigateTo(topic) {
       pluginTypeOrder: navigateToCwByDefault ? ['community', 'premium_social', 'social'] : ['premium_social', 'social', 'community']
     })
   } else {
-    if (topic.originalShareId) pluginData.queryString = 'wid=' + topic.originalShareId + '&privacy=' + topic.privacy;
-    else pluginData.queryString = queryString + '&privacy=' + topic.privacy;
+    const queryString = new URLSearchParams();
+    if (topic && topic.originalShareId) queryString.append('wid', topic.originalShareId);
+    else if (topic && topic.id) queryString.append('wid', topic.id);
+    if (topic && topic.privacy) queryString.append('privacy', topic.privacy);
+    pluginData.queryString = queryString.toString();
     buildfire.navigation.navigateTo(pluginData);
   }
 }
