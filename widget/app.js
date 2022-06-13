@@ -387,6 +387,7 @@ function createListLink(topic) {
     if (event.target.tagName === 'BUTTON') {
       return;
     }
+    Helper.trackAction(Helper.EVENTS.TOPIC_VIEWED);
     navigateTo(topic)
   };
 
@@ -970,6 +971,7 @@ function shareWithOthers(data) {
           console.log(err)
         else
           console.log(result)
+          Helper.trackAction(Helper.EVENTS.TOPIC_SHEARED);
       });
     }
   });
