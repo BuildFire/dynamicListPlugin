@@ -278,6 +278,7 @@ function loadData(filterData) {
             ...obj.data,
             id: obj.id
           });
+          topic.privacy= config.privacy;
           renderTopic(topic);
         }
 
@@ -970,7 +971,7 @@ function shareWithOthers(data) {
 }
 
 function subscribeToGroup(data) {
-  let group = data.data;
+  let group = data;
   if (group?.privacy === 'public') {
     getData();
     navigateTo(data);
