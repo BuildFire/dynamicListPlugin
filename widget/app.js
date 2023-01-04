@@ -942,16 +942,17 @@ function setStrings() {
 }
 
 function shareWithOthers(data) {
-  let toShare = {};
-  toShare.data = {
-    id: data.id,
-    title: data.title,
-    privacy: data.privacy,
-    createdById: data.createdBy._id,
-    parentTopicId: data.parentTopicId,
-    type: data.type,
-  };
-  buildfire.deeplink.generateUrl(toShare, function (err, result) {
+  buildfire.deeplink.generateUrl(
+    {
+      data:{
+        id: data.id,
+        title: data.title,
+        privacy: data.privacy,
+        createdById: data.createdBy._id,
+        parentTopicId: data.parentTopicId,
+        type: data.type,
+      }
+    }, function (err, result) {
     if (err) {
       console.error(err)
     } else {
@@ -972,13 +973,12 @@ function shareWithOthers(data) {
 
 function subscribeToGroup(data) {
   let group = data;
+  getData();
   if (group?.privacy === 'public') {
-    getData();
     navigateTo(data);
     return;
   }
   if (group?.createdById === loggedUser._id) {
-    getData();
     navigateTo(data);
     return;
   }
@@ -994,7 +994,6 @@ function subscribeToGroup(data) {
       console.log(err)
     }
     if (result && result.length > 0) {
-      getData();
       navigateTo(result)
     }
     else {
@@ -1009,7 +1008,6 @@ function subscribeToGroup(data) {
       topic.save(group.privacy)
         .then((result => {
           showMessage(`You have been added to ${topic.title} topic`)
-          getData();
           navigateTo(result);
         }))
         .catch(err => {
