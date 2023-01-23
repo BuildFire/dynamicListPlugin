@@ -142,7 +142,6 @@ function updateRecordsForSorting() {
           allItems.map(item => {
             item.data.titleIndex = item.data.title.toLowerCase();
             buildfire.userData.update(item.id, item.data, "topics", (err, res) => {
-              console.log(res)
             })
           });
         }
@@ -279,6 +278,7 @@ function loadData(filterData) {
             ...obj.data,
             id: obj.id
           });
+          topic.privacy= config.privacy;
           renderTopic(topic);
         }
 
@@ -534,16 +534,16 @@ function getBreadcrumbs() {
           if (err) reject(err);
           let homeBreadcrumb = null;
           breadcrumbs.map(bread => {
-            if (bread.label === "Home") {
+            if (bread?.label === "Home") {
               bread.label = context.title;
               homeBreadcrumb = bread;
               pluginBreadCrumbs.push(bread);
             }
-            if (bread.options.instanceId === context.instanceId) {
+            if (bread?.options.instanceId === context.instanceId) {
               pluginBreadCrumbs.push(bread);
             }
-            if (bread.label === context.title) {
-              if (bread.label !== homeBreadcrumb.label) {
+            if (bread?.label === context.title) {
+              if (bread?.label !== homeBreadcrumb?.label) {
                 pluginBreadCrumbs.push(bread);
               }
             }
@@ -942,50 +942,51 @@ function setStrings() {
 }
 
 function shareWithOthers(data) {
-  console.log(data)
-  let link = {};
-  link.title = data.title;
-  link.type = "website";
-  link.description = "Join group";
-  let toShare = {};
-  toShare.title = data.title;
-  toShare.createdBy = { _id: data.createdBy._id };
-  toShare.privacy = data.privacy;
-  toShare.type = data.type;
-  console.log(toShare);
-  link.data = {
-    toShare
-  };
-
-  buildfire.deeplink.generateUrl(link, function (err, result) {
+  buildfire.deeplink.generateUrl(
+    {
+      data:{
+        id: data.id,
+        title: data.title,
+        privacy: data.privacy,
+        createdById: data.createdBy._id,
+        parentTopicId: data.parentTopicId,
+        type: data.type,
+      }
+    }, function (err, result) {
     if (err) {
       console.error(err)
     } else {
       buildfire.device.share({
-        subject: link.title,
-        text: link.description,
-        image: 'http://myImageUrl',
+        subject: data.title,
+        text: "Join group",
         link: result.url
       }, function (err, result) {
         if (err)
           console.log(err)
         else
           console.log(result)
-          Helper.trackAction(Helper.EVENTS.TOPIC_SHEARED);
+        Helper.trackAction(Helper.EVENTS.TOPIC_SHEARED);
       });
     }
   });
 }
 
 function subscribeToGroup(data) {
-  let group = data.toShare;
-  if (group.privacy === 'public') return getData();
-  if (group.createdBy._id === loggedUser._id) return getData();
+  let group = data;
+  getData();
+  if (group?.privacy === 'public') {
+    navigateTo(data);
+    return;
+  }
+  if (group?.createdById === loggedUser._id) {
+    navigateTo(data);
+    return;
+  }
   let searchOptions = {}
   searchOptions.filter = {
     $and: [
       { '$json.createdBy._id': loggedUser._id },
-      { '$json.title': group.title },
+      { '$json.title': group?.title },
     ]
   }
   buildfire.userData.search(searchOptions, 'topics', function (err, result) {
@@ -993,7 +994,7 @@ function subscribeToGroup(data) {
       console.log(err)
     }
     if (result && result.length > 0) {
-      getData();
+      navigateTo(result)
     }
     else {
       const topic = new Topic({
@@ -1007,7 +1008,7 @@ function subscribeToGroup(data) {
       topic.save(group.privacy)
         .then((result => {
           showMessage(`You have been added to ${topic.title} topic`)
-          getData();
+          navigateTo(result);
         }))
         .catch(err => {
           console.error(err);
