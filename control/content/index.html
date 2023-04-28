@@ -350,8 +350,14 @@
 
 
             if (result && Object.keys(config.pluginData).length > 0) {
-              pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
-              queryStringContainer.style.display = "grid"
+              getPluginInstance(config.pluginData.instanceId).then(pluginInstance => {
+                  if(pluginInstance && pluginInstance.title !== config.pluginData.title) {
+                    config.pluginData.title = pluginInstance.title;
+                    config.save();
+                  }
+                  pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
+                  queryStringContainer.style.display = "grid"
+              });
             } else {
               pluginInstanceName.innerHTML = 'Social Wall'
               queryStringContainer.style.display = "none"
@@ -410,6 +416,19 @@
           .catch(err => {
             console.error(err)
           })
+      }
+
+      function getPluginInstance (instanceId) {
+        return new Promise((resolve, reject) => {
+          if(!instanceId) resolve(null);
+          buildfire.pluginInstance.get(instanceId, function(error, instance) {
+              if (instance) {
+                resolve(instance);
+              } else {
+                resolve(null);
+              }
+          });
+        });
       }
 
       function setBothPrivacyElements() {
