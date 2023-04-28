@@ -59,6 +59,41 @@
           </div>
         </div>
       </div>
+
+      <div class="mdc-layout-grid__inner block">
+        <span class="mdc-layout-grid__cell--span-2 text-body-light">Feature Title</span>
+        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
+          <div class="mdc-layout-grid__cell--span-4">
+            <div class="mdc-form-field">
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="defaultTitle" value="default" name="title"
+                  checked onchange="onSelectTitle('default')">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+              <label for="defaultTitle">Default</label>
+            </div>
+          </div>
+          <div class="mdc-layout-grid__cell--span-4">
+            <div class="mdc-form-field">
+              <div class="mdc-radio">
+                <input class="mdc-radio__native-control" type="radio" id="topicTitle" value="topic" name="title"
+                  onchange="onSelectTitle('topic')">
+                <div class="mdc-radio__background">
+                  <div class="mdc-radio__outer-circle"></div>
+                  <div class="mdc-radio__inner-circle"></div>
+                </div>
+                <div class="mdc-radio__ripple"></div>
+              </div>
+              <label for="topicTitle">Topic Title</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="mdc-layout-grid__inner block" style="margin-bottom: 0;">
         <span class="mdc-layout-grid__cell--span-2 text-body-light">Topic Privacy</span>
         <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
@@ -362,6 +397,11 @@
               pluginInstanceName.innerHTML = 'Social Wall'
               queryStringContainer.style.display = "none"
             }
+            if (config.featureTitle === Config.TITLE.DEFAULT) {
+              defaultTitle.checked = true;
+            } else {
+              topicTitle.checked = true;
+            }
             if (config.privacy === Config.PRIVACY.PUBLIC) {
               publicPrivacy.checked = true;
               writeAccessContainer.style.display = "grid";
@@ -492,6 +532,16 @@
           config.privacy = Config.PRIVACY.BOTH;
           bothPrivacyDiv.setAttribute('style', 'display: block;');
           writeAccessContainer.style.display = "grid";
+        }
+        config.save();
+      }
+
+      function onSelectTitle(title) {
+        if (title === 'default') {
+          config.featureTitle = Config.TITLE.DEFAULT;
+        }
+        else if (title === 'topic') {
+          config.featureTitle = Config.TITLE.TOPIC;
         }
         config.save();
       }
