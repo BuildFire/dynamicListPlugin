@@ -11,6 +11,7 @@ class Config {
     this.emptyStateMessage = dataObj.emptyStateMessage ||'Create your first group now!';
     this.navigateToCwByDefault = dataObj.navigateToCwByDefault || false;
     this.sortBy = dataObj.sortBy || 'default';
+    this.featureTitle = dataObj.featureTitle || 'default';
   }
 
   static get PRIVACY() {
@@ -18,6 +19,13 @@ class Config {
       PUBLIC: 'public',
       PRIVATE: 'private',
       BOTH: 'both'
+    }
+  }
+
+  static get TITLE() {
+    return {
+      DEFAULT: 'default',
+      TOPIC: 'topic',
     }
   }
 

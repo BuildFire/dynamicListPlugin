@@ -28,6 +28,9 @@ function init() {
     .then(result => {
       buildfire.spinner.hide();
       config = result.data;
+      if(!config.featureTitle) {
+        config.featureTitle = 'default';
+      }
       getStrings();
       if (config.privacy === Helper.PRIVACY.PRIVATE && !loggedUser) {
         enforceUserLogin();
@@ -802,6 +805,9 @@ function navigateTo(topic) {
   } else {
     if (topic.originalShareId) pluginData.queryString = 'wid=' + topic.originalShareId + '&privacy=' + topic.privacy;
     else pluginData.queryString = queryString + '&privacy=' + topic.privacy;
+    if(config.featureTitle === 'topic') {
+      pluginData.title = topic.title;
+    }
     buildfire.navigation.navigateTo(pluginData);
   }
 }
