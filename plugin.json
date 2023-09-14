@@ -1,7 +1,7 @@
 {
   "author": "BuildFire",
   "pluginName": "Dynamic List",
-  "pluginDescription": "Give your users a great experience. This feature gives users the ability to create community driven lists, each can be public or private. Users can create link, groups, and sub-groups each can be linked to different plug-ins such as a social wall, the possibilities are limitless.",
+  "pluginDescription": "Customizable, data-driven lists for all needs.",
   "supportEmail": "support@buildfire.com",
   "supportSite":"https://learn.buildfire.com/en/articles/4759761-how-to-use-the-dynamic-list-plugin",
   "control": {
@@ -37,7 +37,27 @@
   "media": [
     {
       "type": "image-resource",
-      "path": "promo.gif"
+      "path": "1-Plugin.png"
+    },
+    {
+      "type": "image-resource",
+      "path": "2-Benefits.png"
+    },
+    {
+      "type": "image-resource",
+      "path": "3-Use-Cases.png"
+    },
+    {
+      "type": "image-resource",
+      "path": "4-Content-Tab.png"
+    },
+    {
+      "type": "image-resource",
+      "path": "5-Language-Tab.png"
+    },
+    {
+      "type": "youtube-video",
+      "path": "https://www.youtube.com/watch?v=GAmOG1EPYGQ"
     }
   ]
 }
