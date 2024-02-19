@@ -76,6 +76,7 @@ class Topic {
       parentTopicId: this.parentTopicId,
       originalShareId: this.originalShareId,
       reportedBy: this.reportedBy,
+      privacy: this.privacy,
       createdOn: this.createdOn,
       createdBy: this.createdBy,
       lastUpdatedOn: this.lastUpdatedOn,
@@ -143,24 +144,53 @@ class Topic {
   }
 
 
-  static delete(db, topicId) {
+  delete() {
     return new Promise((resolve, reject) => {
-      if (!topicId) {
+      if (!this.id) {
         reject({
           error: 'Missed Parameters',
           message: 'You missed id parameter',
         });
         return;
       }
-
-      db.delete(topicId, 'topics', (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
+      if (this.privacy === 'public') {
+        const filter = {
+          "$json.parentTopicId": this.id,
+          "_buildfire.index.date1": {
+            $type: "null"
+          },
         }
-      });
-    });
+        Topic.getTopics(this.privacy, filter, 1)
+          .then(topics => {
+            if (topics && topics.length > 0 && this.deletedBy) {
+              reject({
+                error: 'Unauthorized',
+                message: this.title + ' group is not empty'
+              });
+              return;
+            }
+            this.deletedOn = new Date();
+            this.update(this.privacy)
+              .then(result => {
+                Helper.trackAction(Helper.EVENTS.TOPIC_DELETED);
+                resolve(result);
+              })
+              .catch(err => {
+                reject(err);
+              });
+          });
+      } else {
+        this.deletedOn = new Date();
+        this.update(this.privacy)
+          .then(result => {
+            Helper.trackAction(Helper.EVENTS.TOPIC_DELETED);
+            resolve(result);
+          })
+          .catch(err => {
+            reject(err);
+          })
+      } 
+  });
   }
 
   getById(privacy, topicId) {
