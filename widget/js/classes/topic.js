@@ -69,6 +69,7 @@ class Topic {
 
   getRowData() {
     return {
+      id: this.id,
       title: this.title,
       titleIndex: this.titleIndex,
       type: this.type,
@@ -142,53 +143,23 @@ class Topic {
   }
 
 
-  delete(privacy) {
+  static delete(db, topicId) {
     return new Promise((resolve, reject) => {
-      if (!this.id) {
+      if (!topicId) {
         reject({
           error: 'Missed Parameters',
-          message: 'You missed id parameter'
+          message: 'You missed id parameter',
         });
         return;
       }
 
-      if (privacy === 'public') {
-        const filter = {
-          "$json.parentTopicId": this.id,
-          "_buildfire.index.date1": {
-            $type: "null"
-          },
+      db.delete(topicId, 'topics', (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
         }
-        Topic.getTopics(privacy, filter, 1)
-          .then(topics => {
-            if (topics && topics.length > 0 && this.deletedBy) {
-              reject({
-                error: 'Unauthorized',
-                message: this.title + ' group is not empty'
-              });
-              return;
-            }
-            this.deletedOn = new Date();
-            this.update(privacy)
-              .then(result => {
-                Helper.trackAction(Helper.EVENTS.TOPIC_DELETED);
-                resolve(result);
-              })
-              .catch(err => {
-                reject(err);
-              });
-          });
-      } else {
-        this.deletedOn = new Date();
-        this.update(privacy)
-          .then(result => {
-            Helper.trackAction(Helper.EVENTS.TOPIC_DELETED);
-            resolve(result);
-          })
-          .catch(err => {
-            reject(err);
-          })
-      }
+      });
     });
   }
 
