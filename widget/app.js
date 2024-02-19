@@ -688,7 +688,7 @@ function openDeleteDialog(topic, targetElement) {
     event.preventDefault();
     dialogDeleteBtn.disabled = true;
     topic.deletedBy = loggedUser;
-    topic.delete(topic.id, config.privacy)
+    topic.delete(config.privacy)
       .then(result => {
         deleteTopicDialog.close();
         showMessage(`Successfully deleted ${topic.title} topic`)
