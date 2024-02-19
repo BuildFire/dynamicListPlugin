@@ -663,8 +663,10 @@ function showOptionsDialog(topic, targetElement) {
         break;
       case 'report':
         openReportDialog(topic)
+        break;
       case 'share':
         shareWithOthers(topic)
+        break;
     }
   };
 
