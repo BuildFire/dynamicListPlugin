@@ -69,12 +69,14 @@ class Topic {
 
   getRowData() {
     return {
+      id: this.id,
       title: this.title,
       titleIndex: this.titleIndex,
       type: this.type,
       parentTopicId: this.parentTopicId,
       originalShareId: this.originalShareId,
       reportedBy: this.reportedBy,
+      privacy: this.privacy,
       createdOn: this.createdOn,
       createdBy: this.createdBy,
       lastUpdatedOn: this.lastUpdatedOn,
@@ -142,24 +144,23 @@ class Topic {
   }
 
 
-  delete(privacy) {
+  delete() {
     return new Promise((resolve, reject) => {
       if (!this.id) {
         reject({
           error: 'Missed Parameters',
-          message: 'You missed id parameter'
+          message: 'You missed id parameter',
         });
         return;
       }
-
-      if (privacy === 'public') {
+      if (this.privacy === 'public') {
         const filter = {
           "$json.parentTopicId": this.id,
           "_buildfire.index.date1": {
             $type: "null"
           },
         }
-        Topic.getTopics(privacy, filter, 1)
+        Topic.getTopics(this.privacy, filter, 1)
           .then(topics => {
             if (topics && topics.length > 0 && this.deletedBy) {
               reject({
@@ -169,7 +170,7 @@ class Topic {
               return;
             }
             this.deletedOn = new Date();
-            this.update(privacy)
+            this.update(this.privacy)
               .then(result => {
                 Helper.trackAction(Helper.EVENTS.TOPIC_DELETED);
                 resolve(result);
@@ -180,7 +181,7 @@ class Topic {
           });
       } else {
         this.deletedOn = new Date();
-        this.update(privacy)
+        this.update(this.privacy)
           .then(result => {
             Helper.trackAction(Helper.EVENTS.TOPIC_DELETED);
             resolve(result);
@@ -188,8 +189,8 @@ class Topic {
           .catch(err => {
             reject(err);
           })
-      }
-    });
+      } 
+  });
   }
 
   getById(privacy, topicId) {
