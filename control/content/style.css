@@ -1,3 +1,6 @@
+*:not(i):not(.material-icons):not(.mdc-icon):not(.mdc-button__icon):not(.mdc-icon-button__icon):not(.icon) {
+  font-family: 'Inter_Regular', 'Helvetica', 'Sans-Serif', 'Arial' !important
+}
 
 .container {
   margin: 1rem 0;
