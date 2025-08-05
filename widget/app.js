@@ -9,6 +9,13 @@ const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
 let languages = {};
 let appTheme = {};
+let pagination = {
+  skip: 0,
+  limit: 15,
+  busy: false,
+  reachedEnd: false,
+  filter: {}
+};
 init();
 
 function init() {
@@ -122,6 +129,8 @@ function init() {
     }
   })
 
+  scrollContainer.addEventListener('scroll', handleScroll);
+
   window.addEventListener('click', function (e) {
     if (document.getElementById('inputDialog').contains(e.target)) {
       if (e.target.className === "mdc-dialog__scrim") {
@@ -200,13 +209,14 @@ function getCurrentUser() {
     .catch(console.error);
 }
 
-function loadData(filterData) {
+function loadData(filterData, append = false) {
   checkTagPermissions(showHideAddButton);
-  clearList();
-  buildfire.spinner.show()
+
+  if (pagination.busy || (append && pagination.reachedEnd)) return;
+
   let filter = {
     "_buildfire.index.date1": {
-      $type: "null"
+      $type: "null",
     },
   };
 
@@ -215,12 +225,27 @@ function loadData(filterData) {
   }
   config?.sortBy === 'ascending' ? sort.titleIndex = 1 : (config?.sortBy === 'descending' ? sort.titleIndex = -1 : null);
 
+  if (!append) {
+    clearList();
+    buildfire.spinner.show();
+    pagination.skip = 0;
+    pagination.reachedEnd = false;
+    pagination.filter = filterData || {};
+  } else {
+    filterData = pagination.filter;
+  }
+
   if (filterData && Object.keys(filterData).length > 0) {
     filter = {
       ...filter,
       ...filterData
     }
   }
+
+  pagination.busy = true;
+
+  let getTopicsPromise;
+
   if (config.privacy === 'both') {
     if (config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE) {
       checkTagPermissions(function (hasTag) {
@@ -230,68 +255,64 @@ function loadData(filterData) {
         }
       })
     }
-    Topic.getAllTopics(filter, null, sort)
-      .then(topics => {
-        clearList();
-        buildfire.spinner.hide()
-        if (topics && topics.length === 0) {
-          scrollContainer.classList.add('bitmap');
-          return;
-        }
-        config?.sortBy === 'ascending' ? topics.sort((a, b) =>a.data.titleIndex.localeCompare(b.data.titleIndex)) 
-        : config?.sortBy === 'descending' ? topics.sort((a, b) =>b.data.titleIndex.localeCompare(a.data.titleIndex)) : null;
-        
-        for (const obj of topics) {
-          let topic = new Topic({
-            ...obj.data,
-            id: obj.id
-          });
-          topic.privacy = obj.data.privacy;
-          renderTopic(topic);
-        }
-        /*setTimeout(() => {
-          let elements = document.getElementsByClassName('titleIcon');
-          for (let el of elements) {
-            console.log(el)
-            el.style.setProperty('color', appTheme.icons, 'important');
-          }
-          let elements2 = document.getElementsByClassName('action-btn');
-          for (let el of elements2) {
-            console.log(el)
-            el.style.setProperty('color', appTheme.icons, 'important');
-          }
-        }, 500)*/
-      })
-      .catch(err => {
-        scrollContainer.classList.add('bitmap');
-        console.error(err);
-      })
+    getTopicsPromise = Topic.getAllTopics(filter, pagination.limit, sort, pagination.skip);
   }
   else {
-    Topic.getTopics(config.privacy, filter, null, sort)
-      .then(topics => {
-        clearList();
-        buildfire.spinner.hide()
-        if (topics && topics.length === 0) {
-          scrollContainer.classList.add('bitmap');
-          return;
-        }
-        for (const obj of topics) {
-          let topic = new Topic({
-            ...obj.data,
-            id: obj.id
-          });
-          topic.privacy= config.privacy;
-          renderTopic(topic);
-        }
+    getTopicsPromise = Topic.getTopics(config.privacy, filter, pagination.limit, sort, pagination.skip);
+  }
 
-      })
-      .catch(err => {
+  getTopicsPromise
+    .then(topics => {
+      if (!append) {
+        clearList();
+        buildfire.spinner.hide();
+      }
+
+      if (topics && topics.length === 0) {
+        if (!append) {
+          scrollContainer.classList.add('bitmap');
+        }
+        pagination.reachedEnd = true;
+        pagination.busy = false;
+        return;
+      }
+
+      if (config.privacy === 'both') {
+        config?.sortBy === 'ascending' ? topics.sort((a, b) => a.data.titleIndex.localeCompare(b.data.titleIndex))
+          : config?.sortBy === 'descending' ? topics.sort((a, b) => b.data.titleIndex.localeCompare(a.data.titleIndex)) : null;
+      }
+
+      for (const obj of topics) {
+        let topic = new Topic({
+          ...obj.data,
+          id: obj.id
+        });
+        topic.privacy = config.privacy === 'both' ? obj.data.privacy : config.privacy;
+        renderTopic(topic);
+      }
+
+      pagination.skip += topics.length;
+      if (topics.length < pagination.limit) {
+        pagination.reachedEnd = true;
+      }
+      pagination.busy = false;
+    })
+    .catch(err => {
+      if (!append) {
+        buildfire.spinner.hide();
         scrollContainer.classList.add('bitmap');
-        console.error(err);
-      })
+      }
+      pagination.busy = false;
+      console.error(err);
+    })
+}
+
+function handleScroll() {
+  if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 50) {
+    loadData(null, true);
   }
 }
+
 
 function search() {
   let target = searchTxt.value;

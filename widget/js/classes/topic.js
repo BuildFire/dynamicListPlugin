@@ -16,13 +16,13 @@ class Topic {
     this.deletedOn = data.deletedOn || null;
   }
 
-  static getAllTopics(filter, limit, sort) {
+  static getAllTopics(filter, limit, sort, skip = 0) {
     let topics = [];
     return new Promise((resolve, reject) => {
-      buildfire.publicData.search({ filter, skip: 0, limit, sort }, "topics", function (err, dataResult) {
+      buildfire.publicData.search({ filter, skip, limit, sort }, "topics", function (err, dataResult) {
         if (err) reject(err);
         else {
-          buildfire.userData.search({ filter, skip: 0, limit, sort }, "topics", function (err, userResult) {
+          buildfire.userData.search({ filter, skip, limit, sort }, "topics", function (err, userResult) {
             if (err) {
               dataResult.map(function (item) {
                 item.data.privacy = "public";
@@ -46,7 +46,7 @@ class Topic {
     });
   }
 
-  static getTopics(privacy, filter, limit, sort) {
+  static getTopics(privacy, filter, limit, sort, skip = 0) {
     let db = buildfire.publicData;
     if (privacy === 'private') {
       db = buildfire.userData;
@@ -54,7 +54,7 @@ class Topic {
     return new Promise((resolve, reject) => {
       db.search({
         filter,
-        skip: 0,
+        skip,
         limit,
         sort
       }, "topics", function (err, result) {
