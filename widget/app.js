@@ -9,6 +9,8 @@ const deleteTopicDialog = new mdc.dialog.MDCDialog(deleteDialog);
 const reportTopicDialog = new mdc.dialog.MDCDialog(reportDialog);
 let languages = {};
 let appTheme = {};
+let skip = 0;
+let reachedLastPage = false;
 init();
 
 function init() {
@@ -63,6 +65,8 @@ function init() {
     });
 
   buildfire.datastore.onUpdate(result => {
+    skip = 0;
+    reachedLastPage = false;
     topicInpuDialog.close();
     deleteTopicDialog.close();
     reportTopicDialog.close();
@@ -129,6 +133,7 @@ function init() {
       }
     }
   });
+  handleScroll();
 }
 
 function updateRecordsForSorting() {
@@ -200,108 +205,155 @@ function getCurrentUser() {
     .catch(console.error);
 }
 
-function loadData(filterData) {
-  checkTagPermissions(showHideAddButton);
-  clearList();
-  buildfire.spinner.show()
-  let filter = {
-    "_buildfire.index.date1": {
-      $type: "null"
-    },
-  };
+function loadData(filterData, forceClear = true) {
 
-  let sort = {
-    type: 1
-  }
-  config?.sortBy === 'ascending' ? sort.titleIndex = 1 : (config?.sortBy === 'descending' ? sort.titleIndex = -1 : null);
+  return new Promise((resolve, reject) => {
+    checkTagPermissions(showHideAddButton);
+    forceClear && clearList();
+    buildfire.spinner.show()
+    let filter = {
+      "_buildfire.index.date1": {
+        $type: "null"
+      },
+    };
 
-  if (filterData && Object.keys(filterData).length > 0) {
-    filter = {
-      ...filter,
-      ...filterData
+    let sort = {
+      type: 1
     }
-  }
-  if (config.privacy === 'both') {
-    if (config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE) {
-      checkTagPermissions(function (hasTag) {
-        if (!hasTag) {
-          topicTypeRadioGroup.setAttribute('style', 'display: none;');
-          privateGroup.checked = true;
-        }
-      })
-    }
-    Topic.getAllTopics(filter, null, sort)
-      .then(topics => {
-        clearList();
-        buildfire.spinner.hide()
-        if (topics && topics.length === 0) {
-          scrollContainer.classList.add('bitmap');
-          return;
-        }
-        config?.sortBy === 'ascending' ? topics.sort((a, b) =>a.data.titleIndex.localeCompare(b.data.titleIndex)) 
-        : config?.sortBy === 'descending' ? topics.sort((a, b) =>b.data.titleIndex.localeCompare(a.data.titleIndex)) : null;
-        
-        for (const obj of topics) {
-          let topic = new Topic({
-            ...obj.data,
-            id: obj.id
-          });
-          topic.privacy = obj.data.privacy;
-          renderTopic(topic);
-        }
-        /*setTimeout(() => {
-          let elements = document.getElementsByClassName('titleIcon');
-          for (let el of elements) {
-            console.log(el)
-            el.style.setProperty('color', appTheme.icons, 'important');
-          }
-          let elements2 = document.getElementsByClassName('action-btn');
-          for (let el of elements2) {
-            console.log(el)
-            el.style.setProperty('color', appTheme.icons, 'important');
-          }
-        }, 500)*/
-      })
-      .catch(err => {
-        scrollContainer.classList.add('bitmap');
-        console.error(err);
-      })
-  }
-  else {
-    Topic.getTopics(config.privacy, filter, null, sort)
-      .then(topics => {
-        clearList();
-        buildfire.spinner.hide()
-        if (topics && topics.length === 0) {
-          scrollContainer.classList.add('bitmap');
-          return;
-        }
-        for (const obj of topics) {
-          let topic = new Topic({
-            ...obj.data,
-            id: obj.id
-          });
-          topic.privacy= config.privacy;
-          renderTopic(topic);
-        }
+    config?.sortBy === 'ascending' ? sort.titleIndex = 1 : (config?.sortBy === 'descending' ? sort.titleIndex = -1 : null);
 
-      })
-      .catch(err => {
-        scrollContainer.classList.add('bitmap');
-        console.error(err);
-      })
-  }
+    if (filterData && Object.keys(filterData).length > 0) {
+      filter = {
+        ...filter,
+        ...filterData
+      }
+    }
+    if (config.privacy === 'both') {
+      if (config.writePrivacy === Helper.WRITE_PRIVACY.PRIVATE) {
+        checkTagPermissions(function (hasTag) {
+          if (!hasTag) {
+            topicTypeRadioGroup.setAttribute('style', 'display: none;');
+            privateGroup.checked = true;
+          }
+        })
+      }
+      Topic.getAllTopics(filter, 50, sort, skip)
+        .then(topics => {
+          skip += topics.length;
+          forceClear && clearList();
+          buildfire.spinner.hide()
+          if (topics && topics.length === 0) {
+            skip === 0 && scrollContainer.classList.add('bitmap');
+            reachedLastPage = true;
+            resolve();
+          }
+          config?.sortBy === 'ascending' ? topics.sort((a, b) =>a.data.titleIndex.localeCompare(b.data.titleIndex))
+            : config?.sortBy === 'descending' ? topics.sort((a, b) =>b.data.titleIndex.localeCompare(a.data.titleIndex)) : null;
+
+          for (const obj of topics) {
+            let topic = new Topic({
+              ...obj.data,
+              id: obj.id
+            });
+            topic.privacy = obj.data.privacy;
+            renderTopic(topic);
+          }
+          resolve();
+
+          /*setTimeout(() => {
+            let elements = document.getElementsByClassName('titleIcon');
+            for (let el of elements) {
+              console.log(el)
+              el.style.setProperty('color', appTheme.icons, 'important');
+            }
+            let elements2 = document.getElementsByClassName('action-btn');
+            for (let el of elements2) {
+              console.log(el)
+              el.style.setProperty('color', appTheme.icons, 'important');
+            }
+          }, 500)*/
+        })
+        .catch(err => {
+          scrollContainer.classList.add('bitmap');
+          console.error(err);
+          reject();
+        })
+    }
+    else {
+      console.log(config.privacy);
+      Topic.getTopics(config.privacy, filter, 50, sort, skip)
+        .then(topics => {
+          skip += topics.length;
+          forceClear && clearList();
+          buildfire.spinner.hide()
+          if (topics && topics.length === 0) {
+            skip === 0 && scrollContainer.classList.add('bitmap');
+            reachedLastPage = true;
+            resolve();
+          }
+          for (const obj of topics) {
+            let topic = new Topic({
+              ...obj.data,
+              id: obj.id
+            });
+            topic.privacy= config.privacy;
+            renderTopic(topic);
+          }
+          resolve();
+
+        })
+        .catch(err => {
+          scrollContainer.classList.add('bitmap');
+          console.error(err);
+          reject();
+        })
+    }
+  })
+
+}
+
+function handleScroll() {
+  const bodyElement = document.querySelector("body");
+
+  let isLoading = false;
+  bodyElement.addEventListener("scroll",async function  (e) {
+    if (isLoading || reachedLastPage) return;
+
+    let filter = {};
+
+    if (bodyElement.scrollTop / (bodyElement.scrollHeight - bodyElement.offsetHeight) > 0.8) {
+      isLoading = true;
+      if (breadcrumbsHistory && breadcrumbsHistory.length > 0) {
+        let breadcrumbOptions = breadcrumbsHistory[breadcrumbsHistory.length - 1].options;
+        if (breadcrumbOptions.topic) {
+          filter['$json.parentTopicId'] = breadcrumbOptions.topic.id
+        } else {
+          filter['$json.parentTopicId'] = {
+            $type: "null"
+          }
+        }
+      }
+      if (searchTxt.value) {
+        filter["_buildfire.index.text"] = searchTxt.value;
+      }
+      await loadData(filter, false);
+      isLoading = false
+    }
+  });
 }
 
 function search() {
+
+  skip = 0;
+  reachedLastPage = false;
   let target = searchTxt.value;
   let filter = {};
   if (target) {
-    filter.$text = {
-      $search: target
+    filter["_buildfire.index.text"] = {
+      $regex: target,
+      $options: 'i'
     };
   }
-
   if (breadcrumbsHistory && breadcrumbsHistory.length > 0) {
     let breadcrumbOptions = breadcrumbsHistory[breadcrumbsHistory.length - 1].options;
     if (breadcrumbOptions.topic) {
@@ -363,6 +415,8 @@ function createListGroup(topic) {
       instanceId,
       topic
     });
+    skip = 0;
+    reachedLastPage = false;
     getData();
   };
 
@@ -478,6 +532,8 @@ function addNewTopic() {
   } else privacy = config.privacy;
   topic.save(privacy)
     .then((result => {
+      skip = 0;
+      reachedLastPage = false;
       topicInpuDialog.close();
       showMessage(`Successfully added ${topic.title} topic`)
       getData();
@@ -609,6 +665,8 @@ function navigateBreadcrumbs(bread) {
     if (breadcrumb.uid === bread.uid) {
       break;
     }
+    skip = 0;
+    reachedLastPage = false;
     buildfire.history.pop();
   }
 }
