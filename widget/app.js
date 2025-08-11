@@ -103,6 +103,8 @@ function init() {
     if (user && user._id) {
       loggedUser = user;
       buildfire.deeplink.getData(function (result) {
+        skip = 0;
+        reachedLastPage = 0;
         if (result) {
           subscribeToGroup(result);
         } else {
@@ -114,10 +116,13 @@ function init() {
 
   buildfire.auth.onLogout(() => {
     loggedUser = null;
+    loggedUser = user;
+    skip = 0;
     if (config.privacy === Helper.PRIVACY.PRIVATE) {
       authManager.login(false)
         .then(user => {
-          loggedUser = user;
+
+          reachedLastPage = 0;
           loadData();
         })
         .catch(console.error);
@@ -667,6 +672,7 @@ function navigateBreadcrumbs(bread) {
     }
     skip = 0;
     reachedLastPage = false;
+    searchTxt.value = '';
     buildfire.history.pop();
   }
 }
