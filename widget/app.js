@@ -941,6 +941,9 @@ buildfire.navigation.onAppLauncherActive(() => {
 }, false);
 
 buildfire.history.onPop((breadcrumb) => {
+  skip = 0;
+  reachedLastPage = false;
+  searchTxt.value = '';
   getData();
   buildfire.appearance.titlebar.show();
 });
