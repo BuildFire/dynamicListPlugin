@@ -280,7 +280,6 @@ function loadData(filterData, forceClear = true) {
         })
     }
     else {
-      console.log(config.privacy);
       Topic.getTopics(config.privacy, filter, 50, sort, skip)
         .then(topics => {
           skip += topics.length;
@@ -417,6 +416,7 @@ function createListGroup(topic) {
     });
     skip = 0;
     reachedLastPage = false;
+    searchTxt.value = '';
     getData();
   };
 
@@ -1030,7 +1030,6 @@ function shareWithOthers(data) {
         if (err)
           console.log(err)
         else
-          console.log(result)
         Helper.trackAction(Helper.EVENTS.TOPIC_SHEARED);
       });
     }
