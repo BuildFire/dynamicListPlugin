@@ -338,7 +338,10 @@ function handleScroll() {
         }
       }
       if (searchTxt.value) {
-        filter["_buildfire.index.text"] = searchTxt.value;
+        filter["_buildfire.index.text"] = {
+          $regex: searchTxt.value,
+          $options: 'i'
+        };
       }
       await loadData(filter, false);
       isLoading = false
