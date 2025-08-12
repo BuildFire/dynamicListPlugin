@@ -350,9 +350,6 @@ function handleScroll() {
 }
 
 function search() {
-
-  skip = 0;
-  reachedLastPage = false;
   let target = searchTxt.value;
   let filter = {};
   if (target) {
@@ -371,9 +368,10 @@ function search() {
       }
     }
   }
-
   clearTimeout(timerId)
   timerId = setTimeout(() => {
+    skip = 0;
+    reachedLastPage = false;
     loadData(filter)
   }, 500)
 }
