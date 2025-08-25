@@ -16,6 +16,7 @@ init();
 function init() {
   buildfire.spinner.show();
   buildfire.appearance.titlebar.show();
+  initFabTopicButton();
   updateRecordsForSorting();
   buildfire.appearance.getAppTheme(function (err, theme) {
     appTheme = theme.colors;
@@ -24,7 +25,6 @@ function init() {
     document.getElementsByClassName('widgetIcon')[1].style.setProperty('color', appTheme.icons, 'important');
     document.getElementById('dialogtitle').style.setProperty('color', appTheme.successTheme, 'important');
     document.getElementById('searchIcon').style.setProperty('color', appTheme.icons, 'important');
-    document.getElementById('addBtn').style.setProperty('background-color', appTheme.icons, 'important');
   })
   Helper.getConfigs()
     .then(result => {
@@ -349,6 +349,17 @@ function handleScroll() {
   });
 }
 
+function initFabTopicButton() {
+  const fabSpeedDial = new buildfire.components.fabSpeedDial('#addButton',{
+    mainButton: {
+      content: '<span class="material-icons">add</span>',
+      type: 'default',
+    },});
+  
+  fabSpeedDial.onMainButtonClick = () => openTopicInputDialog();
+  
+}
+
 function search() {
   let target = searchTxt.value;
   let filter = {};
@@ -472,6 +483,7 @@ function clearList() {
 }
 
 function openTopicInputDialog() {
+  // update here
   if (!loggedUser) {
     authManager.login(true)
       .then(user => {

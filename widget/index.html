@@ -11,13 +11,16 @@
   <link href="../../../styles/materialDesign/material-components-web@4.0.0.min.css" rel="stylesheet">
   <script src="../../../scripts/materialDesign/material-components-web@4.0.0.min.js" type="text/javascript"></script>
 
+
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="../../../styles/components/fabSpeedDial/fabSpeedDial.css" />
   <link rel="stylesheet" href="style.css">
 
   <!-- JS -->
   <script src="../../../scripts/buildfire.js"></script>
   <script src="../../../scripts/buildfire/components/toast/toast.js"></script>
   <script src="../../../scripts/buildfire/components/drawer/drawer.js"></script>
+  <script src="../../../scripts/buildfire/components/fabSpeedDial/fabSpeedDial.js"></script>
 
 
   <script src="./js/classes/helper.js"></script>
@@ -70,12 +73,7 @@
     </div>
   </div>
 
-  <div class="add-btn" id="addButton">
-    <button class="mdc-fab" aria-label="Add" id="addBtn" onclick="openTopicInputDialog()">
-      <div class="mdc-fab__ripple"></div>
-      <span class="mdc-fab__icon material-icons">add</span>
-    </button>
-  </div>
+  <div class="add-btn" id="addButton"></div>
   <div class="mdc-dialog" id="inputDialog">
     <div class="mdc-dialog__container dialogContainer">
       <div class="mdc-dialog__surface dialogSurface" role="inputDialog" aria-modal="true" aria-labelledby="dialog-title"

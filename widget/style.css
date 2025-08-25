@@ -245,6 +245,10 @@ a.breadcrumb-label:hover {
   width: 100%;
 }
 
+#inputDialog {
+  z-index: 100;
+}
+
 .dialogSurface {
   position: absolute;
   bottom: 0;
