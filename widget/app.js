@@ -483,7 +483,6 @@ function clearList() {
 }
 
 function openTopicInputDialog() {
-  // update here
   if (!loggedUser) {
     authManager.login(true)
       .then(user => {
