@@ -891,6 +891,7 @@ function navigateTo(topic) {
 }
 
 function getQueryString(qs, topic_id, topic_title, user_id) {
+  if (!qs || !qs.trim()) qs = '?wid=${topic_id}&topic_title=${topic_title}&uid=${user_id}';
   return eval("`" + qs + "`");
 }
 
