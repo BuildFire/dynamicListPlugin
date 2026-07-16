@@ -26,7 +26,7 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="padding-left-twenty padding-right-twenty">
     <div class="empty-state" id="emptyListContainer">
       <h5>Loading...</h5>
     </div>
@@ -254,7 +254,13 @@
             updateRecordsForSorting();
             // This way, we will keep old instances to use PSW navigate by default (so we don't break backward compatibility) and new instances to navigate to CW by default.
             if (result && !Object.keys(result.data).length) result.data.navigateToCwByDefault = true;
-            config = new Config(result.data); querystring.value = config.querystring;
+            config = new Config(result.data);
+
+            if (config.querystring && config.querystring.trim() !== "") {
+              querystring.value = config.querystring;
+            } else {
+              querystring.value = "?wid=${topic_id}&topic_title=${topic_title}&uid=${user_id}"
+            }
 
             initWritePrivacyTagsInput();
 
