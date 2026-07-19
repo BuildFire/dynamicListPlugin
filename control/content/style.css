@@ -1,4 +1,4 @@
-*:not(i):not(.material-icons):not(.mdc-icon):not(.mdc-button__icon):not(.mdc-icon-button__icon):not(.icon) {
+*:not(i):not(.glyphicon):not(.icon) {
   font-family: 'Inter_Regular', 'Helvetica', 'Sans-Serif', 'Arial' !important
 }
 
@@ -26,19 +26,205 @@
   color: #777777;
 }
 
-.mdc-text-field {
-  height: 2.3rem;
-  width: 100%;
-}
-
-.mdc-text-field--outlined .mdc-text-field__input {
-  padding: 0 0.9rem;
-  font-size: 0.8rem;
-}
-
 ul {
   padding: 0 1rem;
 }
 .text-helper {
   color: #888888;
+}
+
+.col-md-8 .radio.radio-primary {
+  width: 32%;
+  margin: 0 !important;
+}
+
+.section__title {
+  font-size: 24px;
+  line-height: normal;
+}
+
+.section__current-widget {
+  padding: 0px 20px 13px 0;
+}
+.card-container{
+  display: flex;
+  padding: 12px;
+  justify-content: space-between;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.img-container{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.info-container .info-holder{
+  line-height: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.DynamicRow__container-center{
+  width:20%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 18px;
+  gap: 14px;
+}
+.DynamicRow__container-center span{
+  cursor: pointer;
+  font-size: 20px;
+}
+.title, .subTitle{
+  line-height:1;
+  margin: 0;                
+
+}
+
+.img-holder{
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color:#DDDDDD;
+}
+
+.outlined-btn {
+  color: var(--c-primary);
+  background-color: transparent;
+  background-image: none;
+  border-color: var(--c-primary);
+}
+
+.empty-state {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  align-items: center;
+  background-color: var(--c-gray1);
+  border: 1px solid var(--c-gray3);
+  border-radius: .25rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  justify-content: center;
+  min-height: 15rem;
+  padding: 4rem
+}
+
+.empty-state h5 {
+  -webkit-text-stroke: 0;
+  color: var(--c-gray6);
+  font-size: 16px;
+  font-weight: 700
+}
+
+.info-note {
+  background-color: var(--c-gray2);
+  line-height: 1.33;
+  color: var(--c-gray5);
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}
+
+/* tooltip */
+.tooltip-container {
+  display: flex !important;
+  align-items: center;
+  margin-right: 13px !important;
+  gap: 0.25rem;
+  width: max-content !important;
+  padding-right: 0 !important;
+}
+.tooltip-container .btn-info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  min-width: 16px;
+  min-height: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  color: #fff;
+  position: relative;
+}
+.tooltip-container .btn-info-icon:after {
+  content: 'i';
+  font-weight: 400;
+  font-size: 12px;
+  font-style: normal;
+  left: 0;
+  top: auto !important;
+  height: 100%;
+}
+.tooltip-container .btn-info-icon .cp-tooltip {
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, .80);
+  color: #fff;
+  padding: 8px;
+  border-radius: 4px;
+  position: absolute;
+  left: calc(100% + 12px);
+  cursor: auto;
+  font-size: 12px;
+  text-align: left;
+  width: 200px;
+  opacity: 0;
+  transform: scale(.1);
+  transition: opacity ease .1s, transform ease .1s;
+  transform-origin: left;
+  z-index: 100;
+  font-weight: 400;
+  line-height: 18px;
+  -webkit-text-stroke: 0;
+}
+.top-cp-tooltip {
+  top: 0;
+}
+.bottom-cp-tooltip {
+  bottom: 0;
+}
+.tooltip-container .btn-info-icon .cp-tooltip::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -5px;
+  transform: rotate(90deg) translate(-50%);
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, .80) transparent transparent transparent;
+}
+.top-cp-tooltip::before {
+  top: 10px !important;
+}
+.bottom-cp-tooltip::before {
+  bottom: 0 !important;
+  top: unset !important;
+}
+
+.tooltip-container .btn-info-icon:hover .cp-tooltip {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* left tooltip */
+.tooltip-container .btn-info-icon .left-cp-tooltip {
+  left: auto;
+  right: calc(100% + 12px);
+  transform-origin: right;
+}
+.tooltip-container .btn-info-icon .left-cp-tooltip::before {
+  left: auto;
+  right: -5px;
+  margin-left: 0;
+  margin-right: -5px;
+  transform: rotate(-90deg) translate(-50%);
+  top: 0px !important;
 }

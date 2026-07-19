@@ -3,18 +3,19 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Inherit App Colors and Font -->
-  <meta name="buildfire" content="enableMDTheme">
 
-  <!-- Material Design -->
-  <link href="../../../../styles/materialDesign/material-components-web@4.0.0.min.css" rel="stylesheet">
-  <script src="../../../../scripts/materialDesign/material-components-web@4.0.0.min.js" type="text/javascript"></script>
+  <link href="../../../../styles/helper.css" rel="stylesheet">
+	<link href="../../../../styles/control/bf-base.css" rel="stylesheet">
+	<link href="../../../../styles/siteIcons.css" rel="stylesheet" />
+  <link href="../../../../styles/control/siteIcons-control.css" rel="stylesheet" />
+  <link href="../../../../styles/components/control/tagsInput/tagsInput.min.css" rel="stylesheet"/>
 
   <!-- Style -->
   <link rel="stylesheet" href="style.css">
 
   <!-- JS -->
   <script src="../../../../scripts/buildfire.js"></script>
+  <script src="../../../../scripts/buildfire/components/control/tagsInput/tagsInput.min.js"></script>
 
   <script src="./js/classes/analytics.js"></script>
   <script src="./js/classes/config.js"></script>
@@ -25,340 +26,216 @@
 </head>
 
 <body>
-  <div class="container">
-    <div class="mdc-layout-grid">
-      <div class="mdc-layout-grid__inner block">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Navigate To</span>
-        <span class="mdc-layout-grid__cell--span-4 text-body" id="pluginInstanceName">Social Wall</span>
-        <div class="mdc-layout-grid__cell--span-2">
-          <button class="mdc-button  mdc-button--raised btn" onclick="onSelectPlugin()">
-            <div class="mdc-button__ripple"></div>
-            <span class="mdc-button__label">Select Feature</span>
-          </button>
-        </div>
-      </div>
-      <div class="mdc-layout-grid__inner block">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light" style="white-space: nowrap;">Selected Feature Title</span>
-        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6" style="margin-left: 30px;">
-          <div class="mdc-layout-grid__cell--span-4">
-            <div class="mdc-form-field">
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="defaultTitle" value="default" name="title"
-                  checked onchange="onSelectTitle('default')">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
+  <div class="padding-left-twenty padding-right-twenty">
+    <div class="empty-state" id="emptyListContainer">
+      <h5>Loading...</h5>
+    </div>
+    <div class="hidden" id="contentContainer">
+      <div class="row margin-bottom-twenty">
+        <span class="col-md-4">Navigate To</span>
+        <div class="col-md-8">
+          <div class="card-container">
+            <div class="img-container">
+              <img class="img-holder hidden" id="pluginImage" src="" alt="" />
+  
+              <div class="info-container">
+                <div class="info-holder">
+                  <p class="title margin-bottom-five hidden" id="pluginName">Chat</p>
+                  <p class="subTitle " id="pluginInstanceName">
+                    Social Wall
+                  </p>
                 </div>
-                <div class="mdc-radio__ripple"></div>
               </div>
-              <label for="defaultTitle" style="white-space: nowrap;">Feature Name</label>
             </div>
-          </div>
-          <div class="mdc-layout-grid__cell--span-4" style="margin-left: 30px;">
-            <div class="mdc-form-field">
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="topicTitle" value="topic" name="title"
-                  onchange="onSelectTitle('topic')">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
-                </div>
-                <div class="mdc-radio__ripple"></div>
-              </div>
-              <label for="topicTitle" style="white-space: nowrap;">Topic Title</label>
+            <div class="DynamicRow__container-center">
+              <span class="icon icon-pencil" onclick="onSelectPlugin()"></span>
+              <span class="icon icon-cross2 hidden" id="deletePluginBtn" onclick="deletePlugin()"></span>
             </div>
           </div>
         </div>
       </div>
-      <div class="mdc-layout-grid__inner block" id="queryStringContainer">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Query String</span>
-        <div class="mdc-layout-grid__cell--span-6">
-
-          <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
-            <input type="text" class="mdc-text-field__input"
-              placeholder="?wid=${topic_id}&topic_title=${topic_title}&uid=${user_id}" id="querystring"
-              onchange="onChangeQuerystring()">
-            <div class="mdc-notched-outline">
-              <div class="mdc-notched-outline__leading"></div>
-              <div class="mdc-notched-outline__trailing"></div>
-            </div>
-          </label>
-          <div>
-            <ul class="text-helper">
-              <li>topic_id: The topic id</li>
-              <li>topic_title: The topic title</li>
-              <li>user_id: The user id</li>
+      <div class="row margin-bottom-twenty">
+        <span class="col-md-4" style="white-space: nowrap;">Selected Feature Title</span>
+        <div class="col-md-8 flex space-between">
+          <div class="radio radio-primary margin-top-zero">
+            <input type="radio" id="defaultTitle" value="default" name="title" checked
+              onchange="onSelectTitle('default')">
+            <label for="defaultTitle" style="white-space: nowrap;">Feature Name</label>
+          </div>
+          <div class="radio radio-primary" style="margin-left: 30px;">
+            <input type="radio" id="topicTitle" value="topic" name="title" onchange="onSelectTitle('topic')">
+            <label for="topicTitle" style="white-space: nowrap;">Topic Title</label>
+          </div>
+        </div>
+      </div>
+      <div class="row margin-bottom-twenty" id="queryStringContainer">
+        <span class="col-md-4">Query String</span>
+        <div class="col-md-8">
+          <input type="text" class="form-control"
+            placeholder="?wid=${topic_id}&topic_title=${topic_title}&uid=${user_id}" id="querystring"
+            onchange="onChangeQuerystring()">
+          <div class="margin-top-five">
+            <ul class="text-helper info-note">
+              <li><strong>topic_id:</strong> The topic id</li>
+              <li><strong>topic_title:</strong> The topic title</li>
+              <li><strong>user_id:</strong> The user id</li>
             </ul>
           </div>
         </div>
       </div>
 
-      <div class="mdc-layout-grid__inner block" style="margin-bottom: 0;">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Topic Privacy</span>
-        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
-          <div class="mdc-layout-grid__cell--span-4">
-            <div class="mdc-form-field">
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="publicPrivacy" value="public" name="privacy"
-                  checked onchange="onSelectPrivacy('public')">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
-                </div>
-                <div class="mdc-radio__ripple"></div>
-              </div>
-              <label for="publicPrivacy">Public</label>
-            </div>
-          </div>
-          <div class="mdc-layout-grid__cell--span-4">
-            <div class="mdc-form-field">
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="privatePrivacy" value="private" name="privacy"
-                  onchange="onSelectPrivacy('private')">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
-                </div>
-                <div class="mdc-radio__ripple"></div>
-              </div>
-              <label for="privatePrivacy">Private</label>
-            </div>
-          </div>
-          <div class="mdc-layout-grid__cell--span-2">
-            <div class="mdc-form-field">
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="bothPrivacy" value="both" name="privacy"
-                  checked onchange="onSelectPrivacy('both')">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
-                </div>
-                <div class="mdc-radio__ripple"></div>
-              </div>
-              <label for="bothPrivacy">Both</label>
-            </div>
-          </div>
-          <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
-            <div class="mdc-layout-grid__cell--span-10" id="bothPrivacyDiv">
+      <div class="row margin-bottom-twenty">
+        <span class="col-md-4">Topic Privacy</span>
+        <div class="col-md-8 flex space-between">
+          <div class="radio radio-primary margin-top-zero">
+            <input type="radio" id="publicPrivacy" value="public" name="privacy" checked
+              onchange="onSelectPrivacy('public')">
 
-              <ul class="text-helper">
-                <li>Public: Anyone on app can see the topic</li>
-                <li>Private: Only me can see the topic</li>
-                <li>Both: Anyone on app can see the public & private topics</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="mdc-layout-grid__inner block" id="writeAccessContainer">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Public Write Access</span>
-        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6">
-          <div class="mdc-layout-grid__cell--span-4">
-            <div class="mdc-form-field">
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="publicWritePrivacy" value="publicWrite"
-                  name="writePrivacy" checked onchange="onSelectWritePrivacy()">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
-                </div>
-                <div class="mdc-radio__ripple"></div>
-              </div>
-              <label for="publicWritePrivacy">Anyone</label>
-            </div>
-          </div>
-          <div class="mdc-layout-grid__cell--span-4">
-            <div class="mdc-form-field">
-              <div class="mdc-radio">
-                <input class="mdc-radio__native-control" type="radio" id="privateWritePrivacy" value="privateWrite"
-                  name="writePrivacy" onchange="onSelectWritePrivacy()">
-                <div class="mdc-radio__background">
-                  <div class="mdc-radio__outer-circle"></div>
-                  <div class="mdc-radio__inner-circle"></div>
-                </div>
-                <div class="mdc-radio__ripple"></div>
-              </div>
-              <label for="privateWritePrivacy">Tag Only</label>
-            </div>
-          </div>
-          <div class="mdc-layout-grid__cell--span-4 tagInputContainer" id="tagInputContainer">
-            <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
-              <input type="text" class="mdc-text-field__input" placeholder="exampletag" id="writePrivacyTag" disabled>
-              <div class="mdc-notched-outline">
-                <div class="mdc-notched-outline__leading"></div>
-                <div class="mdc-notched-outline__trailing"></div>
-              </div>
+            <label class="col-md-5"for="publicPrivacy">
+              <span class="tooltip-container">Public
+                <span class="btn-info-icon btn-primary">
+                  <span class="cp-tooltip top-cp-tooltip">
+                    Public topics are visible to everyone using the app, including users who aren't signed in.
+                  </span>
+                </span>
+              </span>
             </label>
           </div>
-          <div class="mdc-layout-grid__cell--span-2 tagInputContainer" id="tagInputContainer">
-            <button class="mdc-button  mdc-button--raised btn" onclick="onSelectTag()">
-              <div class="mdc-button__ripple"></div>
-              <span class="mdc-button__label">Select Tag(s)</span>
-            </button>
+          <div class="radio radio-primary">
+            <input type="radio" id="privatePrivacy" value="private" name="privacy" onchange="onSelectPrivacy('private')">
+            
+            <label class="col-md-5"for="privatePrivacy">
+              <span class="tooltip-container">Private
+                <span class="btn-info-icon btn-primary">
+                  <span class="cp-tooltip top-cp-tooltip left-cp-tooltip">
+                    Private topics are visible only to the user who created them - no other app users can see them.
+                  </span>
+                </span>
+              </span>
+            </label>
           </div>
-          <div class="mdc-layout-grid__cell--span-12">
-            <ul class="text-helper">
-              <li>Anyone: Anyone on app can add content</li>
-              <li>Tag Only: Only users with tag can add content</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="mdc-layout-grid__inner block">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Style With Random</span>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="imageIndicator" value="image" name="indicator"
-                checked onchange="onSelectIndicator()">
-              <div class=" mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label class="radio-label" for="imageIndicator">Images</label>
-          </div>
-        </div>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="colorIndicator" value="color" name="indicator"
-                onchange="onSelectIndicator()">
-              <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label class="radio-label" for="colorIndicator">Colors</label>
-          </div>
-        </div>
-      </div>
-      <div class="mdc-layout-grid__inner block">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Disable Groups</span>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="contentTypeLinks" value="links" name="content"
-                checked onchange="onSelectContentType(1)">
-              <div class=" mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label class="radio-label" for="imageIndicator">On</label>
-          </div>
-        </div>
-        <div class="mdc-layout-grid__cell--span-4">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="contentTypeGroups" value="groupslinks"
-                name="content" onchange="onSelectContentType(2)">
-              <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label class="radio-label" for="colorIndicator">Off</label>
+          <div class="radio radio-primary">
+            <input type="radio" id="bothPrivacy" value="both" name="privacy" checked onchange="onSelectPrivacy('both')">
+            
+            <label class="col-md-5"for="bothPrivacy">
+              <span class="tooltip-container">Both
+                <span class="btn-info-icon btn-primary">
+                  <span class="cp-tooltip top-cp-tooltip left-cp-tooltip">
+                    Shows public and private topics together - users see public topics from everyone alongside their own private ones.
+                  </span>
+                </span>
+              </span>
+            </label>
           </div>
         </div>
       </div>
 
-      <div class="mdc-layout-grid__inner block">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Empty State Message</span>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="emptyStateMessageOn" value="emptyStateMessageOn"
-                name="emptyStateMessage" checked onchange="onSelectEmptyStateMessage(true)">
-              <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
+      <div class="row margin-bottom-twenty" id="writeAccessContainer">
+        <span class="col-md-4">Public Write Access</span>
+        <div class="col-md-8 flex space-between">
+          <div class="radio radio-primary margin-top-zero">
+            <input type="radio" id="publicWritePrivacy" value="publicWrite" name="writePrivacy" checked
+              onchange="onSelectWritePrivacy()">
+            <label class="col-md-5"for="publicWritePrivacy">
+              <span class="tooltip-container">Anyone
+                <span class="btn-info-icon btn-primary">
+                  <span class="cp-tooltip top-cp-tooltip">
+                    Any app user can create topics and add content to this feed.
+                  </span>
+                </span>
+              </span>
+            </label>
+          </div>
+          <div class="radio radio-primary">
+            <input type="radio" id="privateWritePrivacy" value="privateWrite" name="writePrivacy"
+              onchange="onSelectWritePrivacy()">
+            <label class="col-md-5"for="privateWritePrivacy">
+              <span class="tooltip-container">Tag Only
+                <span class="btn-info-icon btn-primary">
+                  <span class="cp-tooltip top-cp-tooltip left-cp-tooltip">
+                    Only users assigned one of the selected tags can add content - everyone else can view but not post.
+                  </span>
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row margin-bottom-twenty tagInputContainer hidden" id="tagInputContainer">
+        <div class="col-md-4"></div>
+        <div class="col-md-8">
+          <div id="writePrivacyTagsContainer"></div>
+        </div>
+      </div>
+      
+      <div class="row margin-bottom-twenty">
+        <span class="col-md-4">Style With Random</span>
+        <div class="col-md-8 flex space-between">
+          <div class="radio radio-primary margin-top-zero">
+            <input type="radio" id="imageIndicator" value="image" name="indicator" checked
+              onchange="onSelectIndicator()">
+            <label for="imageIndicator">Images</label>
+          </div>
+          <div class="radio radio-primary">
+            <input type="radio" id="colorIndicator" value="color" name="indicator" onchange="onSelectIndicator()">
+            <label for="colorIndicator">Colors</label>
+          </div>
+        </div>
+      </div>
+      <div class="row margin-bottom-twenty">
+        <span class="col-md-4">Disable Groups</span>
+        <div class="col-md-8 flex space-between">
+          <div class="radio radio-primary margin-top-zero">
+            <input type="radio" id="contentTypeLinks" value="links" name="content" checked
+              onchange="onSelectContentType(1)">
+            <label for="contentTypeLinks">On</label>
+          </div>
+          <div class="radio radio-primary">
+            <input type="radio" id="contentTypeGroups" value="groupslinks" name="content"
+              onchange="onSelectContentType(2)">
+            <label for="contentTypeGroups">Off</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row margin-bottom-twenty">
+        <span class="col-md-4">Empty State Message</span>
+        <div class="col-md-8 flex space-between">
+          <div class="radio radio-primary margin-top-zero">
+            <input type="radio" id="emptyStateMessageOn" value="emptyStateMessageOn" name="emptyStateMessage" checked
+              onchange="onSelectEmptyStateMessage(true)">
             <label for="emptyStateMessageOn">On</label>
           </div>
-        </div>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="emptyStateMessageOff"
-                value="emptyStateMessageOff" name="emptyStateMessage" onchange="onSelectEmptyStateMessage(false)">
-              <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
+          <div class="radio radio-primary">
+            <input type="radio" id="emptyStateMessageOff" value="emptyStateMessageOff" name="emptyStateMessage"
+              onchange="onSelectEmptyStateMessage(false)">
             <label for="emptyStateMessageOff">Off</label>
           </div>
         </div>
-        <div class="mdc-layout-grid__inner mdc-layout-grid__cell--span-6" id="emptyStateMessageDiv"
-          style="display: none;">
-          <div class="mdc-layout-grid__cell--span-10">
-            <span class="mdc-layout-grid__cell--span-2 text-body-light">Text:</span>
-            <div class="mdc-layout-grid__cell--span-4">
-              <label class="mdc-text-field mdc-text-field--outlined  mdc-text-field--no-label">
-                <input type="text" class="mdc-text-field__input" id="blankStateMessage"
-                  onchange="onChangeEmptyStateMessage()">
-                <div class="mdc-notched-outline">
-                  <div class="mdc-notched-outline__leading"></div>
-                  <div class="mdc-notched-outline__trailing"></div>
-                </div>
-              </label>
-            </div>
-          </div>
+      </div>
 
+      <div class="row margin-bottom-twenty hidden" id="emptyStateMessageDiv">
+        <div class="col-md-4"></div>
+        <div class="col-md-8 flex flex-align-center">
+          <input type="text" placeholder="Empty state message" class="form-control" id="blankStateMessage" onchange="onChangeEmptyStateMessage()">
         </div>
       </div>
-      <div class="mdc-layout-grid__inner block">
-        <span class="mdc-layout-grid__cell--span-2 text-body-light">Sort by</span>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="sortBy0" name="sortBy"
-                onchange="onSelectSortType(0)" checked>
-              <div class=" mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label class="radio-label" for="sortBy0">Natural order</label>
+
+      <div class="row margin-bottom-twenty">
+        <span class="col-md-4">Sort by</span>
+        <div class="col-md-8 flex space-between">
+          <div class="radio radio-primary margin-top-zero">
+            <input type="radio" id="sortBy0" name="sortBy" onchange="onSelectSortType(0)" checked>
+            <label for="sortBy0">Natural order</label>
           </div>
-        </div>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="sortBy1" name="sortBy"
-                onchange="onSelectSortType(1)">
-              <div class=" mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label class="radio-label" for="sortBy1">A-Z</label>
+          <div class="radio radio-primary">
+            <input type="radio" id="sortBy1" name="sortBy" onchange="onSelectSortType(1)">
+            <label for="sortBy1">A-Z</label>
           </div>
-        </div>
-        <div class="mdc-layout-grid__cell--span-2">
-          <div class="mdc-form-field">
-            <div class="mdc-radio">
-              <input class="mdc-radio__native-control" type="radio" id="sortBy2"
-                name="sortBy" onchange="onSelectSortType(2)">
-              <div class="mdc-radio__background">
-                <div class="mdc-radio__outer-circle"></div>
-                <div class="mdc-radio__inner-circle"></div>
-              </div>
-              <div class="mdc-radio__ripple"></div>
-            </div>
-            <label class="radio-label" for="sortBy2">Z-A</label>
+          <div class="radio radio-primary">
+            <input type="radio" id="sortBy2" name="sortBy" onchange="onSelectSortType(2)">
+            <label for="sortBy2">Z-A</label>
           </div>
         </div>
       </div>
@@ -377,10 +254,15 @@
             updateRecordsForSorting();
             // This way, we will keep old instances to use PSW navigate by default (so we don't break backward compatibility) and new instances to navigate to CW by default.
             if (result && !Object.keys(result.data).length) result.data.navigateToCwByDefault = true;
-            config = new Config(result.data); querystring.value = config.querystring;
+            config = new Config(result.data);
 
-            bothPrivacyDiv.setAttribute('style', 'display: none;');
-            writePrivacyTag.value = config.writePrivacyTag;
+            if (config.querystring && config.querystring.trim() !== "") {
+              querystring.value = config.querystring;
+            } else {
+              querystring.value = "?wid=${topic_id}&topic_title=${topic_title}&uid=${user_id}"
+            }
+
+            initWritePrivacyTagsInput();
 
 
             if (result && Object.keys(config.pluginData).length > 0) {
@@ -389,10 +271,19 @@
                     config.pluginData.title = pluginInstance.title;
                     config.save();
                   }
-                  pluginInstanceName.innerHTML = config.pluginData.pluginTypeName + ': ' + config.pluginData.title;
-                  queryStringContainer.style.display = "grid"
+                  pluginName.classList.remove("hidden");
+                  pluginImage.classList.remove("hidden");
+                  deletePluginBtn.classList.remove("hidden");
+                  pluginName.innerHTML = config.pluginData.pluginTypeName;
+                  pluginInstanceName.innerHTML = config.pluginData.title;
+                  pluginImage.src = config.pluginData.iconUrl;
+
+                  queryStringContainer.style.display = "block"
               });
             } else {
+              pluginName.classList.add("hidden");
+              pluginImage.classList.add("hidden");
+              deletePluginBtn.classList.add("hidden");
               pluginInstanceName.innerHTML = 'Social Wall'
               queryStringContainer.style.display = "none"
             }
@@ -403,10 +294,12 @@
             }
             if (config.privacy === Config.PRIVACY.PUBLIC) {
               publicPrivacy.checked = true;
-              writeAccessContainer.style.display = "grid";
+              writeAccessContainer.style.display = "block";
+              tagInputContainer.style.display = "block";
             }
             else if (config.privacy === Config.PRIVACY.PRIVATE) {
               writeAccessContainer.style.display = "none";
+              tagInputContainer.style.display = "none";
               privatePrivacy.checked = true;
             } else {
               bothPrivacy.checked = true;
@@ -433,27 +326,32 @@
             if (config.emptyState) {
               emptyStateMessageOn.checked = true;
               blankStateMessage.value = config.emptyStateMessage;
+              emptyStateMessageDiv.classList.remove("hidden");
             } else {
-              emptyStateMessageDiv.setAttribute('style', 'display: none;')
+              emptyStateMessageDiv.classList.add("hidden");
               emptyStateMessageOff.checked = true;
             }
-            let elements = document.getElementsByClassName("tagInputContainer");
 
             if (config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
               privateWritePrivacy.checked = true;
-              for (var i = 0; i < elements.length; i++) {
-                elements[i].style.display = "block";
-              }
+              tagInputContainer.classList.remove("hidden");
             }
             else {
               publicWritePrivacy.checked = true;
-              for (var i = 0; i < elements.length; i++) {
-                elements[i].style.display = "none";
-              }
+              tagInputContainer.classList.add("hidden");
             }
+
+            setTimeout(() => {
+              emptyListContainer.classList.add("hidden");
+              contentContainer.classList.remove("hidden");
+            }, 500);
           })
           .catch(err => {
             console.error(err)
+            setTimeout(() => {
+              emptyListContainer.classList.add("hidden");
+              contentContainer.classList.remove("hidden");
+            }, 500);
           })
       }
 
@@ -471,18 +369,13 @@
       }
 
       function setBothPrivacyElements() {
-        let elements = document.getElementsByClassName("tagInputContainer");
         if (config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
           config.writePrivacy = Config.WRITE_PRIVACY.PUBLIC;
-          for (var i = 0; i < elements.length; i++) {
-            elements[i].style.display = "none";
-          }
+          tagInputContainer.classList.add("hidden");
         }
         else {
           config.writePrivacy = Config.WRITE_PRIVACY.PRIVATE;
-          for (var i = 0; i < elements.length; i++) {
-            elements[i].style.display = "block";
-          }
+          tagInputContainer.classList.remove("hidden");
         }
       }
 
@@ -491,21 +384,35 @@
           if (instances && instances.length > 0) {
             config.pluginData = instances[0];
             config.save();
-            pluginInstanceName.innerHTML = instances[0].pluginTypeName + ": " + instances[0].title;
-            queryStringContainer.style.display = "grid";
-          } else {
-            pluginInstanceName.innerHTML = 'Social Wall';
+            pluginName.classList.remove("hidden");
+            pluginImage.classList.remove("hidden");
+            deletePluginBtn.classList.remove("hidden");
+            pluginImage.src = instances[0].iconUrl;
+            pluginName.innerHTML = instances[0].pluginTypeName;
+            pluginInstanceName.innerHTML = instances[0].title;
+            queryStringContainer.style.display = "block";
           }
         });
       }
 
+      function deletePlugin() {
+        config.pluginData = {};
+        config.save();
+        pluginName.classList.add("hidden");
+        pluginImage.classList.add("hidden");
+        deletePluginBtn.classList.add("hidden");
+        pluginImage.src = '';
+        pluginInstanceName.innerHTML = 'Social Wall';
+        queryStringContainer.style.display = "none";
+      }
+
       function onSelectEmptyStateMessage(bool) {
         if (bool) {
-          emptyStateMessageDiv.setAttribute('style', 'display: block;')
+          emptyStateMessageDiv.classList.remove("hidden");
           blankStateMessage.value = config.emptyStateMessage;
         }
         else if (!bool)
-          emptyStateMessageDiv.setAttribute('style', 'display: none;')
+          emptyStateMessageDiv.classList.add("hidden");
 
         config.emptyState = bool;
         config.save();
@@ -519,18 +426,20 @@
       function onSelectPrivacy(privacy) {
         if (privacy === 'public') {
           config.privacy = Config.PRIVACY.PUBLIC;
-          bothPrivacyDiv.setAttribute('style', 'display: none;');
-          writeAccessContainer.style.display = "grid";
+          writeAccessContainer.style.display = "block";
         }
         else if (privacy === 'private') {
           config.privacy = Config.PRIVACY.PRIVATE;
-          bothPrivacyDiv.setAttribute('style', 'display: none;');
           writeAccessContainer.style.display = "none";
         }
         else if (privacy === 'both') {
           config.privacy = Config.PRIVACY.BOTH;
-          bothPrivacyDiv.setAttribute('style', 'display: block;');
-          writeAccessContainer.style.display = "grid";
+          writeAccessContainer.style.display = "block";
+        }
+        if ((privacy === 'public' || privacy === 'both') && config.writePrivacy === Config.WRITE_PRIVACY.PRIVATE) {
+          tagInputContainer.classList.remove("hidden");
+        } else {
+          tagInputContainer.classList.add("hidden");
         }
         config.save();
       }
@@ -560,13 +469,24 @@
         config.save();
       }
 
-      function onSelectTag() {
-        buildfire.auth.showTagsSearchDialog({}, (err, tags) => {
-          tags = tags.map(tag => tag.tagName).join(", ");
-          config.writePrivacyTag = tags;
-          writePrivacyTag.value = tags;
+      function initWritePrivacyTagsInput() {
+        const writePrivacyTagsInput = new buildfire.components.control.userTagsInput('#writePrivacyTagsContainer', {
+          languageSettings: { placeholder: 'Select Tag(s)' }
+        });
+
+        // Seed the previously saved tags without triggering a redundant save.
+        writePrivacyTagsInput.onUpdate = () => {};
+        let initialTags = (config.writePrivacyTag || '')
+          .split(',')
+          .map(tag => tag.trim())
+          .filter(Boolean)
+          .map(tag => ({ value: tag, tagName: tag }));
+        if (initialTags.length) writePrivacyTagsInput.set(initialTags);
+
+        writePrivacyTagsInput.onUpdate = ({ tags }) => {
+          config.writePrivacyTag = tags.map(tag => tag.value).join(', ');
           config.save();
-        })
+        };
       }
 
       function onChangeEmptyStateMessage() {
